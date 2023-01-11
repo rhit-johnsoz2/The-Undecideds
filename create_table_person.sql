@@ -8,5 +8,6 @@ CREATE TABLE Person (
 	login varchar(30),
 	password varchar(30),
 	role char(2),
+	hcpID Integer REFERENCES dbo.HealthCareProvider,
 	CONSTRAINT primary_key PRIMARY KEY (ID, login)
 )
