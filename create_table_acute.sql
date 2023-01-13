@@ -6,6 +6,10 @@ CREATE TABLE Acute (
 	severity integer,
 	symptomtimestamp timestamp,
 	primary key(personID, symptomID),
-	foreign key(personID) references person(ID),
+	foreign key(personID) references person(ID)
+		On Delete Cascade
+		On Update Cascade,
 	foreign key(symptomID) references symptom(ID)
+		On Delete Cascade
+		On Update Cascade,
 );
