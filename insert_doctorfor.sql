@@ -25,3 +25,23 @@ BEGIN
 INSERT INTO DoctorFor Values(@doctorID, @patientID)
 Return 0
 END
+
+--Testing no errors
+--DECLARE @status int
+--EXEC @status = dbo.InsertDoctorFor @doctorID = 3, @patientID = 2
+--SELECT @status
+
+--Testing error code 1
+--DECLARE @status int
+--EXEC @status = dbo.InsertDoctorFor @doctorID = null, @patientID = 2
+--SELECT @status
+
+--Testing error code 2
+--DECLARE @status int
+--EXEC @status = dbo.InsertDoctorFor @doctorID = 40, @patientID = 2
+--SELECT @status
+
+--Testing error code 3
+--DECLARE @status int
+--EXEC @status = dbo.InsertDoctorFor @doctorID = 3, @patientID = 30
+--SELECT @status
