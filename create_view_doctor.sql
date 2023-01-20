@@ -2,7 +2,7 @@ Use SymptomTracker
 Go
 CREATE VIEW DoctorView
 AS
-SELECT Patient.fname, Patient.lname, Patient.ID
+SELECT Doctor.ID AS DoctorID, Patient.fname, Patient.lname, Patient.ID
 FROM Person Doctor JOIN DoctorFor DF
 On Doctor.ID = DF.doctorID
 JOIN Person Patient on DF.patientID = Patient.ID
