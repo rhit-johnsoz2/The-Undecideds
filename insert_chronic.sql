@@ -25,3 +25,23 @@ BEGIN
 INSERT INTO Chronic Values(@personID, @symptomID)
 Return 0
 END
+
+--Testing no errors
+--DECLARE @status int
+--EXEC @status = dbo.InsertChronic @personID = 2, @symptomID = 1
+--SELECT @status
+
+--Testing error code 1
+--DECLARE @status int
+--EXEC @status = dbo.InsertChronic @personID = 1
+--SELECT @status
+
+--Testing error code 2
+--DECLARE @status int
+--EXEC @status = dbo.InsertChronic @personID = 40, @symptomID = 1
+--SELECT @status
+
+--Testing error code 3
+--DECLARE @status int
+--EXEC @status = dbo.InsertChronic @personID = 2, @symptomID = 30
+--SELECT @status
