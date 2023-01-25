@@ -24,4 +24,21 @@ public class InsertServiceList {
             "Input Arguments cannot be null",
             "HealthCareProvider already exists"
     });
+
+    public static final CUDService INSERT_SYMPTOM = new CUDService("InsertSymptom", new Argument[]{
+            new Argument(Argument.ArgumentType.STRING),  // NAME
+    }, new String[]{
+            "Successful",
+            "Input Arguments cannot be null"
+    });
+
+    public static final CUDService INSERT_CHRONIC = new CUDService("InsertChronic", new Argument[]{
+            new Argument(Argument.ArgumentType.INT),  // PERSON ID
+            new Argument(Argument.ArgumentType.INT)  // SYMPTOM ID
+    }, new String[]{
+            "Successful",
+            "Input Arguments cannot be null",
+            "PersonID does not exist",
+            "SymptomID does not exist"
+    });
 }
