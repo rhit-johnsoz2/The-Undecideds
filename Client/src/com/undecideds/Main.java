@@ -3,10 +3,10 @@ package com.undecideds;
 import com.undecideds.cli.CLIApplication;
 import com.undecideds.ui.ClientWindow;
 
-
 //Authors: 
 // johnsoz2
 // Cerasoml
+// Liz Fogarty:sunglasses
 
 public class Main {
     public static void main(String[] args){
