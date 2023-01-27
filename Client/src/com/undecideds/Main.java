@@ -3,7 +3,9 @@ package com.undecideds;
 import com.undecideds.cli.CLIApplication;
 import com.undecideds.ui.ClientWindow;
 
-// Authors:
+
+//Authors: 
+// johnsoz2
 // Cerasoml
 
 public class Main {
