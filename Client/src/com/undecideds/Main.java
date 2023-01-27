@@ -3,6 +3,8 @@ package com.undecideds;
 import com.undecideds.cli.CLIApplication;
 import com.undecideds.ui.ClientWindow;
 
+//Authors: johnsoz2
+
 public class Main {
     public static void main(String[] args){
         if(args.length == 0){
