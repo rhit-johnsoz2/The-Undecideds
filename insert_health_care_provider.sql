@@ -13,7 +13,7 @@ BEGIN
 	-- check to see if the hcp already exists in the hcp database
 	IF(EXISTS (SELECT * FROM HealthCareProvider WHERE name = @name))
 	BEGIN
-		RAISERROR('HCP already in HCP database', 14, 1)
+		RAISERROR('HCP already in HCP table', 14, 1)
 		Return 2
 	END
 INSERT INTO HealthCareProvider Values(@name)
