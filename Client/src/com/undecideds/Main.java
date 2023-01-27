@@ -3,7 +3,11 @@ package com.undecideds;
 import com.undecideds.cli.CLIApplication;
 import com.undecideds.ui.ClientWindow;
 
-//@Author Liz Fogarty:sunglasses
+//Authors: 
+// johnsoz2
+// Cerasoml
+// Liz Fogarty:sunglasses
+
 public class Main {
     public static void main(String[] args){
         if(args.length == 0){
