@@ -18,7 +18,7 @@ public class InsertServiceList {
     });
 
     public static final CUDService INSERT_HEALTHCAREPROVIDER = new CUDService("InsertHealthCareProviders", new Argument[]{
-            new Argument(Argument.ArgumentType.STRING) // NAME
+            new Argument(Argument.ArgumentType.STRING), // NAME
     }, new String[]{
             "Successful",
             "Input Arguments cannot be null",
@@ -26,7 +26,7 @@ public class InsertServiceList {
     });
 
     public static final CUDService INSERT_SYMPTOM = new CUDService("InsertSymptom", new Argument[]{
-            new Argument(Argument.ArgumentType.STRING)  // NAME
+            new Argument(Argument.ArgumentType.STRING),  // NAME
     }, new String[]{
             "Successful",
             "Input Arguments cannot be null"
@@ -89,7 +89,7 @@ public class InsertServiceList {
 
     public static final CUDService INSERT_NEEDS = new CUDService("InsertNeeds", new Argument[]{
             new Argument(Argument.ArgumentType.INT),  // PATIENT ID
-            new Argument(Argument.ArgumentType.INT),  // TREATMENT ID
+            new Argument(Argument.ArgumentType.INT)  // TREATMENT ID
             new Argument(Argument.ArgumentType.DATE),  // STARTING DATE
             new Argument(Argument.ArgumentType.DATE)  // ENDING DATE
     }, new String[]{
