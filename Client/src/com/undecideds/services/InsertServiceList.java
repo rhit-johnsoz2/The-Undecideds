@@ -43,6 +43,7 @@ public class InsertServiceList {
     });
 
     public static final CUDService INSERT_TREATMENT = new CUDService("InsertTreatment", new Argument[]{
+            new Argument(Argument.ArgumentType.STRING),  // NAME
             new Argument(Argument.ArgumentType.INT)  // COST
     }, new String[]{
             "Successful",

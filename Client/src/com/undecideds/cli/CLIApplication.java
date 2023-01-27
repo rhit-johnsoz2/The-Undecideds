@@ -4,7 +4,9 @@ import com.undecideds.services.DatabaseConnectionService;
 import com.undecideds.services.InsertServiceList;
 import com.undecideds.services.ReadServiceList;
 
+import java.sql.Date;
 import java.sql.ResultSet;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -37,6 +39,41 @@ public class CLIApplication {
                 5, 2
         });
         System.out.println(InsertServiceList.INSERT_CHRONIC.codeMeaning(result));
+
+        result = InsertServiceList.INSERT_TREATMENT.ExecuteQuery(new Object[]{
+                "Advil", 6
+        });
+        System.out.println(InsertServiceList.INSERT_TREATMENT.codeMeaning(result));
+
+        result = InsertServiceList.INSERT_INSURES.ExecuteQuery(new Object[]{
+                2, 2, 2, 5
+        });
+        System.out.println(InsertServiceList.INSERT_INSURES.codeMeaning(result));
+
+        result = InsertServiceList.INSERT_DOCTORFOR.ExecuteQuery(new Object[]{
+                4, 5
+        });
+        System.out.println(InsertServiceList.INSERT_DOCTORFOR.codeMeaning(result));
+
+        result = InsertServiceList.INSERT_PERFORMS.ExecuteQuery(new Object[]{
+                4, 2
+        });
+        System.out.println(InsertServiceList.INSERT_PERFORMS.codeMeaning(result));
+
+        result = InsertServiceList.INSERT_NEEDS.ExecuteQuery(new Object[]{
+                5, 2, Date.valueOf("2021-03-15"), Date.valueOf("2021-05-15")
+        });
+        System.out.println(InsertServiceList.INSERT_NEEDS.codeMeaning(result));
+
+        result = InsertServiceList.INSERT_SIDEEFFECTOF.ExecuteQuery(new Object[]{
+                2, 2
+        });
+        System.out.println(InsertServiceList.INSERT_SIDEEFFECTOF.codeMeaning(result));
+
+        result = InsertServiceList.INSERT_ACUTE.ExecuteQuery(new Object[]{
+                4, 1, 4, Timestamp.valueOf("2021-04-01 09:11:17")
+        });
+        System.out.println(InsertServiceList.INSERT_ACUTE.codeMeaning(result));
 
         ResultSet rs = ReadServiceList.CHRONIC_FROM_PATIENT.ExecuteQuery(new Object[]{
                 5
