@@ -1,6 +1,8 @@
 package com.undecideds.services.structs;
 
 import java.sql.CallableStatement;
+import java.sql.Date;
+import java.sql.Timestamp;
 
 public class Argument {
     ArgumentType type;
@@ -14,6 +16,8 @@ public class Argument {
                 case STRING -> {statement.setString(index, (String) o); return true;}
                 case INT -> {statement.setInt(index, (int) o); return true;}
                 case FLOAT -> {statement.setFloat(index, (float) o); return true;}
+                case DATE -> {statement.setDate(index, (Date) o); return true;}
+                case TIMESTAMP -> {statement.setTimestamp(index, (Timestamp) o);}
                 default -> {System.out.println("Error parsing argument, no type " + type.name());}
             }
         }catch (Exception e){
@@ -25,6 +29,8 @@ public class Argument {
     public enum ArgumentType{
         STRING,
         INT,
-        FLOAT
+        FLOAT,
+        DATE,
+        TIMESTAMP
     }
 }
