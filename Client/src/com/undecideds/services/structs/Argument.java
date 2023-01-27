@@ -17,7 +17,7 @@ public class Argument {
                 case INT -> {statement.setInt(index, (int) o); return true;}
                 case FLOAT -> {statement.setFloat(index, (float) o); return true;}
                 case DATE -> {statement.setDate(index, (Date) o); return true;}
-                case TIMESTAMP -> {statement.setTimestamp(index, (Timestamp) o);}
+                case TIMESTAMP -> {statement.setTimestamp(index, (Timestamp) o); return true;}
                 default -> {System.out.println("Error parsing argument, no type " + type.name());}
             }
         }catch (Exception e){
