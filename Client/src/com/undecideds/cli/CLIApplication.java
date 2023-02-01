@@ -12,12 +12,6 @@ public class CLIApplication {
     Scanner sc;
     public void Launch(String[] args){
         sc = new Scanner(System.in);
-        DatabaseConnectionService.InitDatabaseConnectionService("titan.csse.rose-hulman.edu", "SymptomTracker");
-        boolean connected = DatabaseConnectionService.connect("johnsoz2", "");
-        if(!connected){
-            System.out.println("Connection failed!");
-            System.exit(401);
-        }
         int result = InsertServiceList.INSERT_PERSON.ExecuteQuery(new Object[]{
             "Zachary", "Johnson", "johnsoz2", "Password123", "PA", 1
         });

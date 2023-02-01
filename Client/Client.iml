@@ -8,5 +8,6 @@
     <orderEntry type="jdk" jdkName="17" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="mssql-jdbc-11.2.3.jre17" level="project" />
+    <orderEntry type="library" name="jasypt-1.9.2" level="application" />
   </component>
 </module>
