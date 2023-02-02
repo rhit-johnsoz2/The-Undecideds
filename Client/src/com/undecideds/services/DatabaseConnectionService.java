@@ -30,7 +30,6 @@ public class DatabaseConnectionService {
 			return true;
 		}catch (Exception e){
 			System.out.println("Connection failed, please check login credentials");
-			//System.out.println(e);
 		}
 		return false;
 	}

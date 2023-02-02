@@ -26,6 +26,7 @@ public class Main {
                 System.out.println("unknown run config: " + s);
             }
         }
+        System.out.println("attempting login with credentials:\n\tuser: " + user + "\n\tpass: " + EncryptionService.HiddenPass(encryptedPass));
         DatabaseConnectionService.InitDatabaseConnectionService("titan.csse.rose-hulman.edu", "SymptomTracker");
         boolean connected = DatabaseConnectionService.connect(user, EncryptionService.Decrypt(encryptedPass));
         if(!connected){

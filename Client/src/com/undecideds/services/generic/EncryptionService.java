@@ -7,6 +7,15 @@ public class EncryptionService {
         return "dWUfCDyr6N";
     }
 
+    public static String HiddenPass(String encrypted){
+        StringBuilder sb = new StringBuilder();
+        int charCount = Decrypt(encrypted).length();
+        for(int i = 0; i < charCount; i++){
+            sb.append("*");
+        }
+        return sb.toString();
+    }
+
     public static String Decrypt(String encrypted){
         StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
         encryptor.setPassword(getKey());
