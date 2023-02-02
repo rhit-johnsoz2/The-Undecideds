@@ -29,7 +29,7 @@ public class DatabaseConnectionService {
 			connection = DriverManager.getConnection(URL);
 			return true;
 		}catch (Exception e){
-			System.out.println(e);
+			System.out.println("Connection failed, please check login credentials");
 		}
 		return false;
 	}
