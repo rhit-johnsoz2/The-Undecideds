@@ -9,6 +9,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.sql.Date;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -59,10 +61,12 @@ public class ClientWindow implements ActionListener {
     public void actionPerformed(ActionEvent ae) {
         String userName = this.userName_text.getText();
         String password = this.password_text.getText();
-        if (userName.trim().equals("admin") && password.trim().equals("admin")) {
-            this.message.setText(" Hello " + userName);
+        if (userName.trim().equals("doctor") && password.trim().equals("doctor")) {
             this.DoctorPage();
-            this.frame.dispatchEvent(new WindowEvent(this.frame, 201));
+            frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+        } else if (userName.trim().equals("patient") && password.trim().equals("patient")) {
+            PatientPage();
+            frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
         } else {
             this.message.setText(" Invalid user.. ");
         }
@@ -73,24 +77,20 @@ public class ClientWindow implements ActionListener {
         JFrame frame = new JFrame();
         frame.setSize(500, 300);
         frame.setTitle("Symptom Tracker: Patient View");
-        String[] symptoms = new String[]{"Headache", "Cold"};
+        String[] symptoms = new String[]{"Cold", "Headache"};
         JComboBox<String> symptom = new JComboBox(symptoms);
         String[] severities = new String[]{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
         JComboBox<String> severity = new JComboBox(severities);
         JButton submit = new JButton("Submit");
         submit.addActionListener((e) -> {
-            String selectedSymptom = "You selected " + (String)symptom.getItemAt(symptom.getSelectedIndex());
-            String selectedSeverity = "You selected " + (String)severity.getItemAt(severity.getSelectedIndex());
-            System.out.println(selectedSymptom);
-            System.out.println(selectedSeverity);
-            int result = InsertServiceList.INSERT_ACUTE.ExecuteQuery(new Object[]{symptom.getItemAt(symptom.getSelectedIndex()), severity.getItemAt(severity.getSelectedIndex()), LocalDateTime.now()});
+            int result = InsertServiceList.INSERT_ACUTE.ExecuteQuery(new Object[]{2,1, Integer.valueOf(severity.getItemAt(severity.getSelectedIndex())), Timestamp.from(Instant.now())});
             System.out.println(InsertServiceList.INSERT_ACUTE.codeMeaning(result));
         });
         String[] chronicSymptoms = new String[]{"Cough"};
         JComboBox<String> chronicSymptom = new JComboBox(chronicSymptoms);
         JButton submit2 = new JButton("Submit");
         submit2.addActionListener((e) -> {
-            int result = InsertServiceList.INSERT_CHRONIC.ExecuteQuery(new Object[]{chronicSymptom.getItemAt(chronicSymptom.getSelectedIndex()), LocalDateTime.now()});
+            int result = InsertServiceList.INSERT_CHRONIC.ExecuteQuery(new Object[]{2, 2});
             System.out.println(InsertServiceList.INSERT_CHRONIC.codeMeaning(result));
         });
         String[][] data = new String[][]{{"Cough", "3", "10:00:00PM"}, {"Cough", "5", "10:00:00AM"}, {"Cough", "8", "10:00:00PM"}};
@@ -171,17 +171,14 @@ public class ClientWindow implements ActionListener {
         JComboBox<String> MyPatient = new JComboBox(patients);
         JTextField EndDate = new JTextField();
         JButton submit2 = new JButton("Submit");
-        this.submit.addActionListener((e) -> {
-            String patientID = "You selected " + patientFillIn.getText();
-            System.out.println(patientID);
-            int result = InsertServiceList.INSERT_DOCTORFOR.ExecuteQuery(new Object[]{doctorID, patientFillIn.getText()});
+        submit.addActionListener((e) -> {
+            int result = InsertServiceList.INSERT_DOCTORFOR.ExecuteQuery(new Object[]{3, 2});
             System.out.println(InsertServiceList.INSERT_DOCTORFOR.codeMeaning(result));
         });
-        submit2.addActionListener((e) -> {
-            String patientID = "You selected " + patientFillIn.getText();
-            System.out.println(patientID);
-            int result = InsertServiceList.INSERT_NEEDS.ExecuteQuery(new Object[]{4, 2, Date.valueOf(EndDate.getText()), null});
-            System.out.println(InsertServiceList.INSERT_NEEDS.codeMeaning(result));
+
+            submit2.addActionListener((e2) -> {
+            int result2 = InsertServiceList.INSERT_NEEDS.ExecuteQuery(new Object[]{3, 2, Date.valueOf(EndDate.getText()), null});
+            System.out.println(InsertServiceList.INSERT_NEEDS.codeMeaning(result2));
         });
         gbc.fill = 2;
         gbc.ipady = 20;
