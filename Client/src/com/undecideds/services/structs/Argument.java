@@ -6,8 +6,10 @@ import java.sql.Timestamp;
 
 public class Argument {
     ArgumentType type;
-    public Argument(ArgumentType type){
+    String argumentID;
+    public Argument(ArgumentType type, String argumentID){
         this.type = type;
+        this.argumentID = argumentID;
     }
 
     public boolean prepare(CallableStatement statement, int index, Object o){

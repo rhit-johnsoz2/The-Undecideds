@@ -8,20 +8,20 @@ import java.sql.Timestamp;
 
 public class InsertServiceList {
     public static final CUDService INSERT_PERSON = new CUDService("InsertPerson", new Argument[]{
-            //new Argument(Argument.ArgumentType.INT), // ID
-            new Argument(Argument.ArgumentType.STRING), // FNAME
-            new Argument(Argument.ArgumentType.STRING), // LNAME
-            new Argument(Argument.ArgumentType.STRING), // LOGIN
-            new Argument(Argument.ArgumentType.STRING), // PASSWORD
-            new Argument(Argument.ArgumentType.STRING), // ROLE
-            new Argument(Argument.ArgumentType.INT)  // INSURED BY
+            //new Argument(Argument.ArgumentType.INT, "D"),
+            new Argument(Argument.ArgumentType.STRING, "FNAME"),
+            new Argument(Argument.ArgumentType.STRING, "LNAME"),
+            new Argument(Argument.ArgumentType.STRING, "LOGIN"),
+            new Argument(Argument.ArgumentType.STRING, "PASSWORD"),
+            new Argument(Argument.ArgumentType.STRING, "ROLE"),
+            new Argument(Argument.ArgumentType.INT, "INSURED BY")
     }, new String[]{
             "Successful",
             "Input Arguments cannot be null"
     });
 
     public static final CUDService INSERT_HEALTHCAREPROVIDER = new CUDService("InsertHealthCareProviders", new Argument[]{
-            new Argument(Argument.ArgumentType.STRING) // NAME
+            new Argument(Argument.ArgumentType.STRING, "NAME")
     }, new String[]{
             "Successful",
             "Input Arguments cannot be null",
@@ -29,15 +29,15 @@ public class InsertServiceList {
     });
 
     public static final CUDService INSERT_SYMPTOM = new CUDService("InsertSymptom", new Argument[]{
-            new Argument(Argument.ArgumentType.STRING)  // NAME
+            new Argument(Argument.ArgumentType.STRING, "NAME")
     }, new String[]{
             "Successful",
             "Input Arguments cannot be null"
     });
 
     public static final CUDService INSERT_CHRONIC = new CUDService("InsertChronic", new Argument[]{
-            new Argument(Argument.ArgumentType.INT),  // PERSON ID
-            new Argument(Argument.ArgumentType.INT)  // SYMPTOM ID
+            new Argument(Argument.ArgumentType.INT, "PERSON ID"),
+            new Argument(Argument.ArgumentType.INT, "SYMPTOM ID")
     }, new String[]{
             "Successful",
             "Input Arguments cannot be null",
@@ -46,8 +46,8 @@ public class InsertServiceList {
     });
 
     public static final CUDService INSERT_TREATMENT = new CUDService("InsertTreatment", new Argument[]{
-            new Argument(Argument.ArgumentType.STRING),  // NAME
-            new Argument(Argument.ArgumentType.INT)  // COST
+            new Argument(Argument.ArgumentType.STRING, "NAME"),
+            new Argument(Argument.ArgumentType.INT, "COST")
     }, new String[]{
             "Successful",
             "Input Arguments cannot be null",
@@ -56,10 +56,10 @@ public class InsertServiceList {
 
 
     public static final CUDService INSERT_INSURES = new CUDService("InsertInsures", new Argument[]{
-            new Argument(Argument.ArgumentType.INT),  // PERSON ID
-            new Argument(Argument.ArgumentType.INT),  // HCP ID
-            new Argument(Argument.ArgumentType.INT),  // TREATMENT ID
-            new Argument(Argument.ArgumentType.INT)  // COVERAGE
+            new Argument(Argument.ArgumentType.INT, "PERSON ID"),
+            new Argument(Argument.ArgumentType.INT, "HCP ID"),
+            new Argument(Argument.ArgumentType.INT, "TREATMENT ID"),
+            new Argument(Argument.ArgumentType.INT, "COVERAGE")
     }, new String[]{
             "Successful",
             "Input Arguments cannot be null",
@@ -70,8 +70,8 @@ public class InsertServiceList {
 
 
     public static final CUDService INSERT_DOCTORFOR = new CUDService("InsertDoctorFor", new Argument[]{
-            new Argument(Argument.ArgumentType.INT),  // DOCTOR ID
-            new Argument(Argument.ArgumentType.INT)  // PATIENT ID
+            new Argument(Argument.ArgumentType.INT, "DOCTOR ID"),
+            new Argument(Argument.ArgumentType.INT, "PATIENT ID")
     }, new String[]{
             "Successful",
             "Input Arguments cannot be null",
@@ -81,8 +81,8 @@ public class InsertServiceList {
 
 
     public static final CUDService INSERT_PERFORMS = new CUDService("InsertPerforms", new Argument[]{
-            new Argument(Argument.ArgumentType.INT),  // DOCTOR ID
-            new Argument(Argument.ArgumentType.INT)  // TREATMENT ID
+            new Argument(Argument.ArgumentType.INT, "DOCTOR ID"),
+            new Argument(Argument.ArgumentType.INT, "TREATMENT ID")
     }, new String[]{
             "Successful",
             "Input Arguments cannot be null",
@@ -92,10 +92,10 @@ public class InsertServiceList {
 
 
     public static final CUDService INSERT_NEEDS = new CUDService("InsertNeeds", new Argument[]{
-            new Argument(Argument.ArgumentType.INT),  // PATIENT ID
-            new Argument(Argument.ArgumentType.INT),  // TREATMENT ID
-            new Argument(Argument.ArgumentType.DATE),  // STARTING DATE
-            new Argument(Argument.ArgumentType.DATE)  // ENDING DATE
+            new Argument(Argument.ArgumentType.INT, "PATIENT ID"),
+            new Argument(Argument.ArgumentType.INT, "TREATMENT ID"),
+            new Argument(Argument.ArgumentType.DATE, "STARTING DATE"),
+            new Argument(Argument.ArgumentType.DATE, "ENDING DATE")
     }, new String[]{
             "Successful",
             "Input Arguments cannot be null",
@@ -106,8 +106,8 @@ public class InsertServiceList {
 
 
     public static final CUDService INSERT_SIDEEFFECTOF = new CUDService("InsertSideEffectOf", new Argument[]{
-            new Argument(Argument.ArgumentType.INT),  // SYMPTOM ID
-            new Argument(Argument.ArgumentType.INT)  // TREATMENT ID
+            new Argument(Argument.ArgumentType.INT, "SYMPTOM ID"),
+            new Argument(Argument.ArgumentType.INT, "TREATMENT ID")
     }, new String[]{
             "Successful",
             "Input Arguments cannot be null",
@@ -117,10 +117,10 @@ public class InsertServiceList {
 
 
     public static final CUDService INSERT_ACUTE = new CUDService("InsertAcute", new Argument[]{
-            new Argument(Argument.ArgumentType.INT),  // PERSON ID
-            new Argument(Argument.ArgumentType.INT),  // SYMPTOM ID
-            new Argument(Argument.ArgumentType.INT),  // SEVERITY
-            new Argument(Argument.ArgumentType.TIMESTAMP)  // TIMESTAMP
+            new Argument(Argument.ArgumentType.INT, "PERSON ID"),
+            new Argument(Argument.ArgumentType.INT, "SYMPTOM ID"),
+            new Argument(Argument.ArgumentType.INT, "SEVERITY"),
+            new Argument(Argument.ArgumentType.TIMESTAMP, "TIMESTAMP")
     }, new String[]{
             "Successful",
             "Input Arguments cannot be null",
