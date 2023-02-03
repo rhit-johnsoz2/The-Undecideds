@@ -163,12 +163,12 @@ public class ClientWindow implements ActionListener {
         GridBagConstraints gbc = new GridBagConstraints();
         JTextField patientFillIn = new JTextField();
         new JButton("Submit");
-        JLabel TreatmentHeader = new JLabel("Select Treatement for Patient");
-        JLabel DateHeader = new JLabel("Enter Date in yyyy/dd/mm");
+        JLabel TreatmentHeader = new JLabel("Select Treatment for Patient");
+        JLabel DateHeader = new JLabel("Enter Date in yyyy-mm-dd");
         String[] Treatments = new String[]{"Drink Water", "Tylenol"};
         JComboBox<String> Treatment = new JComboBox(Treatments);
-        String[] pateints = new String[]{"Max C", "Zach J"};
-        JComboBox<String> MyPatient = new JComboBox(pateints);
+        String[] patients = new String[]{"Max C", "Zach J"};
+        JComboBox<String> MyPatient = new JComboBox(patients);
         JTextField EndDate = new JTextField();
         JButton submit2 = new JButton("Submit");
         this.submit.addActionListener((e) -> {
@@ -180,7 +180,7 @@ public class ClientWindow implements ActionListener {
         submit2.addActionListener((e) -> {
             String patientID = "You selected " + patientFillIn.getText();
             System.out.println(patientID);
-            int result = InsertServiceList.INSERT_NEEDS.ExecuteQuery(new Object[]{MyPatient.getSelectedIndex(), Treatment.getSelectedIndex(), LocalDateTime.now(), Date.valueOf("2023-01-30")});
+            int result = InsertServiceList.INSERT_NEEDS.ExecuteQuery(new Object[]{4, 2, Date.valueOf(EndDate.getText()), null});
             System.out.println(InsertServiceList.INSERT_NEEDS.codeMeaning(result));
         });
         gbc.fill = 2;
