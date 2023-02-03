@@ -1,6 +1,6 @@
 Use SymptomTracker
 Go
-Create Procedure GetPatientsWithAcuteSymptoms
+Create Procedure GetPatientsWithChronicSymptoms
 (@patientID int)
 As
 BEGIN
@@ -15,6 +15,6 @@ BEGIN
 		Return 2
 	END
 	SELECT *
-	FROM AllAcuteSymptomsOnPatient
-	WHERE AllAcuteSymptomsOnPatient.PID = @patientID
+	FROM AllChronicSymptomsOnPatient
+	WHERE AllChronicSymptomsOnPatient.PID = @patientID
 END
