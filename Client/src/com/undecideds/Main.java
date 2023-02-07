@@ -2,8 +2,15 @@ package com.undecideds;
 
 import com.undecideds.cli.CLIApplication;
 import com.undecideds.services.DatabaseConnectionService;
+import com.undecideds.services.ReadServiceList;
 import com.undecideds.services.generic.EncryptionService;
 import com.undecideds.ui.ClientWindow;
+import com.undecideds.ui.builders.TableBuilder;
+
+import javax.swing.*;
+import java.awt.*;
+import java.sql.ResultSet;
+import java.util.HashSet;
 
 //Authors: 
 // johnsoz2
@@ -33,6 +40,17 @@ public class Main {
             System.out.println("Connection failed! Exiting . . .");
             System.exit(401);
         }
+
+        ResultSet rs = ReadServiceList.CHRONIC_FROM_PATIENT.ExecuteQuery(new Object[]{
+                5
+        });
+
+        JFrame test = new JFrame();
+        HashSet<String> hidden = new HashSet<>();
+        test.add(TableBuilder.buildTable(rs, hidden));
+        test.setSize(500, 500);
+        test.setVisible(true);
+
         if(guiEnabled){
             ClientWindow window = new ClientWindow();
             window.launch();
