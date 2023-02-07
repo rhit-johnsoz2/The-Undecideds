@@ -1,6 +1,10 @@
 package com.undecideds.services.structs;
 
+import com.undecideds.ui.cuduibuilder.DateLabelFormatter;
 import com.undecideds.ui.cuduibuilder.InputWidget;
+import org.jdatepicker.impl.JDatePanelImpl;
+import org.jdatepicker.impl.JDatePickerImpl;
+import org.jdatepicker.impl.UtilDateModel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,6 +13,7 @@ import java.awt.event.KeyEvent;
 import java.sql.CallableStatement;
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.Properties;
 
 public class Argument {
     ArgumentType type;
@@ -94,38 +99,30 @@ public class Argument {
             }
             case DATE -> {
                 return new InputWidget(argumentID){
-                    JTextField text = new JTextField();
+                    JDatePickerImpl datePicker;
                     @Override
                     public Container generateWidget() {
                         Container con = new Panel(new GridLayout(1, 1));
                         con.add(label);
-                        con.add(text);
+
+                        UtilDateModel model = new UtilDateModel();
+                        Properties p = new Properties();
+                        p.put("text.today", "Today");
+                        p.put("text.month", "Month");
+                        p.put("text.year", "Year");
+                        JDatePanelImpl datePanel = new JDatePanelImpl(model, p);
+                        datePicker = new JDatePickerImpl(datePanel, new DateLabelFormatter());
+                        con.add(datePicker);
                         return con;
                     }
                     @Override
                     public Object getValue() {
-                        return Date.valueOf(text.getText());
-                    }
-                };
-            }
-            case TIMESTAMP -> {
-                return new InputWidget(argumentID){
-                    JTextField text = new JTextField();
-                    @Override
-                    public Container generateWidget() {
-                        Container con = new Panel(new GridLayout(1, 1));
-                        con.add(label);
-                        con.add(text);
-                        return con;
-                    }
-                    @Override
-                    public Object getValue() {
-                        return Timestamp.valueOf(text.getText());
+                        return datePicker.getModel().getValue();
                     }
                 };
             }
             default -> {
-                System.out.println("Error parsing argument, no type " + type.name());
+                System.out.println("Error generating widget, no widget for type " + type.name());
             }
         }
         return null;

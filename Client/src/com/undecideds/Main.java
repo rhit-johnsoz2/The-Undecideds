@@ -57,22 +57,7 @@ public class Main {
         testButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JFrame f1 = new JFrame();
-                f1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                f1.setSize(300, 300);
-                f1.setVisible(true);
-
-//                Container conn = f1.getContentPane();
-//                conn.setLayout(null);
-
-                UtilDateModel model = new UtilDateModel();
-                Properties p = new Properties();
-                p.put("text.today", "Today");
-                p.put("text.month", "Month");
-                p.put("text.year", "Year");
-                JDatePanelImpl datePanel = new JDatePanelImpl(model, p);
-                JDatePickerImpl datePicker = new JDatePickerImpl(datePanel, new DateLabelFormatter());
-                f1.add(datePicker);
+                System.out.println(test.get("STARTING DATE").getValue());
             }
         });
         testPanel.add(test.get("PATIENT ID").generateWidget());
