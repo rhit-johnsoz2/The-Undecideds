@@ -26,6 +26,8 @@ public class Argument {
         return false;
     }
 
+
+
     public enum ArgumentType{
         STRING,
         INT,
