@@ -2,9 +2,11 @@ package com.undecideds.services.generic;
 
 import com.undecideds.services.DatabaseConnectionService;
 import com.undecideds.services.structs.Argument;
+import com.undecideds.ui.cuduibuilder.InputWidget;
 
 import java.sql.CallableStatement;
 import java.sql.Types;
+import java.util.HashMap;
 
 public class CUDService {
     StringBuilder template;
@@ -38,6 +40,15 @@ public class CUDService {
             e.printStackTrace();
         }
         return -1;
+    }
+
+    public HashMap<String, InputWidget> buildUIWidgets() {
+        HashMap<String, InputWidget> widgets = new HashMap<>();
+        for(Argument a : arguments) {
+            InputWidget widget = a.buildWidget();
+            widgets.put(widget.getArgumentID(), widget);
+        }
+        return widgets;
     }
 
     @Override
