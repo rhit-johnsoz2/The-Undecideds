@@ -1,13 +1,26 @@
 package com.undecideds.services.structs;
 
+import com.undecideds.ui.cuduibuilder.DateLabelFormatter;
+import com.undecideds.ui.cuduibuilder.InputWidget;
+import org.jdatepicker.impl.JDatePanelImpl;
+import org.jdatepicker.impl.JDatePickerImpl;
+import org.jdatepicker.impl.UtilDateModel;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.sql.CallableStatement;
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.Properties;
 
 public class Argument {
     ArgumentType type;
-    public Argument(ArgumentType type){
+    String argumentID;
+    public Argument(ArgumentType type, String argumentID){
         this.type = type;
+        this.argumentID = argumentID;
     }
 
     public boolean prepare(CallableStatement statement, int index, Object o){
@@ -26,7 +39,99 @@ public class Argument {
         return false;
     }
 
+    public InputWidget buildWidget() {
+        JLabel label = new JLabel(argumentID);
+        switch (type) {
+            case STRING -> {
+                return new InputWidget(argumentID){
+                    JTextField text = new JTextField();
+                    @Override
+                    public Container generateWidget() {
+                        Container con = new Panel(new GridLayout(1, 1));
+                        con.add(label);
+                        con.add(text);
+                        return con;
+                    }
+                    @Override
+                    public Object getValue() {
+                        return text.getText();
+                    }
+                };
+            }
+            case INT -> {
+                return new InputWidget(argumentID){
+                    JTextField numbers = new JTextField();
+                    @Override
+                    public Container generateWidget() {
+                        Container con = new Panel(new GridLayout(1, 1));
+                        numbers.addKeyListener(new KeyAdapter() {
+                            @Override
+                            public void keyPressed(KeyEvent e) {
+                                String value = numbers.getText();
+                                numbers.setEditable(e.isActionKey() || e.getKeyCode() == KeyEvent.VK_BACK_SPACE || (e.getKeyChar() >= '0' && e.getKeyChar() <= '9'));
+                            }
+                        });
+                        con.add(label);
+                        con.add(numbers);
+                        return con;
+                    }
+                    @Override
+                    public Object getValue() {
+                        return Integer.parseInt(numbers.getText());
+                    }
+                };
+            }
+            case FLOAT -> {
+                return new InputWidget(argumentID){
+                    JTextField text = new JTextField();
+                    @Override
+                    public Container generateWidget() {
+                        Container con = new Panel(new GridLayout(1, 1));
+                        con.add(label);
+                        con.add(text);
+                        return con;
+                    }
+                    @Override
+                    public Object getValue() {
+                        return Float.valueOf(text.getText());
+                    }
+                };
+            }
+            case DATE -> {
+                return new InputWidget(argumentID){
+                    JDatePickerImpl datePicker;
+                    @Override
+                    public Container generateWidget() {
+                        Container con = new Panel(new GridLayout(1, 1));
+                        con.add(label);
 
+                        UtilDateModel model = new UtilDateModel();
+                        Properties p = new Properties();
+                        p.put("text.today", "Today");
+                        p.put("text.month", "Month");
+                        p.put("text.year", "Year");
+                        JDatePanelImpl datePanel = new JDatePanelImpl(model, p);
+                        datePicker = new JDatePickerImpl(datePanel, new DateLabelFormatter());
+                        con.add(datePicker);
+                        return con;
+                    }
+                    @Override
+                    public Object getValue() {
+                        Date date = new Date(datePicker.getModel().getYear(), datePicker.getModel().getMonth(), datePicker.getModel().getDay());
+                        return date;
+                    }
+                };
+            }
+            default -> {
+                System.out.println("Error generating widget, no widget for type " + type.name());
+            }
+        }
+        return null;
+    }
+
+    public String getArgumentID() {
+        return argumentID;
+    }
 
     public enum ArgumentType{
         STRING,

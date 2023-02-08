@@ -2,6 +2,22 @@ package com.undecideds;
 
 import com.undecideds.cli.CLIApplication;
 import com.undecideds.services.DatabaseConnectionService;
+import com.undecideds.services.InsertServiceList;
+import com.undecideds.services.generic.EncryptionService;
+import com.undecideds.ui.ClientWindow;
+import com.undecideds.ui.cuduibuilder.DateLabelFormatter;
+import com.undecideds.ui.cuduibuilder.InputWidget;
+import com.undecideds.ui.cuduibuilder.ResultListener;
+import org.jdatepicker.impl.JDatePanelImpl;
+import org.jdatepicker.impl.JDatePickerImpl;
+import org.jdatepicker.impl.UtilDateModel;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.HashMap;
+import java.util.Properties;
 import com.undecideds.services.ReadServiceList;
 import com.undecideds.services.generic.EncryptionService;
 import com.undecideds.ui.ClientWindow;
@@ -40,6 +56,37 @@ public class Main {
             System.out.println("Connection failed! Exiting . . .");
             System.exit(401);
         }
+        
+        HashMap<String, InputWidget> test = InsertServiceList.INSERT_NEEDS.buildUIWidgets();
+
+        // My widget tests
+        JFrame testFrame = new JFrame();
+        JPanel testPanel = new JPanel(new GridLayout(5, 5));
+        JButton testButton = new JButton("GET DATE");
+
+        testButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println(test.get("STARTING DATE").getValue());
+            }
+        });
+        testPanel.add(test.get("PATIENT ID").generateWidget());
+        testPanel.add(test.get("TREATMENT ID").generateWidget());
+        testPanel.add(test.get("STARTING DATE").generateWidget());
+        testPanel.add(test.get("ENDING DATE").generateWidget());
+        //testPanel.add(testButton);
+
+        testPanel.add(InsertServiceList.INSERT_NEEDS.buildActivateButton("execute query", test, new ResultListener() {
+            @Override
+            public void onResult(int result) {
+                System.out.println("SPROC RESULT: " + result);
+            }
+        }));
+
+        testFrame.add(testPanel);
+        testFrame.setSize(500, 300);
+        testFrame.setVisible(true);
+        // end
 
         ResultSet rs = ReadServiceList.CHRONIC_FROM_PATIENT.ExecuteQuery(new Object[]{
                 5
@@ -52,7 +99,7 @@ public class Main {
 
         if(guiEnabled){
             ClientWindow window = new ClientWindow();
-            window.launch();
+            //window.launch();
         }else{
             CLIApplication clip = new CLIApplication();
             clip.Launch(args);
