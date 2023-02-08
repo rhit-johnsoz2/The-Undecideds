@@ -22,7 +22,7 @@ Begin
 
 	if not Exists(select * from Person where ID = @ID)
 	Begin
-		RAISERROR('Person does not exisit and cannot be updated',14,1)
+		RAISERROR('Person does not exist and cannot be updated',14,1)
 		return 2;
 	End
 
