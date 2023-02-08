@@ -18,6 +18,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Properties;
+import com.undecideds.services.ReadServiceList;
+import com.undecideds.services.generic.EncryptionService;
+import com.undecideds.ui.ClientWindow;
+import com.undecideds.ui.builders.TableBuilder;
+
+import javax.swing.*;
+import java.awt.*;
+import java.sql.ResultSet;
+import java.util.HashSet;
 
 //Authors: 
 // johnsoz2
@@ -47,7 +56,7 @@ public class Main {
             System.out.println("Connection failed! Exiting . . .");
             System.exit(401);
         }
-
+        
         HashMap<String, InputWidget> test = InsertServiceList.INSERT_NEEDS.buildUIWidgets();
 
         // My widget tests
@@ -78,6 +87,15 @@ public class Main {
         testFrame.setSize(500, 300);
         testFrame.setVisible(true);
         // end
+
+        ResultSet rs = ReadServiceList.CHRONIC_FROM_PATIENT.ExecuteQuery(new Object[]{
+                5
+        });
+
+        JFrame test = new JFrame();
+        test.add(TableBuilder.buildTable(rs));
+        test.setSize(500, 500);
+        test.setVisible(true);
 
         if(guiEnabled){
             ClientWindow window = new ClientWindow();
