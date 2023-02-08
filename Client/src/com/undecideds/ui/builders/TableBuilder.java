@@ -10,6 +10,10 @@ import java.util.HashSet;
 
 public class TableBuilder {
 
+    public static Container buildTable(ResultSet rs){
+        return buildTable(rs, new HashSet<String>());
+    }
+
     public static Container buildTable(ResultSet rs, HashSet<String> hidden){
         Container container = new JPanel(new GridLayout(1, 1));
         try{
@@ -18,8 +22,6 @@ public class TableBuilder {
             ArrayList<Integer> headerIDs = new ArrayList<>();
             ArrayList<String> headers = new ArrayList<>();
             HashMap<String, ArrayList<Object>> data = new HashMap<>();
-
-
 
 
             for(int i = 0; i < rsmd.getColumnCount(); i++){

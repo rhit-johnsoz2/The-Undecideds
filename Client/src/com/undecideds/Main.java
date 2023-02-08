@@ -46,8 +46,7 @@ public class Main {
         });
 
         JFrame test = new JFrame();
-        HashSet<String> hidden = new HashSet<>();
-        test.add(TableBuilder.buildTable(rs, hidden));
+        test.add(TableBuilder.buildTable(rs));
         test.setSize(500, 500);
         test.setVisible(true);
 
