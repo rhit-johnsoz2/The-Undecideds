@@ -3,7 +3,12 @@ package com.undecideds.services.generic;
 import com.undecideds.services.DatabaseConnectionService;
 import com.undecideds.services.structs.Argument;
 import com.undecideds.ui.cuduibuilder.InputWidget;
+import com.undecideds.ui.cuduibuilder.ResultListener;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.CallableStatement;
 import java.sql.Types;
 import java.util.HashMap;
@@ -49,6 +54,25 @@ public class CUDService {
             widgets.put(widget.getArgumentID(), widget);
         }
         return widgets;
+    }
+
+    public Container buildActivateButton(String name, HashMap<String, InputWidget> sources, ResultListener resultListener){
+        JPanel panel = new JPanel(new GridLayout(1, 1));
+        JButton button = new JButton(name);
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int res;
+                Object[] values = new Object[arguments.length];
+                for(int i = 0; i < arguments.length; i++){
+                    values[i] = sources.get(arguments[i].getArgumentID()).getValue();
+                }
+                res = ExecuteQuery(values);
+                resultListener.onResult(res);
+            }
+        });
+        panel.add(button);
+        return panel;
     }
 
     @Override

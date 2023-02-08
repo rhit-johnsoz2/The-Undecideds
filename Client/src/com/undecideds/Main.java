@@ -7,6 +7,7 @@ import com.undecideds.services.generic.EncryptionService;
 import com.undecideds.ui.ClientWindow;
 import com.undecideds.ui.cuduibuilder.DateLabelFormatter;
 import com.undecideds.ui.cuduibuilder.InputWidget;
+import com.undecideds.ui.cuduibuilder.ResultListener;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
@@ -64,7 +65,15 @@ public class Main {
         testPanel.add(test.get("TREATMENT ID").generateWidget());
         testPanel.add(test.get("STARTING DATE").generateWidget());
         testPanel.add(test.get("ENDING DATE").generateWidget());
-        testPanel.add(testButton);
+        //testPanel.add(testButton);
+
+        testPanel.add(InsertServiceList.INSERT_NEEDS.buildActivateButton("execute query", test, new ResultListener() {
+            @Override
+            public void onResult(int result) {
+                System.out.println("SPROC RESULT: " + result);
+            }
+        }));
+
         testFrame.add(testPanel);
         testFrame.setSize(500, 300);
         testFrame.setVisible(true);

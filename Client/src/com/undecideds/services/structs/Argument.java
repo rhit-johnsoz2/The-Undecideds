@@ -68,7 +68,7 @@ public class Argument {
                             @Override
                             public void keyPressed(KeyEvent e) {
                                 String value = numbers.getText();
-                                numbers.setEditable(e.getKeyChar() >= '0' && e.getKeyChar() <= '9');
+                                numbers.setEditable(e.isActionKey() || e.getKeyCode() == KeyEvent.VK_BACK_SPACE || (e.getKeyChar() >= '0' && e.getKeyChar() <= '9'));
                             }
                         });
                         con.add(label);
@@ -117,7 +117,8 @@ public class Argument {
                     }
                     @Override
                     public Object getValue() {
-                        return datePicker.getModel().getValue();
+                        Date date = new Date(datePicker.getModel().getYear(), datePicker.getModel().getMonth(), datePicker.getModel().getDay());
+                        return date;
                     }
                 };
             }
@@ -126,6 +127,10 @@ public class Argument {
             }
         }
         return null;
+    }
+
+    public String getArgumentID() {
+        return argumentID;
     }
 
     public enum ArgumentType{
