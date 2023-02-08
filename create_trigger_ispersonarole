@@ -1,0 +1,10 @@
+use [SymptomTracker]
+go
+Create Trigger Doctor_Delete on Person
+AFTER Insert
+AS
+If (Select role from inserted) != 'PA' and (Select role from inserted) != 'DR'
+Begin
+	RAISERROR('People can only be patients or doctors.', 14, 1)
+	ROLLBACK TRANSACTION
+End
