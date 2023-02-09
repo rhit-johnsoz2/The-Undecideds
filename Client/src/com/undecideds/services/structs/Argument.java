@@ -126,7 +126,7 @@ public class Argument {
                 return new InputWidget(argumentID) {
                     @Override
                     public Container generateWidget() {
-                        return new JPanel(new GridLayout(0, 0));
+                        return new JPanel(new GridLayout(1, 1));
                     }
 
                     @Override
@@ -162,6 +162,7 @@ public class Argument {
                 };
             }
             case INT -> {
+                System.out.println(inputValue);
                 return new InputWidget(argumentID){
                     JTextField numbers = new JTextField(((Integer) inputValue).toString());
                     @Override

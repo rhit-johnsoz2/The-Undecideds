@@ -17,5 +17,31 @@ public class ReadServiceList {
     public static final ReadService GET_DOCTORS = new ReadService("ShowAllDoctors", new Argument[]{
     });
 
+    public static final ReadService GET_HEALTHCAREPROVIDERS = new ReadService("ShowAllHealthCareProviders", new Argument[]{
+    });
+
+    public static final ReadService GET_SYMPTOMS = new ReadService("ShowAllSymptoms", new Argument[]{
+    });
+
+    public static final ReadService GET_TREATMENTS = new ReadService("ShowAllTreatments", new Argument[]{
+    });
+
+    public static final ReadService GET_INSURES = new ReadService("ShowAllInsures", new Argument[]{
+    });
+
+    public static final ReadService GET_PERFORMS = new ReadService("ShowAllPerforms", new Argument[]{
+    });
+
+    public static final ReadService GET_NEEDS = new ReadService("ShowAllNeeds", new Argument[]{
+    });
+
+    public static final ReadService GET_SIDEEFFECTOF = new ReadService("ShowAllSideEffectOf", new Argument[]{
+    });
+
+    public static final ReadService GET_ACUTE = new ReadService("ShowAllAcuteSymptoms", new Argument[]{
+    });
+
+    public static final ReadService GET_CHRONIC = new ReadService("ShowAllChronicSymptoms", new Argument[]{
+    });
 
 }

@@ -24,8 +24,7 @@ public class InsertServiceList {
             new Argument(Argument.ArgumentType.STRING, "NAME")
     }, new String[]{
             "Successful",
-            "Input Arguments cannot be null",
-            "HealthCareProvider already exists"
+            "Input Arguments cannot be null"
     });
 
     public static final CUDService INSERT_SYMPTOM = new CUDService("InsertSymptom", new Argument[]{
@@ -46,12 +45,11 @@ public class InsertServiceList {
     });
 
     public static final CUDService INSERT_TREATMENT = new CUDService("InsertTreatment", new Argument[]{
-            new Argument(Argument.ArgumentType.STRING, "NAME"),
-            new Argument(Argument.ArgumentType.INT, "COST")
+            new Argument(Argument.ArgumentType.INT, "COST"),
+            new Argument(Argument.ArgumentType.STRING, "NAME")
     }, new String[]{
             "Successful",
-            "Input Arguments cannot be null",
-            "Input Arguments already exist"
+            "Input Arguments cannot be null"
     });
 
 
@@ -80,14 +78,14 @@ public class InsertServiceList {
     });
 
 
-    public static final CUDService INSERT_PERFORMS = new CUDService("InsertPerforms", new Argument[]{
+    public static final CUDService INSERT_PERFORMS = new CUDService("InsertPerform", new Argument[]{
             new Argument(Argument.ArgumentType.INT, "DOCTOR ID"),
             new Argument(Argument.ArgumentType.INT, "TREATMENT ID")
     }, new String[]{
             "Successful",
             "Input Arguments cannot be null",
-            "DoctorID does not exist",
-            "TreatmentID does not exist"
+            "Treatment does not exist",
+            "Doctor does not exist"
     });
 
 
@@ -111,8 +109,8 @@ public class InsertServiceList {
     }, new String[]{
             "Successful",
             "Input Arguments cannot be null",
-            "SymptomID does not exist",
-            "TreatmentID does not exist"
+            "Symptom does not exist",
+            "Treatment does not exist"
     });
 
 
