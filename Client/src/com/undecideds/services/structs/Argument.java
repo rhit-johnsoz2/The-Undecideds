@@ -122,6 +122,123 @@ public class Argument {
                     }
                 };
             }
+            case TIMESTAMP -> {
+                return new InputWidget(argumentID) {
+                    @Override
+                    public Container generateWidget() {
+                        return new JPanel(new GridLayout(0, 0));
+                    }
+
+                    @Override
+                    public Object getValue() {
+                        return new Timestamp(System.currentTimeMillis());
+                    }
+                };
+            }
+            default -> {
+                System.out.println("Error generating widget, no widget for type " + type.name());
+            }
+        }
+        return null;
+    }
+
+    public InputWidget buildWidget(Object inputValue) {
+        JLabel label = new JLabel(argumentID);
+        switch (type) {
+            case STRING -> {
+                return new InputWidget(argumentID){
+                    JTextField text = new JTextField((String) inputValue);
+                    @Override
+                    public Container generateWidget() {
+                        Container con = new Panel(new GridLayout(1, 1));
+                        con.add(label);
+                        con.add(text);
+                        return con;
+                    }
+                    @Override
+                    public Object getValue() {
+                        return text.getText();
+                    }
+                };
+            }
+            case INT -> {
+                return new InputWidget(argumentID){
+                    JTextField numbers = new JTextField(((Integer) inputValue).toString());
+                    @Override
+                    public Container generateWidget() {
+                        Container con = new Panel(new GridLayout(1, 1));
+                        numbers.addKeyListener(new KeyAdapter() {
+                            @Override
+                            public void keyPressed(KeyEvent e) {
+                                String value = numbers.getText();
+                                numbers.setEditable(e.isActionKey() || e.getKeyCode() == KeyEvent.VK_BACK_SPACE || (e.getKeyChar() >= '0' && e.getKeyChar() <= '9'));
+                            }
+                        });
+                        con.add(label);
+                        con.add(numbers);
+                        return con;
+                    }
+                    @Override
+                    public Object getValue() {
+                        return Integer.parseInt(numbers.getText());
+                    }
+                };
+            }
+            case FLOAT -> {
+                return new InputWidget(argumentID){
+                    JTextField text = new JTextField(((Float) inputValue).toString());
+                    @Override
+                    public Container generateWidget() {
+                        Container con = new Panel(new GridLayout(1, 1));
+                        con.add(label);
+                        con.add(text);
+                        return con;
+                    }
+                    @Override
+                    public Object getValue() {
+                        return Float.valueOf(text.getText());
+                    }
+                };
+            }
+            case DATE -> {
+                return new InputWidget(argumentID){
+                    JDatePickerImpl datePicker;
+                    @Override
+                    public Container generateWidget() {
+                        Container con = new Panel(new GridLayout(1, 1));
+                        con.add(label);
+
+                        UtilDateModel model = new UtilDateModel((java.util.Date) inputValue);
+                        Properties p = new Properties();
+                        p.put("text.today", "Today");
+                        p.put("text.month", "Month");
+                        p.put("text.year", "Year");
+                        JDatePanelImpl datePanel = new JDatePanelImpl(model, p);
+                        datePicker = new JDatePickerImpl(datePanel, new DateLabelFormatter());
+                        con.add(datePicker);
+                        return con;
+                    }
+                    @Override
+                    public Object getValue() {
+                        Date date = new Date(datePicker.getModel().getYear(), datePicker.getModel().getMonth(), datePicker.getModel().getDay());
+                        return date;
+                    }
+                };
+            }
+            case TIMESTAMP -> {
+                return new InputWidget(argumentID) {
+                    @Override
+                    public Container generateWidget() {
+                        System.out.println("Warning, timestamp passed default value with no defined default value behavior");
+                        return new JPanel(new GridLayout(0, 0));
+                    }
+
+                    @Override
+                    public Object getValue() {
+                        return new Timestamp(System.currentTimeMillis());
+                    }
+                };
+            }
             default -> {
                 System.out.println("Error generating widget, no widget for type " + type.name());
             }

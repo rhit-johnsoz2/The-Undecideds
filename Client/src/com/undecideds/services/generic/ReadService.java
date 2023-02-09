@@ -21,6 +21,9 @@ public class ReadService {
                 template.append("?, ");
             }
         }
+        if(arguments.length == 0){
+            template.append(")}");
+        }
     }
 
     public ResultSet ExecuteQuery(Object[] params) {
@@ -32,6 +35,7 @@ public class ReadService {
                 a.prepare(statement, paramNumber, params[paramNumber - 2]);
                 paramNumber++;
             }
+            System.out.println(template);
             return statement.executeQuery();
         }catch (Exception e){
             e.printStackTrace();
