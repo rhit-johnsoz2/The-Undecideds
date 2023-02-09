@@ -4,7 +4,7 @@ CREATE TABLE Acute (
 	personID integer,
 	symptomID integer,
 	severity integer,
-	symptomtimestamp timestamp,
+	symptomDate date,
 	primary key(personID, symptomID),
 	foreign key(personID) references person(ID)
 		On Delete Cascade
