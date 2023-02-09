@@ -15,14 +15,12 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Scanner;
+import java.util.*;
 
 public class TableBuilder {
 
-    public static Container buildTableWithCUD(ReadService readService, HashMap<String, String> name_match, CUDService create, CUDService update, CUDService delete){
+
+    public static Container buildTableWithCUD(ReadService readService, HashMap<String, String> name_match, CUDService create, CUDService update, CUDService delete, HashSet<String> fixedOnUpdate, boolean canUpdate, boolean canDelete){
         try {
             ResultSet rs = readService.ExecuteQuery(new Object[]{});
             JPanel panel = new JPanel(new GridLayout(2, 1));
@@ -102,7 +100,7 @@ public class TableBuilder {
 
                     HashMap<String, InputWidget> insertWidgets = create.buildUIWidgets();
                     for(String key : widgets.keySet()){
-                        if(!insertWidgets.containsKey(key)){
+                        if(!insertWidgets.containsKey(key) || fixedOnUpdate.contains(key)){
                             final Object value = widgets.get(key).getValue();
                             widgets.replace(key, new InputWidget(widgets.get(key).getArgumentID()){
                                 @Override
@@ -243,10 +241,14 @@ public class TableBuilder {
 
             panel.add(new JScrollPane(table));
 
-            JPanel buttonPanel = new JPanel(new GridLayout(1, 3));
+            JPanel buttonPanel = new JPanel(new GridLayout(1, 1 + (canUpdate ? 1 : 0) + (canDelete ? 1 : 0)));
 
-            buttonPanel.add(deleteButton);
-            buttonPanel.add(updateButton);
+            if(canDelete) {
+                buttonPanel.add(deleteButton);
+            }
+            if(canUpdate) {
+                buttonPanel.add(updateButton);
+            }
             buttonPanel.add(createButton);
 
             panel.add(buttonPanel);
@@ -329,6 +331,25 @@ public class TableBuilder {
             e.printStackTrace();
             return null;
         }
+    }
+
+
+    public static Container buildTableWithCUD(ReadService readService, HashMap<String, String> name_match, CUDService create, CUDService update, CUDService delete) {
+        return buildTableWithCUD(readService, name_match, create, update, delete, new HashSet<String>(), true, true);
+    }
+
+    public static Container buildTableWithCUD(ReadService readService, HashMap<String, String> name_match, CUDService create, CUDService update, CUDService delete, String[] fixedOnUpdate) {
+        HashSet<String> fixed = new HashSet<>(Arrays.asList(fixedOnUpdate));
+        return buildTableWithCUD(readService, name_match, create, update, delete, fixed, true, true);
+    }
+
+    public static Container buildTableWithCUD(ReadService readService, HashMap<String, String> name_match, CUDService create, CUDService update, CUDService delete, boolean canUpdate, boolean canDelete) {
+        return buildTableWithCUD(readService, name_match, create, update, delete, new HashSet<String>(), canUpdate, canDelete);
+    }
+
+    public static Container buildTableWithCUD(ReadService readService, HashMap<String, String> name_match, CUDService create, CUDService update, CUDService delete, String[] fixedOnUpdate, boolean canUpdate, boolean canDelete) {
+        HashSet<String> fixed = new HashSet<>(Arrays.asList(fixedOnUpdate));
+        return buildTableWithCUD(readService, name_match, create, update, delete, fixed, canUpdate, canDelete);
     }
 
 
