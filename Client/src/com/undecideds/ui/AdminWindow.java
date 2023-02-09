@@ -61,7 +61,7 @@ public class AdminWindow {
 
     private Container buildTableView(ReadService readService, CUDService[] services, String[] map){
         HashMap<String, String> nameMatch = new HashMap<>();
-        for(int i = 0; i < map.length / 2; i += 2){
+        for(int i = 0; i < map.length; i += 2){
             nameMatch.put(map[i], map[i+1]);
         }
         return TableBuilder.buildTableWithCUD(readService, nameMatch, services[0], services[1], services[2]);

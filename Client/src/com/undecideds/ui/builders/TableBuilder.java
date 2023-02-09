@@ -59,8 +59,15 @@ public class TableBuilder {
                                 create_popup.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                                 create_popup.dispatchEvent(new WindowEvent(create_popup, WindowEvent.WINDOW_CLOSING));
                             }else{
-                                create_popup.removeAll();
-                                create_popup.add(new JLabel("Failed to execute with error: " + create.codeMeaning(result)));
+                                create_popup.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                                create_popup.dispatchEvent(new WindowEvent(create_popup, WindowEvent.WINDOW_CLOSING));
+                                JFrame error_popup = new JFrame();
+                                JPanel panel = new JPanel(new GridLayout(1, 1));
+                                panel.add(new JLabel("Error executing procedure: " + create.codeMeaning(result)));
+                                error_popup.add(panel);
+                                error_popup.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                                error_popup.pack();
+                                error_popup.setVisible(true);
                             }
                         }
                     });
@@ -90,6 +97,9 @@ public class TableBuilder {
                     JFrame update_popup = new JFrame("edit item");
 
                     HashMap<String, InputWidget> widgets = update.buildUIWidgets(inputValues);
+
+
+
                     HashMap<String, InputWidget> insertWidgets = create.buildUIWidgets();
                     for(String key : widgets.keySet()){
                         if(!insertWidgets.containsKey(key)){
@@ -117,8 +127,15 @@ public class TableBuilder {
                                 update_popup.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                                 update_popup.dispatchEvent(new WindowEvent(update_popup, WindowEvent.WINDOW_CLOSING));
                             }else{
-                                update_popup.removeAll();
-                                update_popup.add(new JLabel("Failed to execute with error: " + update.codeMeaning(result)));
+                                update_popup.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                                update_popup.dispatchEvent(new WindowEvent(update_popup, WindowEvent.WINDOW_CLOSING));
+                                JFrame error_popup = new JFrame();
+                                JPanel panel = new JPanel(new GridLayout(1, 1));
+                                panel.add(new JLabel("Error executing procedure: " + update.codeMeaning(result)));
+                                error_popup.add(panel);
+                                error_popup.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                                error_popup.pack();
+                                error_popup.setVisible(true);
                             }
                         }
                     });
@@ -172,8 +189,15 @@ public class TableBuilder {
                                 delete_popup.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                                 delete_popup.dispatchEvent(new WindowEvent(delete_popup, WindowEvent.WINDOW_CLOSING));
                             }else{
-                                delete_popup.removeAll();
-                                delete_popup.add(new JLabel("Failed to execute with error: " + delete.codeMeaning(result)));
+                                delete_popup.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                                delete_popup.dispatchEvent(new WindowEvent(delete_popup, WindowEvent.WINDOW_CLOSING));
+                                JFrame error_popup = new JFrame();
+                                JPanel panel = new JPanel(new GridLayout(1, 1));
+                                panel.add(new JLabel("Error executing procedure: " + delete.codeMeaning(result)));
+                                error_popup.add(panel);
+                                error_popup.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                                error_popup.pack();
+                                error_popup.setVisible(true);
                             }
                         }
                     });
