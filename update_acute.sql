@@ -1,14 +1,14 @@
 USE [SymptomTracker]
 GO
-/****** Object:  StoredProcedure [dbo].[UpdateAcuteSymptom]    Script Date: 2/2/2023 5:25:17 PM ******/
+/****** Object:  StoredProcedure [dbo].[UpdateAcuteSymptom]    Script Date: 2/9/2023 1:47:26 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-ALTER procedure [dbo].[UpdateAcuteSymptom](@personID int, @severity int, @time timestamp)
+ALTER procedure [dbo].[UpdateAcuteSymptom](@personID int, @symptomID int, @severity int, @time timestamp)
 As
 Begin
-if(@personID is null or @severity is null or @time is null)
+if(@personID is null or @symptomID is null or @severity is null or @time is null)
 	Begin
 		raiserror('Input Arguments cannot be null', 14,1)
 		return 1;
@@ -26,6 +26,6 @@ if(@time < GETDATE())
 
 Update Acute
 	Set severity = @severity
-	Where personID = @personID
+	Where personID = @personID and symptomID = @symptomID
 	return 0;
 End
