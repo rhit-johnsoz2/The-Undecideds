@@ -149,11 +149,24 @@ public class AdminWindow {
         frame.setVisible(true);
     }
 
-    private Container buildTableView(ReadService readService, CUDService[] services, String[] map){
+    private Container buildTableView(ReadService readService, CUDService[] services, String[] map, String[] fixedOnUpdate, boolean canUpdate, boolean canDelete){
         HashMap<String, String> nameMatch = new HashMap<>();
         for(int i = 0; i < map.length; i += 2){
             nameMatch.put(map[i], map[i+1]);
         }
-        return TableBuilder.buildTableWithCUD(readService, nameMatch, services[0], services[1], services[2]);
+        return TableBuilder.buildTableWithCUD(readService, nameMatch, services[0], services[1], services[2], fixedOnUpdate, canUpdate, canDelete);
+    }
+
+    private Container buildTableView(ReadService readService, CUDService[] services, String[] map, String[] fixedOnUpdate){
+        return buildTableView(readService, services, map, fixedOnUpdate, true, true);
+    }
+
+    private Container buildTableView(ReadService readService, CUDService[] services, String[] map, boolean canUpdate, boolean canDelete){
+        return buildTableView(readService, services, map, new String[]{}, canUpdate, canDelete);
+    }
+
+
+    private Container buildTableView(ReadService readService, CUDService[] services, String[] map){
+        return buildTableView(readService, services, map,true, true);
     }
 }
