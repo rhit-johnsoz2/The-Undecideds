@@ -5,6 +5,7 @@ import com.undecideds.services.*;
 import com.undecideds.services.generic.CUDService;
 import com.undecideds.services.generic.EncryptionService;
 import com.undecideds.ui.ClientWindow;
+import com.undecideds.ui.LoginWindow;
 import com.undecideds.ui.cuduibuilder.DateLabelFormatter;
 import com.undecideds.ui.cuduibuilder.InputWidget;
 import com.undecideds.ui.cuduibuilder.ResultListener;
@@ -98,27 +99,27 @@ public class Main {
 //        test2.setVisible(true);
 
 
-        JFrame testWindow = new JFrame();
-        HashMap<String, String> nameMatch = new HashMap<>();
-        nameMatch.put("ID", "PERSON ID");
-        nameMatch.put("fname",  "FNAME");
-        nameMatch.put("lname", "LNAME");
-        nameMatch.put("login", "LOGIN");
-        nameMatch.put("password", "PASSWORD");
-        nameMatch.put("role", "ROLE");
-        nameMatch.put("hcpID", "INSURED BY");
-
-        testWindow.add(TableBuilder.buildTableWithCUD(ReadServiceList.GET_PERSONS, nameMatch, InsertServiceList.INSERT_PERSON, UpdateServiceList.UPDATE_PERSON, DeleteServiceList.DELETE_PERSON));
-
-
-        testWindow.setSize(500, 500);
-        testWindow.setVisible(true);
+//        JFrame testWindow = new JFrame();
+//        HashMap<String, String> nameMatch = new HashMap<>();
+//        nameMatch.put("ID", "PERSON ID");
+//        nameMatch.put("fname",  "FNAME");
+//        nameMatch.put("lname", "LNAME");
+//        nameMatch.put("login", "LOGIN");
+//        nameMatch.put("password", "PASSWORD");
+//        nameMatch.put("role", "ROLE");
+//        nameMatch.put("hcpID", "INSURED BY");
+//
+//        testWindow.add(TableBuilder.buildTableWithCUD(ReadServiceList.GET_PERSONS, nameMatch, InsertServiceList.INSERT_PERSON, UpdateServiceList.UPDATE_PERSON, DeleteServiceList.DELETE_PERSON));
+//
+//
+//        testWindow.setSize(500, 500);
+//        testWindow.setVisible(true);
 
 
 
         if(guiEnabled){
-            ClientWindow window = new ClientWindow();
-            //window.launch();
+            LoginWindow window = new LoginWindow();
+            window.launch();
         }else{
             CLIApplication clip = new CLIApplication();
             clip.Launch(args);
