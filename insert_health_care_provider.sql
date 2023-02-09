@@ -1,6 +1,11 @@
-Use SymptomTracker
-Go
-CREATE PROCEDURE InsertHealthCareProviders
+USE [SymptomTracker]
+GO
+/****** Object:  StoredProcedure [dbo].[InsertHealthCareProviders]    Script Date: 2/9/2023 2:24:20 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[InsertHealthCareProviders]
 	(@name varchar(50))
 AS
 BEGIN
@@ -9,12 +14,6 @@ BEGIN
 	BEGIN
 		RAISERROR('Input arguments cannot be null', 14, 1)
 		Return 1
-	END
-	-- check to see if the hcp already exists in the hcp database
-	IF(EXISTS (SELECT * FROM HealthCareProvider WHERE name = @name))
-	BEGIN
-		RAISERROR('HCP already in HCP table', 14, 1)
-		Return 2
 	END
 INSERT INTO HealthCareProvider Values(@name)
 Return 0
