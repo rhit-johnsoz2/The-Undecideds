@@ -6,10 +6,14 @@ import com.undecideds.services.ReadServiceList;
 import com.undecideds.services.UpdateServiceList;
 import com.undecideds.services.generic.CUDService;
 import com.undecideds.services.generic.ReadService;
+import com.undecideds.services.structs.SprocContainer;
 import com.undecideds.ui.builders.TableBuilder;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class AdminWindow {
@@ -148,6 +152,7 @@ public class AdminWindow {
         ));
 
 
+        context.addTab("Execute S-proc", buildSprocExecute());
 
         frame.add(context);
         frame.setSize(700, 500);
@@ -177,5 +182,36 @@ public class AdminWindow {
 
     private Container buildTableView(ReadService readService, CUDService[] services, String[] map){
         return buildTableView(readService, services, map,true, true);
+    }
+
+    private Container buildSprocExecute(){
+        JPanel panel = new JPanel(new FlowLayout());
+        JButton execute = new JButton("Execute S-proc");
+
+        ArrayList<String> sprocNames = new ArrayList<>();
+        HashMap<String, SprocContainer> sprocs = new HashMap<>();
+        for(ReadService rs : ReadService.READ_SERVICES){
+            sprocNames.add(rs.getSprocName());
+            sprocs.put(rs.getSprocName(), new SprocContainer(rs));
+        }
+        for(CUDService cuds : CUDService.CUD_SERVICES){
+            sprocNames.add(cuds.getSprocName());
+            sprocs.put(cuds.getSprocName(), new SprocContainer(cuds));
+        }
+
+
+        JComboBox dropdown = new JComboBox(sprocNames.toArray());
+        panel.add(dropdown);
+
+        execute.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                sprocs.get(dropdown.getModel().getSelectedItem().toString()).BuildExecuteWindow();
+            }
+        });
+
+        panel.add(execute);
+
+        return panel;
     }
 }
