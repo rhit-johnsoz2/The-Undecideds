@@ -29,6 +29,7 @@ Begin
 	Update Person
 		Set lname = @ln,
 			fname = @fn,
+			login = @login,
 			password = @password,
 			role = @role,
 			hcpID = @hcpID
