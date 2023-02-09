@@ -120,6 +120,18 @@ public class AdminWindow {
                 },
                 false
         ));
+        context.addTab("DoctorFor", null, buildTableView(ReadServiceList.GET_DOCTORFOR,
+                new CUDService[]{
+                        InsertServiceList.INSERT_DOCTORFOR,
+                        UpdateServiceList.UPDATE_DOCTORFOR,
+                        DeleteServiceList.DELETE_DOCTORFOR
+                },
+                new String[]{
+                        "doctorID", "DOCTOR ID",
+                        "patientID",  "PATIENT ID"
+                },
+                false
+        ));
         context.addTab("AcuteSymptoms", null, buildTableView(ReadServiceList.GET_ACUTE,
                 new CUDService[]{
                         InsertServiceList.INSERT_ACUTE,
@@ -130,7 +142,7 @@ public class AdminWindow {
                         "personID", "PERSON ID",
                         "symptomID",  "SYMPTOM ID",
                         "severity", "SEVERITY",
-                        "symptomtimestamp", "TIMESTAMP"
+                        "symptomDate", "DATE"
                 },
                 new String[]{"PERSON ID", "SYMPTOM ID"}
         ));

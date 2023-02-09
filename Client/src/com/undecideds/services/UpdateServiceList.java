@@ -106,11 +106,11 @@ public class UpdateServiceList {
     });
 
 
-    public static final CUDService UPDATE_ACUTE = new CUDService("UpdateAcute", new Argument[]{
+    public static final CUDService UPDATE_ACUTE = new CUDService("UpdateAcuteSymptom", new Argument[]{
             new Argument(Argument.ArgumentType.INT, "PERSON ID"),
             new Argument(Argument.ArgumentType.INT, "SYMPTOM ID"),
             new Argument(Argument.ArgumentType.INT, "SEVERITY"),
-            new Argument(Argument.ArgumentType.TIMESTAMP, "TIMESTAMP")
+            new Argument(Argument.ArgumentType.DATE, "DATE")
     }, new String[]{
             "Successful",
             "Input Arguments cannot be null",

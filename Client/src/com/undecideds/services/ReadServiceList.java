@@ -38,6 +38,9 @@ public class ReadServiceList {
     public static final ReadService GET_SIDEEFFECTOF = new ReadService("ShowAllSideEffectOf", new Argument[]{
     });
 
+    public static final ReadService GET_DOCTORFOR = new ReadService("ShowAllDoctorFor", new Argument[]{
+    });
+
     public static final ReadService GET_ACUTE = new ReadService("ShowAllAcuteSymptoms", new Argument[]{
     });
 
