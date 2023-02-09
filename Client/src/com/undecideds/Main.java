@@ -92,14 +92,14 @@ public class Main {
                 5
         });
 
-        JFrame test = new JFrame();
-        test.add(TableBuilder.buildTable(rs));
-        test.setSize(500, 500);
-        test.setVisible(true);
+//        JFrame test = new JFrame();
+//        test.add(TableBuilder.buildTable(rs));
+//        test.setSize(500, 500);
+//        test.setVisible(true);
 
         if(guiEnabled){
             ClientWindow window = new ClientWindow();
-            //window.launch();
+            window.launch();
         }else{
             CLIApplication clip = new CLIApplication();
             clip.Launch(args);
