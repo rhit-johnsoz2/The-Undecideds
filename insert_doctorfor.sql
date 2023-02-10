@@ -1,11 +1,11 @@
 USE [SymptomTracker]
 GO
-/****** Object:  StoredProcedure [dbo].[InsertDoctorFor]    Script Date: 2/9/2023 5:52:03 PM ******/
+/****** Object:  StoredProcedure [dbo].[InsertDoctorFor]    Script Date: 2/10/2023 2:07:04 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-ALTER PROCEDURE [dbo].[InsertDoctorFor]
+CREATE PROCEDURE [dbo].[InsertDoctorFor]
 	(@doctorID Integer, @patientID Integer)
 AS
 BEGIN
@@ -27,10 +27,12 @@ BEGIN
 		RAISERROR('Patient not in the HCP database', 14, 1)
 		Return 3
 	END
+	-- duplicate value
+	IF (EXISTS (SELECT * FROM DoctorFor WHERE doctorID = @doctorID and patientID = @patientID))
+	BEGIN
+		RAISERROR('Relationship already exists', 14, 1)
+		Return 4
+	END
 INSERT INTO DoctorFor Values(@doctorID, @patientID)
 Return 0
 END
-
---DECLARE @status int
---EXEC @status = InsertAcuteSymptoms('clifton', 'Curt', 'Clifton')
---SELECT @status
