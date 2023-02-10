@@ -3,12 +3,9 @@ package com.undecideds.services;
 import com.undecideds.services.generic.CUDService;
 import com.undecideds.services.structs.Argument;
 
-import java.sql.Date;
-import java.sql.Timestamp;
-
-public class InsertServiceList {
-    public static final CUDService INSERT_PERSON = new CUDService("InsertPerson", new Argument[]{
-            //new Argument(Argument.ArgumentType.INT, "D"),
+public class UpdateServiceList {
+    public static final CUDService UPDATE_PERSON = new CUDService("UpdatePerson", new Argument[]{
+            new Argument(Argument.ArgumentType.INT, "PERSON ID"),
             new Argument(Argument.ArgumentType.STRING, "FNAME"),
             new Argument(Argument.ArgumentType.STRING, "LNAME"),
             new Argument(Argument.ArgumentType.STRING, "LOGIN"),
@@ -17,43 +14,38 @@ public class InsertServiceList {
             new Argument(Argument.ArgumentType.INT, "INSURED BY")
     }, new String[]{
             "Successful",
-            "Input Arguments cannot be null"
+            "Inputs cannot be null",
+            "Person does not exist and cannot be updated"
     });
 
-    public static final CUDService INSERT_HEALTHCAREPROVIDER = new CUDService("InsertHealthCareProviders", new Argument[]{
+    public static final CUDService UPDATE_HEALTHCAREPROVIDER = new CUDService("UpdateHCP", new Argument[]{
+            new Argument(Argument.ArgumentType.INT, "HEALTHCAREPROVIDER ID"),
             new Argument(Argument.ArgumentType.STRING, "NAME")
     }, new String[]{
             "Successful",
             "Input Arguments cannot be null"
     });
 
-    public static final CUDService INSERT_SYMPTOM = new CUDService("InsertSymptom", new Argument[]{
+    public static final CUDService UPDATE_SYMPTOM = new CUDService("UpdateSymptom", new Argument[]{
+            new Argument(Argument.ArgumentType.INT, "SYMPTOM ID"),
             new Argument(Argument.ArgumentType.STRING, "NAME")
     }, new String[]{
             "Successful",
             "Input Arguments cannot be null"
     });
 
-    public static final CUDService INSERT_CHRONIC = new CUDService("InsertChronic", new Argument[]{
-            new Argument(Argument.ArgumentType.INT, "PERSON ID"),
-            new Argument(Argument.ArgumentType.INT, "SYMPTOM ID")
-    }, new String[]{
-            "Successful",
-            "Input Arguments cannot be null",
-            "PersonID does not exist",
-            "SymptomID does not exist"
-    });
-
-    public static final CUDService INSERT_TREATMENT = new CUDService("InsertTreatment", new Argument[]{
+    public static final CUDService UPDATE_TREATMENT = new CUDService("UpdateTreatment", new Argument[]{
+            new Argument(Argument.ArgumentType.INT, "TREATMENT ID"),
             new Argument(Argument.ArgumentType.INT, "COST"),
             new Argument(Argument.ArgumentType.STRING, "NAME")
     }, new String[]{
             "Successful",
-            "Input Arguments cannot be null"
+            "Input Arguments cannot be null",
+            "Input Arguments already exist"
     });
 
 
-    public static final CUDService INSERT_INSURES = new CUDService("InsertInsures", new Argument[]{
+    public static final CUDService UPDATE_INSURES = new CUDService("UpdateInsures", new Argument[]{
             new Argument(Argument.ArgumentType.INT, "PERSON ID"),
             new Argument(Argument.ArgumentType.INT, "HCP ID"),
             new Argument(Argument.ArgumentType.INT, "TREATMENT ID"),
@@ -67,7 +59,7 @@ public class InsertServiceList {
     });
 
 
-    public static final CUDService INSERT_DOCTORFOR = new CUDService("InsertDoctorFor", new Argument[]{
+    public static final CUDService UPDATE_DOCTORFOR = new CUDService("UpdateDoctorFor", new Argument[]{
             new Argument(Argument.ArgumentType.INT, "DOCTOR ID"),
             new Argument(Argument.ArgumentType.INT, "PATIENT ID")
     }, new String[]{
@@ -78,18 +70,18 @@ public class InsertServiceList {
     });
 
 
-    public static final CUDService INSERT_PERFORMS = new CUDService("[InsertPreforms]", new Argument[]{
+    public static final CUDService UPDATE_PERFORMS = new CUDService("UpdatePerforms", new Argument[]{
             new Argument(Argument.ArgumentType.INT, "DOCTOR ID"),
             new Argument(Argument.ArgumentType.INT, "TREATMENT ID")
     }, new String[]{
             "Successful",
             "Input Arguments cannot be null",
-            "Treatment does not exist",
-            "Doctor does not exist"
+            "DoctorID does not exist",
+            "TreatmentID does not exist"
     });
 
 
-    public static final CUDService INSERT_NEEDS = new CUDService("InsertNeeds", new Argument[]{
+    public static final CUDService UPDATE_NEEDS = new CUDService("UpdateNeeds", new Argument[]{
             new Argument(Argument.ArgumentType.INT, "PATIENT ID"),
             new Argument(Argument.ArgumentType.INT, "TREATMENT ID"),
             new Argument(Argument.ArgumentType.DATE, "STARTING DATE"),
@@ -103,18 +95,18 @@ public class InsertServiceList {
     });
 
 
-    public static final CUDService INSERT_SIDEEFFECTOF = new CUDService("InsertSideEffectOf", new Argument[]{
+    public static final CUDService UPDATE_SIDEEFFECTOF = new CUDService("UpdateSideEffectOf", new Argument[]{
             new Argument(Argument.ArgumentType.INT, "SYMPTOM ID"),
             new Argument(Argument.ArgumentType.INT, "TREATMENT ID")
     }, new String[]{
             "Successful",
             "Input Arguments cannot be null",
-            "Symptom does not exist",
-            "Treatment does not exist"
+            "SymptomID does not exist",
+            "TreatmentID does not exist"
     });
 
 
-    public static final CUDService INSERT_ACUTE = new CUDService("InsertAcute", new Argument[]{
+    public static final CUDService UPDATE_ACUTE = new CUDService("UpdateAcuteSymptom", new Argument[]{
             new Argument(Argument.ArgumentType.INT, "PERSON ID"),
             new Argument(Argument.ArgumentType.INT, "SYMPTOM ID"),
             new Argument(Argument.ArgumentType.INT, "SEVERITY"),
@@ -122,7 +114,18 @@ public class InsertServiceList {
     }, new String[]{
             "Successful",
             "Input Arguments cannot be null",
-            "PersonID does not exist"
+            "PersonID does not exist",
+            "SymptomID does not exist"
+    });
+
+    public static final CUDService UPDATE_CHRONIC = new CUDService("UpdateChronic", new Argument[]{
+            new Argument(Argument.ArgumentType.INT, "PERSON ID"),
+            new Argument(Argument.ArgumentType.INT, "SYMPTOM ID")
+    }, new String[]{
+            "Successful",
+            "Input Arguments cannot be null",
+            "PersonID does not exist",
+            "SymptomID does not exist"
     });
 
 }

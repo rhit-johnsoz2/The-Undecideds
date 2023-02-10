@@ -76,7 +76,7 @@ public class DeleteServiceList {
 
     public static final CUDService DELETE_INSURES = new CUDService("deleteInsures", new Argument[] {
             new Argument(Argument.ArgumentType.INT, "PERSON ID"),
-            new Argument(Argument.ArgumentType.INT, "HEALTH CARE PROVIDER ID"),
+            new Argument(Argument.ArgumentType.INT, "HCP ID"),
             new Argument(Argument.ArgumentType.INT, "TREATMENT ID")
     }, new String[]{
             "Successful",

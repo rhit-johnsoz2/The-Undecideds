@@ -9,56 +9,9 @@ import java.awt.event.WindowEvent;
 
 import javax.swing.*;
 
-public class ClientWindow implements ActionListener {
-    JPanel panel;
-    JLabel user_label;
-    JLabel password_label;
-    JLabel message;
-    JTextField userName_text;
-    JPasswordField password_text;
-    JButton submit;
-    JFrame frame = new JFrame();
+@Deprecated
+public class ClientWindow {
 
-    public ClientWindow() {
-    }
-
-    public void launch() {
-        this.user_label = new JLabel();
-        this.user_label.setText("User Name :");
-        this.userName_text = new JTextField();
-        this.password_label = new JLabel();
-        this.password_label.setText("Password :");
-        this.password_text = new JPasswordField();
-        this.submit = new JButton("SUBMIT");
-        this.panel = new JPanel(new GridLayout(5, 1));
-        this.panel.add(this.user_label);
-        this.panel.add(this.userName_text);
-        this.panel.add(this.password_label);
-        this.panel.add(this.password_text);
-        this.message = new JLabel();
-        this.panel.add(this.message);
-        this.panel.add(this.submit);
-        this.submit.addActionListener(this);
-        this.frame.add(this.panel, "Center");
-        this.frame.setTitle("Please Login Here !");
-        this.frame.setSize(500, 300);
-        this.frame.setVisible(true);
-    }
-
-    public void actionPerformed(ActionEvent ae) {
-        String userName = this.userName_text.getText();
-        String password = this.password_text.getText();
-        if (userName.trim().equals("doctor") && password.trim().equals("doctor")) {
-            doctorView();
-            frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
-        } else if (userName.trim().equals("patient") && password.trim().equals("patient")) {
-            patientView();
-            frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
-        } else {
-            this.message.setText(" Invalid user.. ");
-        }
-
-    }
 
 
     public void patientView(){

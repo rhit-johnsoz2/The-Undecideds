@@ -56,6 +56,15 @@ public class CUDService {
         return widgets;
     }
 
+    public HashMap<String, InputWidget> buildUIWidgets(HashMap<String, Object> inputValues) {
+        HashMap<String, InputWidget> widgets = new HashMap<>();
+        for(Argument a : arguments) {
+            InputWidget widget = a.buildWidget(inputValues.get(a.getArgumentID()));
+            widgets.put(widget.getArgumentID(), widget);
+        }
+        return widgets;
+    }
+
     public Container buildActivateButton(String name, HashMap<String, InputWidget> sources, ResultListener resultListener){
         JPanel panel = new JPanel(new GridLayout(1, 1));
         JButton button = new JButton(name);
