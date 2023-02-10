@@ -48,7 +48,6 @@ public class ReadService {
                 a.prepare(statement, paramNumber, params[paramNumber - 2]);
                 paramNumber++;
             }
-            System.out.println(template);
             return statement.executeQuery();
         }catch (Exception e){
             e.printStackTrace();

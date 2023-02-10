@@ -38,8 +38,7 @@ public class Main {
             LoginWindow window = new LoginWindow();
             window.launch();
         }else{
-            CLIApplication clip = new CLIApplication();
-            clip.Launch(args);
+            CLIApplication.Launch(args);
         }
     }
 }

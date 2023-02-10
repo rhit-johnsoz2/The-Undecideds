@@ -1,5 +1,6 @@
 package com.undecideds.services.generic;
 
+import com.undecideds.cli.CLIApplication;
 import com.undecideds.services.DatabaseConnectionService;
 import com.undecideds.services.structs.Argument;
 import com.undecideds.ui.cuduibuilder.InputWidget;
@@ -91,6 +92,24 @@ public class CUDService {
 
     public String getSprocName() {
         return sprocName;
+    }
+
+    public void executeCLI(){
+        Object[] args = new Object[arguments.length];
+        for(int i = 0; i < args.length; i++){
+            String s = CLIApplication.QueryUser(arguments[i].getArgumentID() + "= ");
+            args[i] = arguments[i].parseArg(s);
+        }
+        int res = ExecuteQuery(args);
+        System.out.println("Return code " + res + ": " + codeMeaning(res));
+    }
+
+    public int executeFromStrings(String[] strings) {
+        Object[] args = new Object[arguments.length];
+        for(int i = 0; i < args.length; i++){
+            args[i] = arguments[i].parseArg(strings[i]);
+        }
+        return ExecuteQuery(args);
     }
 
     @Override

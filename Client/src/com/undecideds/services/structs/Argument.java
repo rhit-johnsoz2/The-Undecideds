@@ -247,6 +247,22 @@ public class Argument {
         return null;
     }
 
+    public Object parseArg(String s){
+        try{
+            switch (type){
+                case STRING -> {return s;}
+                case INT -> {return Integer.parseInt(s);}
+                case FLOAT -> {return Float.parseFloat(s);}
+                case DATE -> {return s.equalsIgnoreCase("now") ? new Date(System.currentTimeMillis()) : Date.valueOf(s);}
+                case TIMESTAMP -> {return s.equalsIgnoreCase("now") ? new Timestamp(System.currentTimeMillis()) : Timestamp.valueOf(s);}
+                default -> {System.out.println("Error parsing argument, no type " + type.name());}
+            }
+        }catch (Exception e){
+            System.out.println("Error parsing argument \"" + s + "\" doesn't match the object type " + type.name());
+        }
+        return false;
+    }
+
     public String getArgumentID() {
         return argumentID;
     }
