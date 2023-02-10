@@ -83,9 +83,9 @@ public class Main {
             }
         }));
 
-        testFrame.add(testPanel);
-        testFrame.setSize(500, 300);
-        testFrame.setVisible(true);
+//        testFrame.add(testPanel);
+//        testFrame.setSize(500, 300);
+//        testFrame.setVisible(true);
         // end
 
         ResultSet rs = ReadServiceList.CHRONIC_FROM_PATIENT.ExecuteQuery(new Object[]{

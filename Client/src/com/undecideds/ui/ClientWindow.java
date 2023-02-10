@@ -122,7 +122,6 @@ public class ClientWindow{
         JLabel curSympts = new JLabel("Current Symptoms");
 
 
-        JFrame frame = new JFrame();
 
         double[] values = {10,11,3,11,12,13,15};
         HistogramDataset dataset = new HistogramDataset();
@@ -217,125 +216,164 @@ public class ClientWindow{
         framePatient.setVisible(true);
     }
 
-    public void viewDoctor(){
+    public void viewDoctor() {
+        JFrame frameDoctor = new JFrame();
+        frameDoctor.setSize(700, 500);
 
+        GridBagConstraints gbc = new GridBagConstraints();
+        GridBagLayout layout = new GridBagLayout();
+
+        JTabbedPane tabbedPane = new JTabbedPane();
+        JPanel home = new JPanel(false);
+        JPanel assignTreatment = new JPanel(false);
+        JPanel addPatient = new JPanel(false);
+        JPanel viewPatient = new JPanel(false);
+
+        tabbedPane.addTab("Home", null, home, "");
+        tabbedPane.addTab("Assign Treatment", null, assignTreatment, "");
+        tabbedPane.addTab("Add Patient", null, addPatient, "");
+        tabbedPane.addTab("View Patient", null, viewPatient, "");
+
+        JLabel helloDoctor = new JLabel("Hello Dr. Johnson");
+        JLabel currentPatients = new JLabel("Current Patient Quick View");
+        JLabel Jorg = new JLabel("Jorg");
+
+        {
+            double[] values = {10, 11, 3, 11, 12, 13, 15};
+            HistogramDataset dataset = new HistogramDataset();
+            dataset.addSeries("Frequency of symptom", values, 7);
+
+            JFreeChart histogram = ChartFactory.createHistogram("Jorg Henson",
+                    "Severity", "Frequency", dataset);
+            ChartPanel jorrView = new ChartPanel(histogram);
+
+            {
+            home.setLayout(layout);
+            gbc.gridx = 0;
+            gbc.gridy = 0;
+            home.add(helloDoctor, gbc);
+            gbc.gridx = 0;
+            gbc.gridy = 1;
+            home.add(currentPatients, gbc);
+            gbc.ipadx = 200;
+            gbc.ipady = 200;
+            gbc.gridx = 0;
+            gbc.gridy = 2;
+            home.add(jorrView, gbc);
+        }
     }
 
+        JLabel selectPatient = new JLabel("Select Patient:");
+        JLabel treatment = new JLabel("SelectTreatment:");
+        JButton confirm = new JButton("Confrim");
+        String[] pat = {"Jorg Henson"};
+        String[] treatments = {"Badvillll","Eye Drops"};
+        JComboBox selectPatientDropDown = new JComboBox(pat);
+        JComboBox selectTreatment = new JComboBox(treatments);
 
-//    }
-//    public void doctorView(){
-//        JFrame frameDoctor = new JFrame();
-//        frameDoctor.setSize(700, 500);
-//
-//        JTabbedPane tabbedPane = new JTabbedPane();
-//        JPanel home = new JPanel(false);
-//        JPanel assignTreatment = new JPanel(false);
-//        JPanel addPatient = new JPanel(false);
-//        JPanel viewPatient = new JPanel(false);
-//
-//        tabbedPane.addTab("Home", null, home, "");
-//        tabbedPane.addTab("Assign Treatment", null, assignTreatment, "");
-//        tabbedPane.addTab("Add Patient", null, addPatient, "");
-//        tabbedPane.addTab("View Patient", null, viewPatient, "");
-//
-//        JLabel helloDoctor = new JLabel("Hello Dr. Johnson");
-//        JLabel currentPatients = new JLabel("Current Patient Quick View");
-//
-//        GridBagConstraints gbc = new GridBagConstraints();
-//        GridBagLayout layout = new GridBagLayout();
-//        home.setLayout(layout);
-//        gbc.gridx = 0;
-//        gbc.gridy = 0;
-//        home.add(helloDoctor, gbc);
-//        gbc.gridx = 0;
-//        gbc.gridy = 1;
-//        home.add(currentPatients, gbc);
-//        // patient tables go here
-//
-//        JLabel selectPatient = new JLabel("Select Patient:");
-//        JLabel symptom = new JLabel("Symptom:");
-//        JLabel possibleTreatments = new JLabel("Possible Treatments:");
-//        JButton confirm = new JButton("Confrim");
-//        JComboBox selectPatientDropDown = new JComboBox();
-//        JComboBox selectSymptom = new JComboBox();
-//
-//        assignTreatment.setLayout(layout);
-//        gbc.ipady = 40;
-//        gbc.gridx = 0;
-//        gbc.gridy = 0;
-//        assignTreatment.add(selectPatient, gbc);
-//        gbc.ipady = 40;
-//        gbc.gridx = 0;
-//        gbc.gridy = 1;
-//        assignTreatment.add(selectPatientDropDown, gbc);
-//        gbc.ipady = 40;
-//        gbc.gridx = 0;
-//        gbc.gridy = 2;
-//        assignTreatment.add(symptom, gbc);
-//        gbc.ipady = 40;
-//        gbc.gridx = 0;
-//        gbc.gridy = 3;
-//        assignTreatment.add(selectSymptom, gbc);
-//        gbc.ipady = 40;
-//        gbc.gridx = 0;
-//        gbc.gridy = 4;
-//        assignTreatment.add(possibleTreatments, gbc);
-//        gbc.ipady = 40;
-//        gbc.gridx = 0;
-//        gbc.gridy = 5;
-//        assignTreatment.add(confirm, gbc);
-//
-//        addPatient.setLayout(layout);
-//        JLabel firstName = new JLabel("Enter Patient First Name:");
-//        JLabel lastName = new JLabel("Enter Patient Last Name:");
-//        JButton confirm2 = new JButton("Confrim");
-//        JTextField firstNameEnter = new JTextField();
-//        JTextField lastNameEnter = new JTextField();
-//        JButton go = new JButton("Go");
-//        JButton go2 = new JButton("Go");
-//
-//        gbc.ipady = 40;
-//        gbc.gridx = 0;
-//        gbc.gridy = 0;
-//        addPatient.add(firstName,gbc);
-//        gbc.ipadx = 160;
-//        gbc.ipady = 40;
-//        gbc.gridx = 0;
-//        gbc.gridy = 1;
-//        addPatient.add(firstNameEnter,gbc);
-//        gbc.ipady = 40;
-//        gbc.gridx = 1;
-//        gbc.gridy = 1;
-//        addPatient.add(go,gbc);
-//
-//        gbc.ipady = 40;
-//        gbc.gridx = 0;
-//        gbc.gridy = 2;
-//        addPatient.add(lastName,gbc);
-//        gbc.ipady = 40;
-//        gbc.gridx = 0;
-//        gbc.gridy = 3;
-//        addPatient.add(lastNameEnter,gbc);
-//        gbc.ipadx = 160;
-//        gbc.ipady = 40;
-//        gbc.gridx = 1;
-//        gbc.gridy = 3;
-//        addPatient.add(go2,gbc);
-//        gbc.ipady = 40;
-//        gbc.gridx = 0;
-//        gbc.gridy = 4;
-//        addPatient.add(confirm2,gbc);
-//
-//        viewPatient.setLayout(layout);
-//        JLabel myPatients = new JLabel("My Patients:");
-//        gbc.ipady = 40;
-//        gbc.gridx = 0;
-//        gbc.gridy = 0;
-//        viewPatient.add(myPatients,gbc);
-//
-//        frameDoctor.getContentPane().add(tabbedPane, BorderLayout.CENTER);
-//        frameDoctor.setVisible(true);
-//    }
+        confirm.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                int result = InsertServiceList.INSERT_NEEDS.ExecuteQuery(new Object[]{
+                        19, 2, java.sql.Date.valueOf(LocalDate.now()), null
+                });
+
+            }
+        });
+
+        {
+        assignTreatment.setLayout(layout);
+        gbc.ipadx = 100;
+        gbc.ipady = 40;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        assignTreatment.add(selectPatient, gbc);
+        gbc.ipady = 40;
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.ipadx = 100;
+        assignTreatment.add(selectPatientDropDown, gbc);
+        gbc.ipadx = 100;
+        gbc.ipady = 40;
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        assignTreatment.add(treatment);
+        gbc.ipadx = 100;
+        gbc.ipady = 40;
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        assignTreatment.add(selectTreatment, gbc);
+        gbc.ipady = 40;
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        assignTreatment.add(confirm, gbc);
+    }
+
+        addPatient.setLayout(layout);
+        JLabel firstName = new JLabel("Enter Patient First Name:");
+        JLabel lastName = new JLabel("Enter Patient Last Name:");
+        JButton confirm2 = new JButton("Confrim");
+        JTextField firstNameEnter = new JTextField();
+        JTextField lastNameEnter = new JTextField();
+        JButton go = new JButton("Go");
+        JButton go2 = new JButton("Go");
+
+        confirm2.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                int result = InsertServiceList.INSERT_PERFORMS.ExecuteQuery(new Object[]{
+                        13, 19
+                });
+            }
+        });
+
+        {
+        gbc.ipady = 40;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        addPatient.add(firstName, gbc);
+        gbc.ipadx = 160;
+        gbc.ipady = 40;
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        addPatient.add(firstNameEnter, gbc);
+        gbc.ipady = 40;
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        addPatient.add(lastName, gbc);
+        gbc.ipadx = 160;
+        gbc.ipady = 40;
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        addPatient.add(lastNameEnter, gbc);
+        gbc.ipady = 40;
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        addPatient.add(confirm2, gbc);
+    }
+        viewPatient.setLayout(layout);
+        JLabel myPatients = new JLabel("My Patients:");
+        {
+            double[] values = {10, 11, 3, 11, 12, 13, 15};
+            HistogramDataset dataset = new HistogramDataset();
+            dataset.addSeries("Frequency of symptom", values, 7);
+
+            JFreeChart histogram = ChartFactory.createHistogram("Jorg Henson",
+                    "Severity", "Frequency", dataset);
+            ChartPanel jorrView = new ChartPanel(histogram);
+            gbc.ipady = 40;
+            gbc.gridx = 0;
+            gbc.gridy = 0;
+            viewPatient.add(myPatients, gbc);
+            gbc.ipadx = 200;
+            gbc.ipady = 200;
+            gbc.gridx = 0;
+            gbc.gridy = 2;
+            viewPatient.add(jorrView,gbc);
+        }
+
+        frameDoctor.getContentPane().add(tabbedPane, BorderLayout.CENTER);
+        frameDoctor.setVisible(true);
+
+    }
 
 }
 
