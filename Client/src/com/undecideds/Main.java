@@ -58,65 +58,6 @@ public class Main {
             System.exit(401);
         }
         
-//        HashMap<String, InputWidget> test = InsertServiceList.INSERT_NEEDS.buildUIWidgets();
-//
-//        // My widget tests
-//        JFrame testFrame = new JFrame();
-//        JPanel testPanel = new JPanel(new GridLayout(5, 5));
-//        JButton testButton = new JButton("GET DATE");
-//
-//        testButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                System.out.println(test.get("STARTING DATE").getValue());
-//            }
-//        });
-//        testPanel.add(test.get("PATIENT ID").generateWidget());
-//        testPanel.add(test.get("TREATMENT ID").generateWidget());
-//        testPanel.add(test.get("STARTING DATE").generateWidget());
-//        testPanel.add(test.get("ENDING DATE").generateWidget());
-//        //testPanel.add(testButton);
-//
-//        testPanel.add(InsertServiceList.INSERT_NEEDS.buildActivateButton("execute query", test, new ResultListener() {
-//            @Override
-//            public void onResult(int result) {
-//                System.out.println("SPROC RESULT: " + result);
-//            }
-//        }));
-//
-//        testFrame.add(testPanel);
-//        testFrame.setSize(500, 300);
-//        testFrame.setVisible(true);
-//        // end
-//
-//        ResultSet rs = ReadServiceList.CHRONIC_FROM_PATIENT.ExecuteQuery(new Object[]{
-//                5
-//        });
-//
-//        JFrame test2 = new JFrame();
-//        test2.add(TableBuilder.buildTable(rs));
-//        test2.setSize(500, 500);
-//        test2.setVisible(true);
-
-
-//        JFrame testWindow = new JFrame();
-//        HashMap<String, String> nameMatch = new HashMap<>();
-//        nameMatch.put("ID", "PERSON ID");
-//        nameMatch.put("fname",  "FNAME");
-//        nameMatch.put("lname", "LNAME");
-//        nameMatch.put("login", "LOGIN");
-//        nameMatch.put("password", "PASSWORD");
-//        nameMatch.put("role", "ROLE");
-//        nameMatch.put("hcpID", "INSURED BY");
-//
-//        testWindow.add(TableBuilder.buildTableWithCUD(ReadServiceList.GET_PERSONS, nameMatch, InsertServiceList.INSERT_PERSON, UpdateServiceList.UPDATE_PERSON, DeleteServiceList.DELETE_PERSON));
-//
-//
-//        testWindow.setSize(500, 500);
-//        testWindow.setVisible(true);
-
-
-
         if(guiEnabled){
             LoginWindow window = new LoginWindow();
             window.launch();
