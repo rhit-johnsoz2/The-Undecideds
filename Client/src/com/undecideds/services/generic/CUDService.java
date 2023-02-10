@@ -11,12 +11,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.CallableStatement;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class CUDService {
+    public static final ArrayList<CUDService> CUD_SERVICES = new ArrayList<>();
     StringBuilder template;
     Argument[] arguments;
     String[] resultCodes;
+    String sprocName;
     public CUDService(String sprocName, Argument[] arguments, String[] resultCodes){
         template = new StringBuilder("{? = call " + sprocName + "(");
         this.arguments = arguments;
@@ -28,6 +31,8 @@ public class CUDService {
                 template.append("?, ");
             }
         }
+        this.sprocName = sprocName;
+        CUD_SERVICES.add(this);
     }
 
     public int ExecuteQuery(Object[] params) {
@@ -56,6 +61,15 @@ public class CUDService {
         return widgets;
     }
 
+    public HashMap<String, InputWidget> buildUIWidgets(HashMap<String, Object> inputValues) {
+        HashMap<String, InputWidget> widgets = new HashMap<>();
+        for(Argument a : arguments) {
+            InputWidget widget = a.buildWidget(inputValues.get(a.getArgumentID()));
+            widgets.put(widget.getArgumentID(), widget);
+        }
+        return widgets;
+    }
+
     public Container buildActivateButton(String name, HashMap<String, InputWidget> sources, ResultListener resultListener){
         JPanel panel = new JPanel(new GridLayout(1, 1));
         JButton button = new JButton(name);
@@ -73,6 +87,10 @@ public class CUDService {
         });
         panel.add(button);
         return panel;
+    }
+
+    public String getSprocName() {
+        return sprocName;
     }
 
     @Override

@@ -1,13 +1,18 @@
-use [SymptomTracker]
-go
-alter procedure InsertTreatment(@ID int, @Cost int, @name varchar(30))
+USE [SymptomTracker]
+GO
+/****** Object:  StoredProcedure [dbo].[InsertTreatment]    Script Date: 2/9/2023 5:38:25 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER procedure [dbo].[InsertTreatment](@Cost int, @name varchar(30))
 As
 Begin
-	if(@ID is null or @Cost is null or @name is null)
+	if(@Cost is null or @name is null)
 	Begin
 		raiserror('Input Arguments cannot be null', 14,1)
 		return 1
 	End
-	Insert into dbo.Treatment(ID, Cost, name) Values(@ID, @Cost, @name)
+	Insert into dbo.Treatment(Cost, name) Values(@Cost, @name)
 	return 0
 End

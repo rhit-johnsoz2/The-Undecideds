@@ -100,6 +100,10 @@ public class ClientWindow{
 
         mainFrame.setVisible(true);
     }
+    
+    
+@Deprecated
+public class ClientWindow {
 
     public void viewPatient(){
         JFrame framePatient = new JFrame();

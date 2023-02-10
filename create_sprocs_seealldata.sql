@@ -97,3 +97,11 @@ BEGIN
 	FROM SideEffectOf
 END
 Go
+
+Create Procedure ShowAllDoctorFor
+As
+BEGIN
+	SELECT *
+	FROM DoctorFor
+END
+Go

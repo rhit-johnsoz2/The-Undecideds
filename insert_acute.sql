@@ -2,11 +2,11 @@ Use SymptomTracker
 Go
 CREATE PROCEDURE InsertAcute
 	(@personID Integer, @symptomID Integer,
-	 @severity Integer, @symptomtimestamp Timestamp = GETDATE)
+	 @severity Integer, @symptomDate date = GETDATE)
 AS
 BEGIN
 	-- check to see if any of the parameters are null
-	IF(@personID is NULL or @symptomID is NULL or @severity is NULL or @symptomtimestamp is NULL)
+	IF(@personID is NULL or @symptomID is NULL or @severity is NULL or @symptomDate is NULL)
 	BEGIN
 		RAISERROR('Input arguments cannot be null', 14, 1)
 		Return 1
@@ -23,6 +23,6 @@ BEGIN
 		RAISERROR('Symptom not in the person database', 14, 1)
 		Return 3
 	END
-INSERT INTO Acute Values(@personID, @symptomID, @severity, @symptomtimestamp)
+INSERT INTO Acute Values(@personID, @symptomID, @severity, @symptomDate)
 Return 0
 END

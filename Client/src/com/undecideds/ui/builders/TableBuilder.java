@@ -1,14 +1,266 @@
 package com.undecideds.ui.builders;
 
+import com.undecideds.services.generic.CUDService;
+import com.undecideds.services.generic.ReadService;
+import com.undecideds.ui.cuduibuilder.InputWidget;
+import com.undecideds.ui.cuduibuilder.ResultListener;
+
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 
 public class TableBuilder {
+
+
+    public static Container buildTableWithCUD(ReadService readService, HashMap<String, String> name_match, CUDService create, CUDService update, CUDService delete, HashSet<String> fixedOnUpdate, boolean canUpdate, boolean canDelete){
+        try {
+            ResultSet rs = readService.ExecuteQuery(new Object[]{});
+            JPanel panel = new JPanel(new GridLayout(2, 1));
+            JTable table = (JTable) buildTableRaw(rs, new HashSet<String>());
+            JButton createButton = new JButton("Insert new");
+            JButton updateButton = new JButton("Update");
+            JButton deleteButton = new JButton("Delete");
+            updateButton.setEnabled(false);
+            deleteButton.setEnabled(false);
+
+            HashMap<String, Object> inputValues = new HashMap<>();
+
+            createButton.addActionListener(new ActionListener() {
+                void updateTable(){
+                    try {
+                        ResultSet rs = readService.ExecuteQuery(new Object[]{});
+                        table.setModel(getTableModel(rs, new HashSet<String>()));
+                    }catch (Exception e){
+                        System.out.println("fatal error refetching table");
+                        e.printStackTrace();
+                        System.exit(501);
+                    }
+                }
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    JFrame create_popup = new JFrame("insert new item");
+                    HashMap<String, InputWidget> widgets = create.buildUIWidgets();
+                    JPanel panel = new JPanel(new GridLayout(widgets.size() + 1,  1));
+                    Container submit = create.buildActivateButton("Submit", widgets, new ResultListener() {
+                        @Override
+                        public void onResult(int result) {
+                            if(result == 0) {
+                                updateTable();
+                                create_popup.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                                create_popup.dispatchEvent(new WindowEvent(create_popup, WindowEvent.WINDOW_CLOSING));
+                            }else{
+                                create_popup.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                                create_popup.dispatchEvent(new WindowEvent(create_popup, WindowEvent.WINDOW_CLOSING));
+                                JFrame error_popup = new JFrame();
+                                JPanel panel = new JPanel(new GridLayout(1, 1));
+                                panel.add(new JLabel("Error executing procedure: " + create.codeMeaning(result)));
+                                error_popup.add(panel);
+                                error_popup.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                                error_popup.pack();
+                                error_popup.setVisible(true);
+                            }
+                        }
+                    });
+                    for(String key : widgets.keySet()){
+                        panel.add(widgets.get(key).generateWidget());
+                    }
+                    panel.add(submit);
+                    create_popup.add(panel);
+                    create_popup.setSize(500, 500);
+                    create_popup.setVisible(true);
+                }
+            });
+
+            updateButton.addActionListener(new ActionListener() {
+                void updateTable(){
+                    try {
+                        ResultSet rs = readService.ExecuteQuery(new Object[]{});
+                        table.setModel(getTableModel(rs, new HashSet<String>()));
+                    }catch (Exception e){
+                        System.out.println("fatal error refetching table");
+                        e.printStackTrace();
+                        System.exit(501);
+                    }
+                }
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    JFrame update_popup = new JFrame("edit item");
+
+                    HashMap<String, InputWidget> widgets = update.buildUIWidgets(inputValues);
+
+
+
+                    HashMap<String, InputWidget> insertWidgets = create.buildUIWidgets();
+                    for(String key : widgets.keySet()){
+                        if(!insertWidgets.containsKey(key) || fixedOnUpdate.contains(key)){
+                            final Object value = widgets.get(key).getValue();
+                            widgets.replace(key, new InputWidget(widgets.get(key).getArgumentID()){
+                                @Override
+                                public Container generateWidget() {
+                                    return new JPanel();
+                                }
+
+                                @Override
+                                public Object getValue() {
+                                    return value;
+                                }
+                            });
+                        }
+                    }
+
+                    JPanel panel = new JPanel(new GridLayout(widgets.size() + 1,  1));
+                    Container submit = update.buildActivateButton("Submit", widgets, new ResultListener() {
+                        @Override
+                        public void onResult(int result) {
+                            if(result == 0) {
+                                updateTable();
+                                update_popup.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                                update_popup.dispatchEvent(new WindowEvent(update_popup, WindowEvent.WINDOW_CLOSING));
+                            }else{
+                                update_popup.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                                update_popup.dispatchEvent(new WindowEvent(update_popup, WindowEvent.WINDOW_CLOSING));
+                                JFrame error_popup = new JFrame();
+                                JPanel panel = new JPanel(new GridLayout(1, 1));
+                                panel.add(new JLabel("Error executing procedure: " + update.codeMeaning(result)));
+                                error_popup.add(panel);
+                                error_popup.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                                error_popup.pack();
+                                error_popup.setVisible(true);
+                            }
+                        }
+                    });
+                    for(String key : widgets.keySet()){
+                        panel.add(widgets.get(key).generateWidget());
+                    }
+                    panel.add(submit);
+                    update_popup.add(panel);
+                    update_popup.setSize(500, 500);
+                    update_popup.setVisible(true);
+                }
+            });
+
+            deleteButton.addActionListener(new ActionListener() {
+                void updateTable(){
+                    try {
+                        ResultSet rs = readService.ExecuteQuery(new Object[]{});
+                        table.setModel(getTableModel(rs, new HashSet<String>()));
+                    }catch (Exception e){
+                        System.out.println("fatal error refetching table");
+                        e.printStackTrace();
+                        System.exit(501);
+                    }
+                }
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    JFrame delete_popup = new JFrame("delete item");
+
+                    HashMap<String, InputWidget> widgets = delete.buildUIWidgets(inputValues);
+                    for(String key : widgets.keySet()){
+                        final Object value = widgets.get(key).getValue();
+                        widgets.replace(key, new InputWidget(widgets.get(key).getArgumentID()){
+                            @Override
+                            public Container generateWidget() {
+                                return new JPanel();
+                            }
+
+                            @Override
+                            public Object getValue() {
+                                return value;
+                            }
+                        });
+                    }
+
+                    JPanel panel = new JPanel(new GridLayout(2,  1));
+                    Container submit = delete.buildActivateButton("Submit", widgets, new ResultListener() {
+                        @Override
+                        public void onResult(int result) {
+                            if(result == 0) {
+                                updateTable();
+                                delete_popup.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                                delete_popup.dispatchEvent(new WindowEvent(delete_popup, WindowEvent.WINDOW_CLOSING));
+                            }else{
+                                delete_popup.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                                delete_popup.dispatchEvent(new WindowEvent(delete_popup, WindowEvent.WINDOW_CLOSING));
+                                JFrame error_popup = new JFrame();
+                                JPanel panel = new JPanel(new GridLayout(1, 1));
+                                panel.add(new JLabel("Error executing procedure: " + delete.codeMeaning(result)));
+                                error_popup.add(panel);
+                                error_popup.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                                error_popup.pack();
+                                error_popup.setVisible(true);
+                            }
+                        }
+                    });
+                    JButton reject = new JButton("Reject changes");
+                    reject.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            delete_popup.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                            delete_popup.dispatchEvent(new WindowEvent(delete_popup, WindowEvent.WINDOW_CLOSING));
+                        }
+                    });
+                    JPanel buttonPanel = new JPanel(new GridLayout(1, 2));
+                    buttonPanel.add(reject);
+                    buttonPanel.add(submit);
+                    panel.add(new JLabel("Are you sure?"));
+                    panel.add(buttonPanel);
+                    delete_popup.add(panel);
+                    delete_popup.setSize(500, 500);
+                    delete_popup.setVisible(true);
+                }
+            });
+
+            table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+                @Override
+                public void valueChanged(ListSelectionEvent e) {
+                    if(table.getSelectedRow() != -1){
+
+                        inputValues.clear();
+                        for(int i = 0; i < table.getColumnCount(); i++) {
+                            inputValues.put(name_match.get(table.getColumnName(i)), table.getValueAt(table.getSelectedRow(), i));
+                        }
+
+
+                        updateButton.setEnabled(true);
+                        deleteButton.setEnabled(true);
+
+                    }else{
+                        updateButton.setEnabled(false);
+                        deleteButton.setEnabled(false);
+                    }
+                }
+            });
+
+            panel.add(new JScrollPane(table));
+
+            JPanel buttonPanel = new JPanel(new GridLayout(1, 1 + (canUpdate ? 1 : 0) + (canDelete ? 1 : 0)));
+
+            if(canDelete) {
+                buttonPanel.add(deleteButton);
+            }
+            if(canUpdate) {
+                buttonPanel.add(updateButton);
+            }
+            buttonPanel.add(createButton);
+
+            panel.add(buttonPanel);
+
+            return panel;
+        }catch (Exception e){
+            Container errContainer = new JPanel(new GridLayout(1, 1));
+            errContainer.add(new JLabel("Table has not been fetched. If this is an error, please view the stack trace."));
+            e.printStackTrace();
+            return errContainer;
+        }
+    }
 
     public static Container buildTable(ResultSet rs){
         return buildTable(rs, new HashSet<String>());
@@ -16,6 +268,20 @@ public class TableBuilder {
 
     public static Container buildTable(ResultSet rs, HashSet<String> hidden){
         Container container = new JPanel(new GridLayout(1, 1));
+        container.add(new JScrollPane( buildTableRaw(rs, hidden)));
+        return container;
+    }
+
+    public static JComponent buildTableRaw(ResultSet rs, HashSet<String> hidden){
+        DefaultTableModel model = getTableModel(rs, hidden);
+        if(model != null) {
+            return new JTable(model);
+        }else{
+            return new JLabel("Table has not been fetched. If this is an error, please view the stack trace.");
+        }
+    }
+
+    private static DefaultTableModel getTableModel(ResultSet rs, HashSet<String> hidden){
         try{
             ResultSetMetaData rsmd = rs.getMetaData();
 
@@ -52,16 +318,39 @@ public class TableBuilder {
                 }
             }
 
-            JTable table = new JTable(data_arr, headers_arr);
-            container.add(new JScrollPane(table));
-            return container;
+
+
+            return new DefaultTableModel(data_arr, headers_arr){
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                    return false;
+                }
+            };
+
         }catch(Exception e){
-            container.add(new JLabel("Table has not been fetched. If this is an error, please view the stack trace."));
             e.printStackTrace();
-            return container;
+            return null;
         }
     }
 
+
+    public static Container buildTableWithCUD(ReadService readService, HashMap<String, String> name_match, CUDService create, CUDService update, CUDService delete) {
+        return buildTableWithCUD(readService, name_match, create, update, delete, new HashSet<String>(), true, true);
+    }
+
+    public static Container buildTableWithCUD(ReadService readService, HashMap<String, String> name_match, CUDService create, CUDService update, CUDService delete, String[] fixedOnUpdate) {
+        HashSet<String> fixed = new HashSet<>(Arrays.asList(fixedOnUpdate));
+        return buildTableWithCUD(readService, name_match, create, update, delete, fixed, true, true);
+    }
+
+    public static Container buildTableWithCUD(ReadService readService, HashMap<String, String> name_match, CUDService create, CUDService update, CUDService delete, boolean canUpdate, boolean canDelete) {
+        return buildTableWithCUD(readService, name_match, create, update, delete, new HashSet<String>(), canUpdate, canDelete);
+    }
+
+    public static Container buildTableWithCUD(ReadService readService, HashMap<String, String> name_match, CUDService create, CUDService update, CUDService delete, String[] fixedOnUpdate, boolean canUpdate, boolean canDelete) {
+        HashSet<String> fixed = new HashSet<>(Arrays.asList(fixedOnUpdate));
+        return buildTableWithCUD(readService, name_match, create, update, delete, fixed, canUpdate, canDelete);
+    }
 
 
 }
