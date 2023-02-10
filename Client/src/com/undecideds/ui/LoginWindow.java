@@ -53,6 +53,7 @@ public class LoginWindow {
         });
         frame.add(panel, "Center");
         frame.setTitle("Please Login Here !");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(500, 300);
         frame.setVisible(true);
     }
@@ -64,10 +65,13 @@ public class LoginWindow {
             // TODO: launch doctorView
             frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+            DoctorWindow doctorWindow = new DoctorWindow();
+            doctorWindow.launch();
         } else if (username.trim().equals("patient") && password.trim().equals("patient")) {
-            // TODO: launch patientView
             frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+            PatientWindow patientWindow = new PatientWindow();
+            patientWindow.launch();
         } else if(username.trim().equals("admin") && password.trim().equals("admin")){
             frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));

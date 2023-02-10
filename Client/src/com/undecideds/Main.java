@@ -2,32 +2,8 @@ package com.undecideds;
 
 import com.undecideds.cli.CLIApplication;
 import com.undecideds.services.*;
-import com.undecideds.services.generic.CUDService;
 import com.undecideds.services.generic.EncryptionService;
-import com.undecideds.ui.ClientWindow;
 import com.undecideds.ui.LoginWindow;
-import com.undecideds.ui.cuduibuilder.DateLabelFormatter;
-import com.undecideds.ui.cuduibuilder.InputWidget;
-import com.undecideds.ui.cuduibuilder.ResultListener;
-import org.jdatepicker.impl.JDatePanelImpl;
-import org.jdatepicker.impl.JDatePickerImpl;
-import org.jdatepicker.impl.UtilDateModel;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.HashMap;
-import java.util.Properties;
-
-import com.undecideds.services.generic.EncryptionService;
-import com.undecideds.ui.ClientWindow;
-import com.undecideds.ui.builders.TableBuilder;
-
-import javax.swing.*;
-import java.awt.*;
-import java.sql.ResultSet;
-import java.util.HashSet;
 
 //Authors: 
 // johnsoz2

@@ -6,6 +6,7 @@ import com.undecideds.ui.cuduibuilder.InputWidget;
 import com.undecideds.ui.cuduibuilder.ResultListener;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
@@ -23,8 +24,10 @@ public class TableBuilder {
     public static Container buildTableWithCUD(ReadService readService, HashMap<String, String> name_match, CUDService create, CUDService update, CUDService delete, HashSet<String> fixedOnUpdate, boolean canUpdate, boolean canDelete){
         try {
             ResultSet rs = readService.ExecuteQuery(new Object[]{});
-            JPanel panel = new JPanel(new GridLayout(2, 1));
+            JPanel panel = new JPanel();
+            panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
             JTable table = (JTable) buildTableRaw(rs, new HashSet<String>());
+
             JButton createButton = new JButton("Insert new");
             JButton updateButton = new JButton("Update");
             JButton deleteButton = new JButton("Delete");
@@ -239,9 +242,11 @@ public class TableBuilder {
                 }
             });
 
-            panel.add(new JScrollPane(table));
 
+            JScrollPane tablePane = new JScrollPane(table);
             JPanel buttonPanel = new JPanel(new GridLayout(1, 1 + (canUpdate ? 1 : 0) + (canDelete ? 1 : 0)));
+
+            panel.add(tablePane);
 
             if(canDelete) {
                 buttonPanel.add(deleteButton);
