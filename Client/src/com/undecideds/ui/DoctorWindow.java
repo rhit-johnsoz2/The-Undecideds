@@ -1,6 +1,7 @@
 package com.undecideds.ui;
 
 import com.undecideds.services.InsertServiceList;
+import com.undecideds.services.ReadServiceList;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -10,6 +11,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.ResultSet;
 import java.time.LocalDate;
 
 public class DoctorWindow {
@@ -37,13 +39,6 @@ public class DoctorWindow {
         JLabel Jorg = new JLabel("Jorg");
 
         {
-            double[] values = {10, 11, 3, 11, 12, 13, 15};
-            HistogramDataset dataset = new HistogramDataset();
-            dataset.addSeries("Frequency of symptom", values, 7);
-
-            JFreeChart histogram = ChartFactory.createHistogram("Jorg Henson",
-                    "Severity", "Frequency", dataset);
-            ChartPanel jorrView = new ChartPanel(histogram);
 
             {
                 home.setLayout(layout);
@@ -57,7 +52,7 @@ public class DoctorWindow {
                 gbc.ipady = 200;
                 gbc.gridx = 0;
                 gbc.gridy = 2;
-                home.add(jorrView, gbc);
+                home.add(genHistogram(id, PatientWindow.GraphType.MONTHLY), gbc);
             }
         }
 
@@ -150,13 +145,7 @@ public class DoctorWindow {
         viewPatient.setLayout(layout);
         JLabel myPatients = new JLabel("My Patients:");
         {
-            double[] values = {10, 11, 3, 11, 12, 13, 15};
-            HistogramDataset dataset = new HistogramDataset();
-            dataset.addSeries("Frequency of symptom", values, 7);
 
-            JFreeChart histogram = ChartFactory.createHistogram("Jorg Henson",
-                    "Severity", "Frequency", dataset);
-            ChartPanel jorrView = new ChartPanel(histogram);
             gbc.ipady = 40;
             gbc.gridx = 0;
             gbc.gridy = 0;
@@ -165,12 +154,61 @@ public class DoctorWindow {
             gbc.ipady = 200;
             gbc.gridx = 0;
             gbc.gridy = 2;
-            viewPatient.add(jorrView,gbc);
+            viewPatient.add(genHistogram(id,GraphType.MONTHLY),gbc);
         }
 
         frameDoctor.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frameDoctor.getContentPane().add(tabbedPane, BorderLayout.CENTER);
         frameDoctor.setVisible(true);
 
+    }
+
+    public Container genHistogram(int id , PatientWindow.GraphType gt){
+        try {
+            ResultSet rs = ReadServiceList.ACUTE_FROM_PATIENT.ExecuteQuery(new Object[]{id});
+            double cutOffDate = System.currentTimeMillis();
+            double[] occurences = new double[1];
+            switch (gt) {
+                case WEEKLY -> {
+                    cutOffDate -= 7L * 24 * 60 * 60 * 1000;
+                    occurences = new double[7];
+                }
+                case MONTHLY -> {
+                    cutOffDate -= 30L * 24 * 60 * 60 * 1000;
+                    occurences = new double[30];
+                }
+                case ANNUAL -> {
+                    cutOffDate -= 365L * 24 * 60 * 60 * 1000;
+                    occurences = new double[365];
+                }
+            }
+            int i = 0;
+            while (rs.next()) {
+                if(rs.getDate("Symptom Date").getTime() < cutOffDate) {
+                    break;
+                }
+                occurences[i] = rs.getDate("Symptom Date").getTime();
+                i++;
+            }
+
+            HistogramDataset dataset = new HistogramDataset();
+            dataset.addSeries("Frequency of symptom", occurences, occurences.length);
+            JFreeChart histogram = ChartFactory.createHistogram(String.valueOf(rs.getInt("Symptom ID")),
+                    "Severity", "Frequency", dataset);
+            ChartPanel chartPanel = new ChartPanel(histogram);
+            return chartPanel;
+
+        }catch (Exception e){
+            e.printStackTrace();
+            JPanel panel = new JPanel();
+            panel.add(new JLabel("Error Fetching Data, check Stack Trace"));
+            return panel;
+        }
+    }
+
+    public enum GraphType{
+        WEEKLY,
+        MONTHLY,
+        ANNUAL
     }
 }

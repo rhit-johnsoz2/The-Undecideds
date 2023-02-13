@@ -1,6 +1,8 @@
 package com.undecideds.ui;
 
+
 import com.undecideds.services.InsertServiceList;
+import com.undecideds.services.ReadServiceList;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -10,7 +12,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.ResultSet;
 import java.time.LocalDate;
+import java.util.ArrayList;
+
+import static com.undecideds.services.ReadServiceList.GET_ACUTE;
 
 public class PatientWindow {
 
@@ -34,16 +40,6 @@ public class PatientWindow {
         JLabel hello = new JLabel("Hello Jorg Hansen");
         JLabel curSympts = new JLabel("Current Symptoms");
 
-
-
-        double[] values = {10,11,3,11,12,13,15};
-        HistogramDataset dataset = new HistogramDataset();
-        dataset.addSeries("Frequency of symptom", values, 7);
-
-        JFreeChart histogram = ChartFactory.createHistogram("Cough Histogram",
-                "Severity", "Frequency", dataset);
-        ChartPanel chartPanel = new ChartPanel(histogram);
-
         {
             gbc.ipady = 40;
             gbc.gridx = 0;
@@ -57,19 +53,11 @@ public class PatientWindow {
             gbc.ipady = 200;
             gbc.gridx = 0;
             gbc.gridy = 2;
-            home.add(chartPanel,gbc);
+            home.add(genHistogram(id, GraphType.WEEKLY),gbc);
         }
 
         viewHistory.setLayout(layout);
         JLabel viewHistoryText = new JLabel("View History");
-
-        double[] values2 = {10,11,3,11,12,13,15};
-        HistogramDataset dataset2 = new HistogramDataset();
-        dataset.addSeries("Frequency of symptom", values, 7);
-
-        JFreeChart histogram2 = ChartFactory.createHistogram("Cough Histogram",
-                "Severity", "Frequency", dataset);
-        ChartPanel chartPanel2 = new ChartPanel(histogram);
 
         {
             gbc.ipady = 40;
@@ -80,7 +68,7 @@ public class PatientWindow {
             gbc.ipady = 200;
             gbc.gridx = 0;
             gbc.gridy = 1;
-            viewHistory.add(chartPanel2,gbc);
+            viewHistory.add(genHistogram(id, GraphType.WEEKLY),gbc);
         }
         addSymptom.setLayout(layout);
         JLabel selectSympt = new JLabel("Select Symptom:");
@@ -129,5 +117,54 @@ public class PatientWindow {
         framePatient.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         framePatient.getContentPane().add(tabbedPane, BorderLayout.CENTER);
         framePatient.setVisible(true);
+    }
+
+    public Container genHistogram(int id , GraphType gt){
+        try {
+            ResultSet rs = ReadServiceList.ACUTE_FROM_PATIENT.ExecuteQuery(new Object[]{id});
+            double cutOffDate = System.currentTimeMillis();
+            double[] occurences = new double[1];
+            switch (gt) {
+                case WEEKLY -> {
+                    cutOffDate -= 7L * 24 * 60 * 60 * 1000;
+                    occurences = new double[7];
+                }
+                case MONTHLY -> {
+                    cutOffDate -= 30L * 24 * 60 * 60 * 1000;
+                    occurences = new double[30];
+                }
+                case ANNUAL -> {
+                    cutOffDate -= 365L * 24 * 60 * 60 * 1000;
+                    occurences = new double[365];
+                }
+            }
+            int i = 0;
+            while (rs.next()) {
+                if(rs.getDate("Symptom Date").getTime() < cutOffDate) {
+                    break;
+                }
+                occurences[i] = rs.getDate("Symptom Date").getTime();
+                i++;
+            }
+
+            HistogramDataset dataset = new HistogramDataset();
+            dataset.addSeries("Frequency of symptom", occurences, occurences.length);
+            JFreeChart histogram = ChartFactory.createHistogram(String.valueOf(rs.getInt("Symptom ID")),
+                    "Severity", "Frequency", dataset);
+            ChartPanel chartPanel = new ChartPanel(histogram);
+            return chartPanel;
+
+        }catch (Exception e){
+            e.printStackTrace();
+            JPanel panel = new JPanel();
+            panel.add(new JLabel("Error Fetching Data, check Stack Trace"));
+            return panel;
+        }
+    }
+
+    public enum GraphType{
+        WEEKLY,
+        MONTHLY,
+        ANNUAL
     }
 }
