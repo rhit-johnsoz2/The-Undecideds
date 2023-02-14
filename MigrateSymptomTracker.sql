@@ -34,7 +34,8 @@ GO
 CREATE TABLE HealthCareProvider (
 	ID int identity(1,1),
 	name varchar(50),
-	PRIMARY KEY(ID)
+	PRIMARY KEY(ID),
+	unique(name)
 )
 GO
 
@@ -52,7 +53,8 @@ GO
 CREATE TABLE Treatment(
 	ID Integer Identity(1,1) Primary Key,
 	Cost Integer,
-	name varchar(50)
+	name varchar(50),
+	unique(name)
 )
 GO
 
@@ -86,7 +88,8 @@ GO
 --CHECK((SELECT role FROM dbo.Person WHERE ID = doctorID) = 'DR')
 CREATE TABLE DoctorFor(
 	doctorID Integer REFERENCES dbo.Person,
-	patientID Integer REFERENCES dbo.Person
+	patientID Integer REFERENCES dbo.Person,
+	primary key(doctorID, treatmentID)
 )
 GO
 
@@ -96,7 +99,7 @@ CREATE TABLE Performs (
 	treatmentID integer,
 	primary key(doctorID, treatmentID),
 	foreign key(doctorID) references person(ID),
-	foreign key(treatmentID) references treatment(ID),
+	foreign key(treatmentID) references treatment(ID)
 )
 GO
 
@@ -333,7 +336,7 @@ END
 GO
 
 CREATE PROCEDURE InsertPerson(@FName varchar(30), @LName varchar(30), 
-@Login varchar(30), @Password varchar(30), @Role char(2), @InsuredBy varchar(30))
+@Login varchar(30), @Password varchar(30), @Role char(2), @InsuredBy Integer)
 AS
 Begin
 	if (@FName is null or @LName is null or @Login is null or @Password is null or @Role is null or @InsuredBy is null)
@@ -950,5 +953,61 @@ Begin
 	End
 	Delete From SideEffectOf
 	Where SideEffectOf.symptomID = @symptomID and SideEffectOf.treatmentID = @treatmentID
+End
+GO
+
+CREATE PROCEDURE [dbo].[ImportHealthCareProvider]
+	(@name varchar(50))
+AS
+BEGIN
+	-- check to see if any of the parameters are null
+	IF(@name is NULL)
+	BEGIN
+		RAISERROR('Input arguments cannot be null', 14, 1)
+		Return 1
+	END
+INSERT INTO HealthCareProvider Values(@name)
+Select ID From HealthCareProvider Where ID = @@IDENTITY
+END
+GO
+
+CREATE PROCEDURE ImportPerson(@FName varchar(30), @LName varchar(30), @Login varchar(30), @Password varchar(30), @Role char(2), @InsuredBy Integer)
+AS
+Begin
+	if (@FName is null or @LName is null or @Login is null or @Password is null or @Role is null or @InsuredBy is null)
+	Begin
+		raiserror('Input Arguments cannot be null', 14,1)
+		return 1
+	End
+
+	Insert into dbo.Person(FName, LName, Login, Password, role, hcpID) Values(@FName, @LName, @Login, @Password, @Role, @InsuredBy)
+	Select ID From Person Where ID = @@IDENTITY
+End
+GO
+
+CREATE PROCEDURE ImportSymptom(@Name varchar(50))
+As
+Begin
+	if(@Name is null)
+	Begin
+		raiserror('Input Arguments cannot be null', 14,1)
+		return 1
+	End
+
+	Insert into dbo.Symptom(Name) Values(@Name)
+	Select ID From Symptom Where ID = @@IDENTITY
+End
+GO
+
+CREATE PROCEDURE ImportTreatment(@Cost int, @name varchar(30))
+As
+Begin
+	if(@Cost is null or @name is null)
+	Begin
+		raiserror('Input Arguments cannot be null', 14,1)
+		return 1
+	End
+	Insert into dbo.Treatment(Cost, name) Values(@Cost, @name)
+	Select ID From Treatment Where ID = @@IDENTITY
 End
 GO
