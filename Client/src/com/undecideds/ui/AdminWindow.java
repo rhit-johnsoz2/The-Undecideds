@@ -36,7 +36,12 @@ public class AdminWindow {
                     "password", "PASSWORD",
                     "role", "ROLE",
                     "hcpID", "INSURED BY"
-                }
+                },
+                new String[]{},
+                true,
+                true,
+                new String[]{"INSURED BY"},
+                new ReadService[]{ReadServiceList.GET_HCP_NAMES}
         ));
         context.addTab("Health Care Providers", null, buildTableView(ReadServiceList.GET_HEALTHCAREPROVIDERS,
                 new CUDService[]{
@@ -47,7 +52,12 @@ public class AdminWindow {
                 new String[]{
                         "ID", "HEALTHCAREPROVIDER ID",
                         "name",  "NAME",
-                }
+                },
+                new String[]{},
+                true,
+                true,
+                new String[]{},
+                new ReadService[]{}
         ));
         context.addTab("Symptoms", null, buildTableView(ReadServiceList.GET_SYMPTOMS,
                 new CUDService[]{
@@ -58,7 +68,12 @@ public class AdminWindow {
                 new String[]{
                         "ID", "SYMPTOM ID",
                         "name",  "NAME"
-                }
+                },
+                new String[]{},
+                true,
+                true,
+                new String[]{},
+                new ReadService[]{}
         ));
         context.addTab("Treatments", null, buildTableView(ReadServiceList.GET_TREATMENTS,
                 new CUDService[]{
@@ -70,7 +85,12 @@ public class AdminWindow {
                         "ID", "TREATMENT ID",
                         "Cost",  "COST",
                         "name", "NAME"
-                }
+                },
+                new String[]{},
+                true,
+                true,
+                new String[]{},
+                new ReadService[]{}
         ));
         context.addTab("Insures", null, buildTableView(ReadServiceList.GET_INSURES,
                 new CUDService[]{
@@ -84,7 +104,11 @@ public class AdminWindow {
                         "TreatmentID", "TREATMENT ID",
                         "Coverage", "COVERAGE"
                 },
-                new String[]{"PERSON ID", "HCP ID", "TREATMENT ID"}
+                new String[]{"PERSON ID", "HCP ID", "TREATMENT ID"},
+                true,
+                true,
+                new String[]{"PERSON ID", "HCP ID", "TREATMENT ID"},
+                new ReadService[]{ReadServiceList.GET_DOCTOR_NAMES, ReadServiceList.GET_HCP_NAMES, ReadServiceList.GET_TREATMENT_NAMES}
         ));
         context.addTab("Performs", null, buildTableView(ReadServiceList.GET_PERFORMS,
                 new CUDService[]{
@@ -96,7 +120,11 @@ public class AdminWindow {
                         "doctorID", "DOCTOR ID",
                         "treatmentID",  "TREATMENT ID"
                 },
-                false
+                new String[]{},
+                false,
+                true,
+                new String[]{"DOCTOR ID", "TREATMENT ID"},
+                new ReadService[]{ReadServiceList.GET_DOCTOR_NAMES, ReadServiceList.GET_TREATMENT_NAMES}
         ));
         context.addTab("Needs", null, buildTableView(ReadServiceList.GET_NEEDS,
                 new CUDService[]{
@@ -110,7 +138,11 @@ public class AdminWindow {
                         "SDate", "STARTING DATE",
                         "EDate", "ENDING DATE"
                 },
-                new String[]{"PATIENT ID", "TREATMENT ID"}
+                new String[]{"PATIENT ID", "TREATMENT ID"},
+                true,
+                true,
+                new String[]{"PATIENT ID", "TREATMENT ID"},
+                new ReadService[]{ReadServiceList.GET_PATIENT_NAMES, ReadServiceList.GET_TREATMENT_NAMES}
         ));
         context.addTab("SideEffectOf", null, buildTableView(ReadServiceList.GET_SIDEEFFECTOF,
                 new CUDService[]{
@@ -122,7 +154,11 @@ public class AdminWindow {
                         "symptomID", "SYMPTOM ID",
                         "treatmentID",  "TREATMENT ID"
                 },
-                false
+                new String[]{},
+                false,
+                true,
+                new String[]{"SYMPTOM ID", "TREATMENT ID"},
+                new ReadService[]{ReadServiceList.GET_SYMPTOM_NAMES, ReadServiceList.GET_TREATMENT_NAMES}
         ));
         context.addTab("DoctorFor", null, buildTableView(ReadServiceList.GET_DOCTORFOR,
                 new CUDService[]{
@@ -134,7 +170,11 @@ public class AdminWindow {
                         "doctorID", "DOCTOR ID",
                         "patientID",  "PATIENT ID"
                 },
-                false
+                new String[]{},
+                false,
+                true,
+                new String[]{"DOCTOR ID", "PATIENT ID"},
+                new ReadService[]{ReadServiceList.GET_DOCTOR_NAMES, ReadServiceList.GET_PATIENT_NAMES}
         ));
         context.addTab("AcuteSymptoms", null, buildTableView(ReadServiceList.GET_ACUTE,
                 new CUDService[]{
@@ -148,7 +188,11 @@ public class AdminWindow {
                         "severity", "SEVERITY",
                         "symptomDate", "DATE"
                 },
-                new String[]{"PERSON ID", "SYMPTOM ID"}
+                new String[]{"PERSON ID", "SYMPTOM ID"},
+                true,
+                true,
+                new String[]{"PERSON ID", "SYMPTOM ID"},
+                new ReadService[]{ReadServiceList.GET_PATIENT_NAMES, ReadServiceList.GET_SYMPTOM_NAMES}
         ));
         context.addTab("ChronicSymptoms", null, buildTableView(ReadServiceList.GET_CHRONIC,
                 new CUDService[]{
@@ -160,7 +204,11 @@ public class AdminWindow {
                         "PersonID", "PERSON ID",
                         "SymptomID",  "SYMPTOM ID"
                 },
-                false
+                new String[]{},
+                false,
+                true,
+                new String[]{"PERSON ID", "SYMPTOM ID"},
+                new ReadService[]{ReadServiceList.GET_PATIENT_NAMES, ReadServiceList.GET_SYMPTOM_NAMES}
         ));
 
 
@@ -170,6 +218,14 @@ public class AdminWindow {
         frame.setSize(700, 500);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
+    }
+
+    private Container buildTableView(ReadService readService, CUDService[] services, String[] map, String[] fixedOnUpdate, boolean canUpdate, boolean canDelete, String[] args, ReadService[] IDProvider){
+        HashMap<String, String> nameMatch = new HashMap<>();
+        for(int i = 0; i < map.length; i += 2){
+            nameMatch.put(map[i], map[i+1]);
+        }
+        return TableBuilder.buildTableWithCUD(readService, nameMatch, services[0], services[1], services[2], fixedOnUpdate, canUpdate, canDelete, args, IDProvider);
     }
 
     private Container buildTableView(ReadService readService, CUDService[] services, String[] map, String[] fixedOnUpdate, boolean canUpdate, boolean canDelete){

@@ -21,7 +21,7 @@ import java.util.*;
 public class TableBuilder {
 
 
-    public static Container buildTableWithCUD(ReadService readService, HashMap<String, String> name_match, CUDService create, CUDService update, CUDService delete, HashSet<String> fixedOnUpdate, boolean canUpdate, boolean canDelete){
+    public static Container buildTableWithCUD(ReadService readService, HashMap<String, String> name_match, CUDService create, CUDService update, CUDService delete, HashSet<String> fixedOnUpdate, boolean canUpdate, boolean canDelete, HashMap<String, ReadService> idProviders){
         try {
             ResultSet rs = readService.ExecuteQuery(new Object[]{});
             JPanel panel = new JPanel();
@@ -50,8 +50,9 @@ public class TableBuilder {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     JFrame create_popup = new JFrame("insert new item");
-                    HashMap<String, InputWidget> widgets = create.buildUIWidgets();
-                    JPanel panel = new JPanel(new GridLayout(widgets.size() + 1,  1));
+                    HashMap<String, InputWidget> widgets = create.buildUIWidgets(idProviders, true);
+                    JPanel panel = new JPanel();
+                    panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
                     Container submit = create.buildActivateButton("Submit", widgets, new ResultListener() {
                         @Override
                         public void onResult(int result) {
@@ -78,6 +79,7 @@ public class TableBuilder {
                     panel.add(submit);
                     create_popup.add(panel);
                     create_popup.setSize(500, 500);
+                    create_popup.pack();
                     create_popup.setVisible(true);
                 }
             });
@@ -97,13 +99,13 @@ public class TableBuilder {
                 public void actionPerformed(ActionEvent e) {
                     JFrame update_popup = new JFrame("edit item");
 
-                    HashMap<String, InputWidget> widgets = update.buildUIWidgets(inputValues);
+                    HashMap<String, InputWidget> widgets = update.buildUIWidgets(inputValues, idProviders);
 
 
-
-                    HashMap<String, InputWidget> insertWidgets = create.buildUIWidgets();
+                    HashMap<String, InputWidget> insertWidgets = create.buildUIWidgets(idProviders, true);
                     for(String key : widgets.keySet()){
                         if(!insertWidgets.containsKey(key) || fixedOnUpdate.contains(key)){
+                            widgets.get(key).generateWidget();
                             final Object value = widgets.get(key).getValue();
                             widgets.replace(key, new InputWidget(widgets.get(key).getArgumentID()){
                                 @Override
@@ -119,7 +121,8 @@ public class TableBuilder {
                         }
                     }
 
-                    JPanel panel = new JPanel(new GridLayout(widgets.size() + 1,  1));
+                    JPanel panel = new JPanel();
+                    panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
                     Container submit = update.buildActivateButton("Submit", widgets, new ResultListener() {
                         @Override
                         public void onResult(int result) {
@@ -146,6 +149,7 @@ public class TableBuilder {
                     panel.add(submit);
                     update_popup.add(panel);
                     update_popup.setSize(500, 500);
+                    update_popup.pack();
                     update_popup.setVisible(true);
                 }
             });
@@ -165,8 +169,9 @@ public class TableBuilder {
                 public void actionPerformed(ActionEvent e) {
                     JFrame delete_popup = new JFrame("delete item");
 
-                    HashMap<String, InputWidget> widgets = delete.buildUIWidgets(inputValues);
+                    HashMap<String, InputWidget> widgets = delete.buildUIWidgets(inputValues, idProviders);
                     for(String key : widgets.keySet()){
+                        widgets.get(key).generateWidget();
                         final Object value = widgets.get(key).getValue();
                         widgets.replace(key, new InputWidget(widgets.get(key).getArgumentID()){
                             @Override
@@ -181,7 +186,8 @@ public class TableBuilder {
                         });
                     }
 
-                    JPanel panel = new JPanel(new GridLayout(2,  1));
+                    JPanel panel = new JPanel();
+                    panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
                     Container submit = delete.buildActivateButton("Submit", widgets, new ResultListener() {
                         @Override
                         public void onResult(int result) {
@@ -217,6 +223,7 @@ public class TableBuilder {
                     panel.add(buttonPanel);
                     delete_popup.add(panel);
                     delete_popup.setSize(500, 500);
+                    delete_popup.pack();
                     delete_popup.setVisible(true);
                 }
             });
@@ -340,21 +347,30 @@ public class TableBuilder {
 
 
     public static Container buildTableWithCUD(ReadService readService, HashMap<String, String> name_match, CUDService create, CUDService update, CUDService delete) {
-        return buildTableWithCUD(readService, name_match, create, update, delete, new HashSet<String>(), true, true);
+        return buildTableWithCUD(readService, name_match, create, update, delete, new HashSet<String>(), true, true, new HashMap<>());
     }
 
     public static Container buildTableWithCUD(ReadService readService, HashMap<String, String> name_match, CUDService create, CUDService update, CUDService delete, String[] fixedOnUpdate) {
         HashSet<String> fixed = new HashSet<>(Arrays.asList(fixedOnUpdate));
-        return buildTableWithCUD(readService, name_match, create, update, delete, fixed, true, true);
+        return buildTableWithCUD(readService, name_match, create, update, delete, fixed, true, true, new HashMap<>());
     }
 
     public static Container buildTableWithCUD(ReadService readService, HashMap<String, String> name_match, CUDService create, CUDService update, CUDService delete, boolean canUpdate, boolean canDelete) {
-        return buildTableWithCUD(readService, name_match, create, update, delete, new HashSet<String>(), canUpdate, canDelete);
+        return buildTableWithCUD(readService, name_match, create, update, delete, new HashSet<String>(), canUpdate, canDelete, new HashMap<>());
     }
 
     public static Container buildTableWithCUD(ReadService readService, HashMap<String, String> name_match, CUDService create, CUDService update, CUDService delete, String[] fixedOnUpdate, boolean canUpdate, boolean canDelete) {
         HashSet<String> fixed = new HashSet<>(Arrays.asList(fixedOnUpdate));
-        return buildTableWithCUD(readService, name_match, create, update, delete, fixed, canUpdate, canDelete);
+        return buildTableWithCUD(readService, name_match, create, update, delete, fixed, canUpdate, canDelete, new HashMap<>());
+    }
+
+    public static Container buildTableWithCUD(ReadService readService, HashMap<String, String> name_match, CUDService create, CUDService update, CUDService delete, String[] fixedOnUpdate, boolean canUpdate, boolean canDelete, String[] args, ReadService[] IDproviders){
+        HashSet<String> fixed = new HashSet<>(Arrays.asList(fixedOnUpdate));
+        HashMap<String, ReadService> idMatch = new HashMap<>();
+        for(int i = 0; i < args.length; i++){
+            idMatch.put(args[i], IDproviders[i]);
+        }
+        return buildTableWithCUD(readService, name_match, create, update, delete, fixed, canUpdate, canDelete, idMatch);
     }
 
 

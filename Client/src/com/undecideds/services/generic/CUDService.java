@@ -11,6 +11,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.CallableStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,6 +39,10 @@ public class CUDService {
     }
 
     public int ExecuteQuery(Object[] params) {
+        for(Object o : params){
+            System.out.println("input:" + o);
+        }
+        System.out.println(template.toString());
         try{
             CallableStatement statement = DatabaseConnectionService.getConnection().prepareCall(template.toString());
             statement.registerOutParameter(1, Types.INTEGER);
@@ -53,22 +59,38 @@ public class CUDService {
         return -1;
     }
 
-    public HashMap<String, InputWidget> buildUIWidgets() {
+    public HashMap<String, InputWidget> buildUIWidgets(HashMap<String, ReadService> idMatch, boolean flag) {
         HashMap<String, InputWidget> widgets = new HashMap<>();
         for(Argument a : arguments) {
-            InputWidget widget = a.buildWidget();
-            widgets.put(widget.getArgumentID(), widget);
+            if(idMatch.containsKey(a.getArgumentID())){
+                widgets.put(a.getArgumentID(), generateComboWidget(a.getArgumentID(), idMatch, null));
+            }else {
+                InputWidget widget = a.buildWidget();
+                widgets.put(widget.getArgumentID(), widget);
+            }
         }
         return widgets;
     }
 
-    public HashMap<String, InputWidget> buildUIWidgets(HashMap<String, Object> inputValues) {
+    public HashMap<String, InputWidget> buildUIWidgets(HashMap<String, Object> inputValues, HashMap<String, ReadService> idMatch) {
         HashMap<String, InputWidget> widgets = new HashMap<>();
         for(Argument a : arguments) {
-            InputWidget widget = a.buildWidget(inputValues.get(a.getArgumentID()));
-            widgets.put(widget.getArgumentID(), widget);
+            if(idMatch.containsKey(a.getArgumentID())){
+                widgets.put(a.getArgumentID(), generateComboWidget(a.getArgumentID(), idMatch, inputValues.get(a.getArgumentID())));
+            }else {
+                InputWidget widget = a.buildWidget(inputValues.get(a.getArgumentID()));
+                widgets.put(widget.getArgumentID(), widget);
+            }
         }
         return widgets;
+    }
+
+    public HashMap<String, InputWidget> buildUIWidgets(){
+        return buildUIWidgets(new HashMap<String, ReadService>(), true);
+    }
+
+    public HashMap<String, InputWidget> buildUIWidgets(HashMap<String, Object> inputValues){
+        return buildUIWidgets(inputValues, new HashMap<String, ReadService>());
     }
 
     public Container buildActivateButton(String name, HashMap<String, InputWidget> sources, ResultListener resultListener){
@@ -110,6 +132,49 @@ public class CUDService {
             args[i] = arguments[i].parseArg(strings[i]);
         }
         return ExecuteQuery(args);
+    }
+
+    private InputWidget generateComboWidget(String argId, HashMap<String, ReadService> idMatch, Object inputValue){
+        System.out.println("i " + inputValue);
+        return new InputWidget(argId){
+            JComboBox comboBox;
+            HashMap<String, Integer> map;
+            @Override
+            public Container generateWidget() {
+                try {
+                    map = new HashMap<>();
+                    ResultSet rs = idMatch.get(argId).ExecuteQuery(new Object[]{});
+                    String inputName = "";
+                    while (rs.next()) {
+                        int id = rs.getInt("ID");
+                        String name = rs.getString("NAME");
+                        map.put(name, id);
+                        if(inputValue != null && (int)inputValue == id){
+                            inputName = name;
+                        }
+                    }
+                    comboBox = new JComboBox(map.keySet().toArray());
+                    if (inputValue != null){
+                        System.out.println("inp " + inputValue);
+                        comboBox.getModel().setSelectedItem(inputName);
+                        System.out.println(comboBox.getModel().getSelectedItem());
+                    }
+                    JPanel container = new JPanel(new GridLayout(1, 2));
+                    container.add(new JLabel(argId));
+                    container.add(comboBox);
+                    return container;
+                }catch (Exception e){
+                    JPanel container = new JPanel();
+                    container.add(new JLabel("Issue fetching ID map: " + e));
+                    return container;
+                }
+            }
+
+            @Override
+            public Object getValue() {
+                return map.get(comboBox.getModel().getSelectedItem().toString());
+            }
+        };
     }
 
     @Override
