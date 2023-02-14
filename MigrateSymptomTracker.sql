@@ -1011,3 +1011,43 @@ Begin
 	Select ID From Treatment Where ID = @@IDENTITY
 End
 GO
+
+CREATE PROCEDURE getPasswordByLogin
+(@login varchar(50))
+As
+BEGIN
+	if(@login is null)
+	BEGIN
+		Raiserror('Login can not be null', 14, 1)
+		Return 1
+	END
+	if(NOT EXISTS (SELECT * FROM Person WHERE login = @login))
+	BEGIN
+		Raiserror('Login is not in table', 14, 1)
+		Return 2
+	END
+	SELECT password
+	FROM Person
+	WHERE Person.login = @login
+END
+GO
+
+CREATE PROCEDURE getIDByLogin
+(@login varchar(50))
+As
+BEGIN
+	if(@login is null)
+	BEGIN
+		Raiserror('Login can not be null', 14, 1)
+		Return 1
+	END
+	if(NOT EXISTS (SELECT * FROM Person WHERE login = @login))
+	BEGIN
+		Raiserror('Login is not in table', 14, 1)
+		Return 2
+	END
+	SELECT ID
+	FROM Person
+	WHERE Person.login = @login
+END
+GO
