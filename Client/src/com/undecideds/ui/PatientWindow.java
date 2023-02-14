@@ -1,6 +1,9 @@
 package com.undecideds.ui;
 
+
 import com.undecideds.services.InsertServiceList;
+import com.undecideds.services.ReadServiceList;
+import com.undecideds.ui.builders.GenHistogram;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -10,7 +13,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.ResultSet;
 import java.time.LocalDate;
+import java.util.ArrayList;
+
+import static com.undecideds.services.ReadServiceList.GET_ACUTE;
 
 public class PatientWindow {
 
@@ -34,16 +41,6 @@ public class PatientWindow {
         JLabel hello = new JLabel("Hello Jorg Hansen");
         JLabel curSympts = new JLabel("Current Symptoms");
 
-
-
-        double[] values = {10,11,3,11,12,13,15};
-        HistogramDataset dataset = new HistogramDataset();
-        dataset.addSeries("Frequency of symptom", values, 7);
-
-        JFreeChart histogram = ChartFactory.createHistogram("Cough Histogram",
-                "Severity", "Frequency", dataset);
-        ChartPanel chartPanel = new ChartPanel(histogram);
-
         {
             gbc.ipady = 40;
             gbc.gridx = 0;
@@ -57,19 +54,12 @@ public class PatientWindow {
             gbc.ipady = 200;
             gbc.gridx = 0;
             gbc.gridy = 2;
-            home.add(chartPanel,gbc);
+            GenHistogram newHisto = new GenHistogram();
+            home.add(newHisto.GenHistogram(1, GenHistogram.GraphType.WEEKLY),gbc);
         }
 
         viewHistory.setLayout(layout);
         JLabel viewHistoryText = new JLabel("View History");
-
-        double[] values2 = {10,11,3,11,12,13,15};
-        HistogramDataset dataset2 = new HistogramDataset();
-        dataset.addSeries("Frequency of symptom", values, 7);
-
-        JFreeChart histogram2 = ChartFactory.createHistogram("Cough Histogram",
-                "Severity", "Frequency", dataset);
-        ChartPanel chartPanel2 = new ChartPanel(histogram);
 
         {
             gbc.ipady = 40;
@@ -80,7 +70,8 @@ public class PatientWindow {
             gbc.ipady = 200;
             gbc.gridx = 0;
             gbc.gridy = 1;
-            viewHistory.add(chartPanel2,gbc);
+            GenHistogram newHisto2 = new GenHistogram();
+            viewHistory.add(newHisto2.GenHistogram(1, GenHistogram.GraphType.WEEKLY),gbc);
         }
         addSymptom.setLayout(layout);
         JLabel selectSympt = new JLabel("Select Symptom:");

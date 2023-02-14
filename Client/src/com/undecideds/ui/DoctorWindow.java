@@ -1,6 +1,8 @@
 package com.undecideds.ui;
 
 import com.undecideds.services.InsertServiceList;
+import com.undecideds.services.ReadServiceList;
+import com.undecideds.ui.builders.GenHistogram;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -10,6 +12,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.ResultSet;
 import java.time.LocalDate;
 
 public class DoctorWindow {
@@ -37,13 +40,6 @@ public class DoctorWindow {
         JLabel Jorg = new JLabel("Jorg");
 
         {
-            double[] values = {10, 11, 3, 11, 12, 13, 15};
-            HistogramDataset dataset = new HistogramDataset();
-            dataset.addSeries("Frequency of symptom", values, 7);
-
-            JFreeChart histogram = ChartFactory.createHistogram("Jorg Henson",
-                    "Severity", "Frequency", dataset);
-            ChartPanel jorrView = new ChartPanel(histogram);
 
             {
                 home.setLayout(layout);
@@ -57,7 +53,8 @@ public class DoctorWindow {
                 gbc.ipady = 200;
                 gbc.gridx = 0;
                 gbc.gridy = 2;
-                home.add(jorrView, gbc);
+                GenHistogram newHisto = new GenHistogram();
+                home.add(newHisto.GenHistogram(1, GenHistogram.GraphType.WEEKLY),gbc);
             }
         }
 
@@ -150,13 +147,7 @@ public class DoctorWindow {
         viewPatient.setLayout(layout);
         JLabel myPatients = new JLabel("My Patients:");
         {
-            double[] values = {10, 11, 3, 11, 12, 13, 15};
-            HistogramDataset dataset = new HistogramDataset();
-            dataset.addSeries("Frequency of symptom", values, 7);
 
-            JFreeChart histogram = ChartFactory.createHistogram("Jorg Henson",
-                    "Severity", "Frequency", dataset);
-            ChartPanel jorrView = new ChartPanel(histogram);
             gbc.ipady = 40;
             gbc.gridx = 0;
             gbc.gridy = 0;
@@ -165,7 +156,8 @@ public class DoctorWindow {
             gbc.ipady = 200;
             gbc.gridx = 0;
             gbc.gridy = 2;
-            viewPatient.add(jorrView,gbc);
+            GenHistogram newHisto2 = new GenHistogram();
+            viewPatient.add(newHisto2.GenHistogram(1, GenHistogram.GraphType.WEEKLY),gbc);
         }
 
         frameDoctor.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -173,4 +165,5 @@ public class DoctorWindow {
         frameDoctor.setVisible(true);
 
     }
+
 }
