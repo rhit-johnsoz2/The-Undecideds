@@ -48,4 +48,10 @@ public class ReadServiceList {
     public static final ReadService GET_CHRONIC = new ReadService("ShowAllChronicSymptoms", new Argument[]{
     });
 
+    public static final ReadService GET_SYMPTOM_NAMES = new ReadService("GetSymptomNames", new Argument[]{});
+    public static final ReadService GET_PERSON_NAMES = new ReadService("GetPersonNames", new Argument[]{});
+    public static final ReadService GET_DOCTOR_NAMES = new ReadService("GetDoctorNames", new Argument[]{});
+    public static final ReadService GET_PATIENT_NAMES = new ReadService("GetPatientNames", new Argument[]{});
+    public static final ReadService GET_HCP_NAMES = new ReadService("GetHCPNames", new Argument[]{});
+    public static final ReadService GET_TREATMENT_NAMES = new ReadService("GetTreatmentNames", new Argument[]{});
 }
