@@ -2,6 +2,7 @@ package com.undecideds.ui;
 
 import com.undecideds.services.InsertServiceList;
 import com.undecideds.services.ReadServiceList;
+import com.undecideds.ui.builders.GenHistogram;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -52,7 +53,8 @@ public class DoctorWindow {
                 gbc.ipady = 200;
                 gbc.gridx = 0;
                 gbc.gridy = 2;
-                home.add(genHistogram(id, PatientWindow.GraphType.MONTHLY), gbc);
+                GenHistogram newHisto = new GenHistogram();
+                home.add(newHisto.GenHistogram(1, GenHistogram.GraphType.WEEKLY),gbc);
             }
         }
 
@@ -154,7 +156,8 @@ public class DoctorWindow {
             gbc.ipady = 200;
             gbc.gridx = 0;
             gbc.gridy = 2;
-            viewPatient.add(genHistogram(id,GraphType.MONTHLY),gbc);
+            GenHistogram newHisto2 = new GenHistogram();
+            viewPatient.add(newHisto2.GenHistogram(1, GenHistogram.GraphType.WEEKLY),gbc);
         }
 
         frameDoctor.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -163,52 +166,4 @@ public class DoctorWindow {
 
     }
 
-    public Container genHistogram(int id , PatientWindow.GraphType gt){
-        try {
-            ResultSet rs = ReadServiceList.ACUTE_FROM_PATIENT.ExecuteQuery(new Object[]{id});
-            double cutOffDate = System.currentTimeMillis();
-            double[] occurences = new double[1];
-            switch (gt) {
-                case WEEKLY -> {
-                    cutOffDate -= 7L * 24 * 60 * 60 * 1000;
-                    occurences = new double[7];
-                }
-                case MONTHLY -> {
-                    cutOffDate -= 30L * 24 * 60 * 60 * 1000;
-                    occurences = new double[30];
-                }
-                case ANNUAL -> {
-                    cutOffDate -= 365L * 24 * 60 * 60 * 1000;
-                    occurences = new double[365];
-                }
-            }
-            int i = 0;
-            while (rs.next()) {
-                if(rs.getDate("Symptom Date").getTime() < cutOffDate) {
-                    break;
-                }
-                occurences[i] = rs.getDate("Symptom Date").getTime();
-                i++;
-            }
-
-            HistogramDataset dataset = new HistogramDataset();
-            dataset.addSeries("Frequency of symptom", occurences, occurences.length);
-            JFreeChart histogram = ChartFactory.createHistogram(String.valueOf(rs.getInt("Symptom ID")),
-                    "Severity", "Frequency", dataset);
-            ChartPanel chartPanel = new ChartPanel(histogram);
-            return chartPanel;
-
-        }catch (Exception e){
-            e.printStackTrace();
-            JPanel panel = new JPanel();
-            panel.add(new JLabel("Error Fetching Data, check Stack Trace"));
-            return panel;
-        }
-    }
-
-    public enum GraphType{
-        WEEKLY,
-        MONTHLY,
-        ANNUAL
-    }
 }
