@@ -11,10 +11,13 @@ public class ReadServiceList {
             new Argument(Argument.ArgumentType.INT, "PID")
     });
 
-    public static final ReadService ACUTE_FROM_PATIENT = new ReadService("ChronicFromPatient", new Argument[]{
+    public static final ReadService ACUTE_FROM_PATIENT = new ReadService("AcuteFromPatient", new Argument[]{
             new Argument(Argument.ArgumentType.INT, "PID")
     });
 
+    public static final ReadService DATE_FROM_SYMPTOM = new ReadService("returnDate", new Argument[]{
+            new Argument(Argument.ArgumentType.INT, "patientID")
+    });
     public static final ReadService GET_PERSONS = new ReadService("ShowAllPeople", new Argument[]{
     });
     public static final ReadService GET_PATIENTS = new ReadService("ShowAllPatients", new Argument[]{

@@ -71,7 +71,7 @@ public class LoginWindow {
             frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
             PatientWindow patientWindow = new PatientWindow();
-            patientWindow.launch();
+            patientWindow.launch(5, "Phil Bug");
         } else if(username.trim().equals("admin") && password.trim().equals("admin")){
             frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
