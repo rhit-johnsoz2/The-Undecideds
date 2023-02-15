@@ -13,6 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.CallableStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -90,6 +91,27 @@ public class ReadService {
     @Override
     public String toString() {
         return template.toString();
+    }
+
+    public static ReadService getServiceFromName(String name){
+        for(ReadService service : READ_SERVICES){
+            if(name.equalsIgnoreCase(service.sprocName)){
+                return service;
+            }
+        }
+        return null;
+    }
+
+    public static Object getSingleton(ResultSet rs) {
+        try {
+            if (rs.next()) {
+                return rs.getObject(1);
+            }
+            return null;
+        }catch (Exception e){
+            System.out.println(e);
+            return null;
+        }
     }
 
 }

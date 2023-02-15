@@ -2,6 +2,8 @@ package com.undecideds.services.generic;
 
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 
+import java.util.Locale;
+
 public class EncryptionService {
     private static String getKey(){
         return "dWUfCDyr6N";
@@ -20,5 +22,11 @@ public class EncryptionService {
         StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
         encryptor.setPassword(getKey());
         return encryptor.decrypt(encrypted.trim());
+    }
+
+    public static String Encrypt(String plain){
+        StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
+        encryptor.setPassword(getKey());
+        return encryptor.encrypt(plain.trim());
     }
 }

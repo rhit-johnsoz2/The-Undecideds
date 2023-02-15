@@ -1,8 +1,13 @@
 package com.undecideds.ui;
 
+import com.undecideds.services.ReadServiceList;
+import com.undecideds.services.generic.EncryptionService;
+import com.undecideds.services.generic.ReadService;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.ResultSet;
 
 public class LoginWindow {
 
@@ -23,7 +28,7 @@ public class LoginWindow {
         password_label.setText("Password :");
         password_text = new JPasswordField();
         submit = new JButton("SUBMIT");
-        panel = new JPanel(new GridLayout(5, 1));
+        panel = new JPanel(new GridLayout(4, 1));
         panel.add(user_label);
         panel.add(username_text);
         panel.add(password_label);
@@ -31,6 +36,16 @@ public class LoginWindow {
         message = new JLabel();
         panel.add(message);
         panel.add(submit);
+        JButton newLoginButton = new JButton("Create New Account");
+        newLoginButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                CreateAccountWindow createAccountWindow = new CreateAccountWindow();
+                createAccountWindow.launch();
+            }
+        });
+        panel.add(new JPanel());
+        panel.add(newLoginButton);
         password_text.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -59,26 +74,65 @@ public class LoginWindow {
     }
 
     void launchActivity(){
-        String username = username_text.getText();
-        String password = password_text.getText();
-        if (username.trim().equals("doctor") && password.trim().equals("doctor")) {
-            // TODO: launch doctorView
-            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
-            DoctorWindow doctorWindow = new DoctorWindow();
-            doctorWindow.launch();
-        } else if (username.trim().equals("patient") && password.trim().equals("patient")) {
-            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
-            PatientWindow patientWindow = new PatientWindow();
-            patientWindow.launch();
-        } else if(username.trim().equals("admin") && password.trim().equals("admin")){
+        if(username_text.getText().trim().equals("admin") && password_text.getText().trim().equals("admin")){
             frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
             AdminWindow adminWindow = new AdminWindow();
             adminWindow.launch();
-        } else {
-            message.setText(" Invalid user.. ");
         }
+        String username = username_text.getText();
+        String passwordHash = EncryptionService.Encrypt(password_text.getText());
+        System.out.println(password_text.getText());
+        System.out.println(passwordHash);
+
+
+        Object o = ReadService.getSingleton(ReadServiceList.PASSWORD_FROM_LOGIN.ExecuteQuery(new Object[]{username}));
+        if(o == null){
+            launchLoginFail();
+            return;
+        }
+        String correctHash = (String)o;
+
+        if(correctHash.equals(passwordHash)){
+            o = ReadService.getSingleton(ReadServiceList.ID_FROM_LOGIN.ExecuteQuery(new Object[]{username}));
+            if(o == null){
+                launchLoginFail();
+                return;
+            }
+            int id = (int)o;
+            o = ReadService.getSingleton(ReadServiceList.PERSON_NAME_FROM_ID.ExecuteQuery(new Object[]{id}));
+            if(o == null){
+                launchLoginFail();
+                return;
+            }
+            String name = (String)o;
+            o = ReadService.getSingleton(ReadServiceList.PERSON_ROLE_FROM_ID.ExecuteQuery(new Object[]{id}));
+            if(o == null){
+                launchLoginFail();
+                return;
+            }
+            String role = (String)o;
+
+            if(role.equals("DR")){
+                frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+                DoctorWindow doctorWindow = new DoctorWindow();
+                doctorWindow.launch();
+            }else if(role.equals("PA")){
+                frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+                PatientWindow patientWindow = new PatientWindow();
+                patientWindow.launch();
+            }
+        }
+        launchLoginFail();
+        return;
+    }
+    void launchLoginFail(){
+        JFrame frame = new JFrame();
+        frame.add(new JLabel("Incorrect username or password"));
+        frame.pack();
+        frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        frame.setVisible(true);
     }
 }
