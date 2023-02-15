@@ -325,7 +325,7 @@ CREATE PROCEDURE [dbo].[InsertHealthCareProviders]
 AS
 BEGIN
 	-- check to see if any of the parameters are null
-	IF(@name is NULL)
+	IF(@name is NULL or @name = '')
 	BEGIN
 		RAISERROR('Input arguments cannot be null', 14, 1)
 		Return 1
@@ -339,7 +339,7 @@ CREATE PROCEDURE InsertPerson(@FName varchar(30), @LName varchar(30),
 @Login varchar(30), @Password varchar(30), @Role char(2), @InsuredBy Integer)
 AS
 Begin
-	if (@FName is null or @LName is null or @Login is null or @Password is null or @Role is null or @InsuredBy is null)
+	if (@FName is null or @LName is null or @Login is null or @Password is null or @Role is null or @InsuredBy is null or @FName = '' or @LName = '' or @Login = '' or @Password = '' or @Role = '')
 	Begin
 		raiserror('Input Arguments cannot be null', 14,1)
 		return 1
@@ -354,7 +354,7 @@ GO
 CREATE PROCEDURE InsertSymptom(@Name varchar(50))
 As
 Begin
-	if(@Name is null)
+	if(@Name is null or @Name = '')
 	Begin
 		raiserror('Input Arguments cannot be null', 14,1)
 		return 1
@@ -587,7 +587,7 @@ CREATE PROCEDURE [dbo].[UpdateHCP](@OldID int, @Name varchar(50))
 As
 Begin
 
-if(@OldID is null or @Name is null)
+if(@OldID is null or @Name is null or @Name = '')
 	Begin
 		RAISERROR('Cannot support null attribute', 14, 1)
 		return 1;
@@ -608,7 +608,8 @@ Begin
 
 	if(@ID is null or @fn is null or @ln is null or
 					@login is null or @password is null or @role is null or
-					@hcpID is null)
+					@hcpID is null or @fn = '' or @ln = '' or
+					@login = '' or @password = '' or @role = '')
 	Begin
 		RAISERROR('Inputs cannot be null',14,1)
 		return 1;
@@ -659,7 +660,7 @@ CREATE PROCEDURE [dbo].[UpdateTreatment](@treatmentID int, @cost int, @name varc
 As
 Begin 
 
-	if(@treatmentID is null or @name is null or @cost is null)
+	if(@treatmentID is null or @name is null or @cost is null or @name = '')
 	Begin
 		RAISERROR('Inputs cannot be null',14,1)
 		return 1;
@@ -961,7 +962,7 @@ CREATE PROCEDURE [dbo].[ImportHealthCareProvider]
 AS
 BEGIN
 	-- check to see if any of the parameters are null
-	IF(@name is NULL)
+	IF(@name is NULL or @name = '')
 	BEGIN
 		RAISERROR('Input arguments cannot be null', 14, 1)
 		Return 1
@@ -974,7 +975,8 @@ GO
 CREATE PROCEDURE ImportPerson(@FName varchar(30), @LName varchar(30), @Login varchar(30), @Password varchar(30), @Role char(2), @InsuredBy Integer)
 AS
 Begin
-	if (@FName is null or @LName is null or @Login is null or @Password is null or @Role is null or @InsuredBy is null)
+	if (@FName is null or @LName is null or @Login is null or @Password is null or @Role is null or @InsuredBy is null or
+		@FName = '' or @LName = '' or @Login = '' or @Password = '' or @Role = '')
 	Begin
 		raiserror('Input Arguments cannot be null', 14,1)
 		return 1
@@ -988,7 +990,7 @@ GO
 CREATE PROCEDURE ImportSymptom(@Name varchar(50))
 As
 Begin
-	if(@Name is null)
+	if(@Name is null or @Name = '')
 	Begin
 		raiserror('Input Arguments cannot be null', 14,1)
 		return 1
@@ -1002,7 +1004,7 @@ GO
 CREATE PROCEDURE ImportTreatment(@Cost int, @name varchar(30))
 As
 Begin
-	if(@Cost is null or @name is null)
+	if(@Cost is null or @name is null or @name = '')
 	Begin
 		raiserror('Input Arguments cannot be null', 14,1)
 		return 1
@@ -1049,5 +1051,45 @@ BEGIN
 	SELECT ID
 	FROM Person
 	WHERE Person.login = @login
+END
+GO
+
+CREATE PROCEDURE personGetNameByID
+(@id Integer)
+As
+BEGIN
+	if(@id is null)
+	BEGIN
+		Raiserror('ID can not be null', 14, 1)
+		Return 1
+	END
+	if(NOT EXISTS (SELECT * FROM Person WHERE ID = @id))
+	BEGIN
+		Raiserror('ID is not in table', 14, 1)
+		Return 2
+	END
+	SELECT CONCAT(FName, ' ', LName) as Name
+	FROM Person
+	WHERE Person.ID = @id
+END
+GO
+
+CREATE PROCEDURE personGetRoleByID
+(@id Integer)
+As
+BEGIN
+	if(@id is null)
+	BEGIN
+		Raiserror('ID can not be null', 14, 1)
+		Return 1
+	END
+	if(NOT EXISTS (SELECT * FROM Person WHERE ID = @id))
+	BEGIN
+		Raiserror('ID is not in table', 14, 1)
+		Return 2
+	END
+	SELECT role as Name
+	FROM Person
+	WHERE Person.ID = @id
 END
 GO
