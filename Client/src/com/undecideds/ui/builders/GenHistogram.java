@@ -18,21 +18,25 @@ public class GenHistogram {
             double cutOffDate = System.currentTimeMillis();
             double[] occurences = new double[1];
             String xAxis = "";
+            String title = "";
             switch (gt) {
                 case WEEKLY -> {
                     cutOffDate -= 7L * 24 * 60 * 60 * 1000;
                     occurences = new double[7];
                     xAxis = "Days per Week";
+                    title = "Symptom Frequency per Week";
                 }
                 case MONTHLY -> {
                     cutOffDate -= 30L * 24 * 60 * 60 * 1000;
                     occurences = new double[30];
                     xAxis = "Days per Month";
+                    title = "Symptom Frequency per Month";
                 }
                 case ANNUAL -> {
                     cutOffDate -= 365L * 24 * 60 * 60 * 1000;
                     occurences = new double[365];
                     xAxis = "Days per Year";
+                    title = "Symptom Frequency per Year";
                 }
             }
             int i = 0;
@@ -45,8 +49,8 @@ public class GenHistogram {
             }
 
             HistogramDataset dataset = new HistogramDataset();
-            dataset.addSeries("Frequency of symptom", occurences, occurences.length);
-            JFreeChart histogram = ChartFactory.createHistogram("Title",
+            dataset.addSeries("Frequency of symptom", dateINeed, occurences.length);
+            JFreeChart histogram = ChartFactory.createHistogram(title,
                     xAxis, "Frequency", dataset);
             ChartPanel chart = new ChartPanel(histogram);
             JPanel panel = new JPanel(new GridLayout(1,1));

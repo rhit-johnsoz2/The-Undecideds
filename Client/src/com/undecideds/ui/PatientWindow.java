@@ -64,7 +64,8 @@ public class PatientWindow {
         JLabel viewHistoryText = new JLabel("View History");
 
 
-        viewHistory.add(TableBuilder.buildTable());
+        ResultSet rs = ReadServiceList.ACUTE_FROM_PATIENT.ExecuteQuery(new Object[]{id});
+        viewHistory.add(TableBuilder.buildTable(rs));
 
         //Add Symptom
 
