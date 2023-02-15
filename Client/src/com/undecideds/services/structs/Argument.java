@@ -117,7 +117,7 @@ public class Argument {
                     }
                     @Override
                     public Object getValue() {
-                        Date date = new Date(datePicker.getModel().getYear(), datePicker.getModel().getMonth(), datePicker.getModel().getDay());
+                        Date date = new Date(datePicker.getModel().getYear() - 1900, datePicker.getModel().getMonth(), datePicker.getModel().getDay());
                         return date;
                     }
                 };
