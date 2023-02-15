@@ -14,7 +14,6 @@ public class LoginWindow {
     JPasswordField password_text;
     JButton submit;
     JFrame frame = new JFrame();
-
     public void launch() {
         user_label = new JLabel();
         user_label.setText("User Name :");
