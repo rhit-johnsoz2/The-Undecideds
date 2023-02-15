@@ -1,16 +1,18 @@
+:setvar dbName SymptomTracker2
+
 USE master
 GO
 
-CREATE DATABASE [SymptomTracker] ON (
-    NAME = N'SymptomTracker',
-    FILENAME = 'D:\Database\MSSQL15.MSSQLSERVER\MSSQL\DATA\SymptomTracker',
+CREATE DATABASE $(dbName) ON (
+    NAME = N'$(dbName)',
+    FILENAME = 'D:\Database\MSSQL15.MSSQLSERVER\MSSQL\DATA\$(dbName)',
     SIZE = 6MB,  
     MAXSIZE = 30MB,  
     FILEGROWTH = 12%
 )
 LOG ON (
-    NAME = N'SymptomTracker_log',
-    FILENAME = 'D:\Database\MSSQL15.MSSQLSERVER\MSSQL\DATA\SymptomTracker.ldf',
+    NAME = N'$(dbName)_log',
+    FILENAME = 'D:\Database\MSSQL15.MSSQLSERVER\MSSQL\DATA\$(dbName).ldf',
     SIZE = 3MB,
     MAXSIZE = 30MB,
     FILEGROWTH = 10%
@@ -18,14 +20,17 @@ LOG ON (
 COLLATE SQL_Latin1_General_Cp1_CI_AS
 GO
 
+USE $(dbName)
+GO
+
 CREATE USER [cerasoml] FROM LOGIN [cerasoml]
 EXEC sp_addrolemember 'db_owner', 'cerasoml'
 
-CREATE USER [johnsoz2] FROM LOGIN [johnsoz2]
-EXEC sp_addrolemember 'db_owner', 'johnsoz2'
+CREATE USER [fogartee] FROM LOGIN [fogartee]
+EXEC sp_addrolemember 'db_owner', 'fogartee'
 GO
 
-USE SymptomTracker
+USE $(dbName)
 GO
 
 CREATE TABLE HealthCareProvider (
@@ -86,7 +91,7 @@ GO
 CREATE TABLE DoctorFor(
 	doctorID Integer REFERENCES dbo.Person,
 	patientID Integer REFERENCES dbo.Person,
-	primary key(doctorID, treatmentID)
+	primary key(doctorID, patientID)
 )
 GO
 
@@ -1192,9 +1197,18 @@ AS
 	Return 0
 GO
 
+--CREATE VIEW DoctorsForTreatment
+--As
+--SELECT T.ID as TreatmentID, D.ID, D.fname as DFirstName, D.lname as DLastName, T.Cost as TreatmentCost
+--FROM Treatment T JOIN Performs P
+--on T.ID = P.treatmentID
+--JOIN Person D on P.doctorID = D.ID
+--WHERE D.role = 'DR'
+--GO
+
 CREATE VIEW DoctorsForTreatment
 As
-SELECT T.ID as TreatmentID, D.ID, D.fname as DFirstName, D.lname as DLastName, T.Cost as TreatmentCost
+SELECT T.ID as TreatmentID, D.ID as DoctorID, D.fname as DFirstName, D.lname as DLastName, T.Cost as TreatmentCost, T.name as TreatmentName
 FROM Treatment T JOIN Performs P
 on T.ID = P.treatmentID
 JOIN Person D on P.doctorID = D.ID
@@ -1253,5 +1267,44 @@ AS
 	UNION
 	SELECT CONCAT(DFirstName, ' ', DLastName) as [Doctor Name], @treatmentCost - Cost as Cost FROM InsuredDoctorsForTreatment WHERE TreatmentID = @treatmentID and PatientID = @patientID
 
+	Return 0
+GO
+
+CREATE PROCEDURE SymptomGetIDFromName
+(@name varchar(50))
+AS
+	IF(@name is null or @name = '')
+	BEGIN
+		RAISERROR('Symptom name is empty.', 14, 1)
+		Return 1
+	END
+	IF(NOT EXISTS(SELECT * FROM SymptomNames WHERE SymptomNames.NAME = @name))
+	BEGIN
+		RAISERROR('Symptom does not exist.', 14, 1)
+		Return 2
+	END
+	SELECT ID FROM SymptomNames WHERE SymptomNames.NAME = @name
+	Return 0
+GO
+
+Create Index IX_PERSONLASTNAME
+on Person(LNAME)
+With FILLFACTOR = 80
+GO
+
+CREATE PROCEDURE GetTreatmentsFromDoctor
+(@doctorID Integer)
+AS
+	IF(@doctorID is null)
+	BEGIN
+		RAISERROR('Arguments are null.', 14, 1)
+		Return 1
+	END
+	IF(NOT EXISTS(SELECT * FROM DoctorNames WHERE @doctorID = ID))
+	BEGIN
+		RAISERROR('Doctor does not exist.', 14, 1)
+		Return 2
+	END
+	SELECT TreatmentName FROM DoctorsForTreatment WHERE DoctorID = @doctorID
 	Return 0
 GO
