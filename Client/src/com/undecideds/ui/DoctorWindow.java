@@ -99,10 +99,15 @@ public class DoctorWindow {
         viewPatient.add(hist5);
         viewPatient.add(hist6);
 
+        // TODO: patient view table not histogram
+        // TODO: delete needs appears as delete treatment
+
         frameDoctor.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frameDoctor.getContentPane().add(tabbedPane, BorderLayout.CENTER);
         frameDoctor.setVisible(true);
 
+
+        // TODO: widget pops up from patient view to assign them a treatments
     }
 
 }

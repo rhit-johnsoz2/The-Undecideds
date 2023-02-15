@@ -21,6 +21,7 @@ import java.sql.ResultSet;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import static com.undecideds.services.ReadServiceList.GET_ACUTE;
 
@@ -65,7 +66,9 @@ public class PatientWindow {
 
 
         ResultSet rs = ReadServiceList.ACUTE_FROM_PATIENT.ExecuteQuery(new Object[]{id});
-        viewHistory.add(TableBuilder.buildTable(rs));
+        HashSet<String> hidden = new HashSet<String>();
+        hidden.add("PatientID");
+        viewHistory.add(TableBuilder.buildTable(rs,hidden));
 
         //Add Symptom
 
@@ -86,7 +89,7 @@ public class PatientWindow {
             }
         });
 
-        Container runButton = InsertServiceList.INSERT_ACUTE.buildActivateButton("Add", widgets, new ResultListener(){
+        Container runButton = InsertServiceList.INSERT_ACUTE.buildActivateButton("Add Acute", widgets, new ResultListener(){
             @Override
             public void onResult(int result) {
                 // DO ON RUN
@@ -112,6 +115,12 @@ public class PatientWindow {
         });
         addSymptom.add(launchPopup);
 
+        // TODO: view chronic no graph just table on new tab
+
+        // TODO: view current treatments -> view sideeffects dropdown
+        // TODO: view past treatments -> view sideeffects dropdown
+        // TODO: dropdown for Acute/period
+        // TODO: in home: view current doctors
 
         framePatient.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         framePatient.getContentPane().add(tabbedPane, BorderLayout.CENTER);
