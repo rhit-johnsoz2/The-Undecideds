@@ -30,6 +30,10 @@ CREATE USER [fogartee] FROM LOGIN [fogartee]
 EXEC sp_addrolemember 'db_owner', 'fogartee'
 GO
 
+CREATE USER [SymptomTrackerDemoAccount] FROM LOGIN [SymptomTrackerDemoAccount]
+GRANT EXEC TO [SymptomTrackerDemoAccount]
+GO
+
 USE $(dbName)
 GO
 
