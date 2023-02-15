@@ -12,6 +12,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.sql.ResultSet;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class DoctorViewingPatientWindow {
 
@@ -40,7 +41,13 @@ public class DoctorViewingPatientWindow {
         JPanel viewHistory = new JPanel(false);
         viewHistory.setLayout(new GridLayout());
         ResultSet rs = ReadServiceList.ACUTE_FROM_PATIENT.ExecuteQuery(new Object[]{patientID});
-        viewHistory.add(TableBuilder.buildTable(rs));
+        if(!isDoctor){
+            HashSet<String> hidden = new HashSet<String>();
+            hidden.add("PatientID");
+            viewHistory.add(TableBuilder.buildTable(rs, hidden));
+        }else {
+            viewHistory.add(TableBuilder.buildTable(rs));
+        }
         return viewHistory;
     }
 
