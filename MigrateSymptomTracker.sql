@@ -1,9 +1,6 @@
 USE master
 GO
 
-DECLARE @dbName sysname
-SET @dbName = QUOTENAME('SymptomTracker')
-
 CREATE DATABASE [SymptomTracker] ON (
     NAME = N'SymptomTracker',
     FILENAME = 'D:\Database\MSSQL15.MSSQLSERVER\MSSQL\DATA\SymptomTracker',
