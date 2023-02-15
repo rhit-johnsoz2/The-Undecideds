@@ -1,4 +1,4 @@
-:setvar dbName SymptomTracker2
+:setvar dbName SzmTracker2
 
 USE master
 GO
@@ -230,7 +230,7 @@ GO
 
 CREATE VIEW PatientAcuteSymptomView
 AS
-SELECT Patient.ID AS PatientID, Acute.severity, Acute.symptomtimestamp, Symptom.name
+SELECT Patient.ID AS PatientID, Acute.severity, Acute.symptomDate, Symptom.name
 FROM Person Patient JOIN Acute ON Patient.ID = Acute.personID
 JOIN Symptom ON Acute.symptomID = Symptom.ID
 GO
@@ -703,7 +703,7 @@ if(@date < GETDATE())
 
 Update Acute
 	Set severity = @severity,
-	    date = @date
+	    symptomDate = @date
 	Where personID = @personID and symptomID = @symptomID
 	return 0;
 End
