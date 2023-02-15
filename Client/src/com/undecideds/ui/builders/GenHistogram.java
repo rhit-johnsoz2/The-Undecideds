@@ -39,17 +39,10 @@ public class GenHistogram {
                     title = "Symptom Frequency per Year";
                 }
             }
-            int i = 0;
-            while (rs.next()) {
-                if(rs.getDate("symptomDate").getTime() < cutOffDate) {
-                    break;
-                }
-                occurences[i] = rs.getDate("symptomDate").getTime();
-                i++;
-            }
+
 
             HistogramDataset dataset = new HistogramDataset();
-            dataset.addSeries("Frequency of symptom", dateINeed, occurences.length);
+            dataset.addSeries("Frequency of symptom", occurences, occurences.length);
             JFreeChart histogram = ChartFactory.createHistogram(title,
                     xAxis, "Frequency", dataset);
             ChartPanel chart = new ChartPanel(histogram);
