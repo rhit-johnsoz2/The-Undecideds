@@ -69,7 +69,7 @@ public class PatientWindow {
 
         //Add Symptom
 
-        JFrame popup = new JFrame();
+        //JFrame popup = new JFrame();
         HashMap<String, ReadService> idMatch = new HashMap<>();
         idMatch.put("SYMPTOM ID", ReadServiceList.GET_SYMPTOMS);
 
@@ -90,8 +90,8 @@ public class PatientWindow {
             @Override
             public void onResult(int result) {
                 // DO ON RUN
-                popup.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                popup.dispatchEvent(new WindowEvent(popup, WindowEvent.WINDOW_CLOSING));
+                //popup.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                //popup.dispatchEvent(new WindowEvent(popup, WindowEvent.WINDOW_CLOSING));
             }
         });
         JPanel Wpanel = new JPanel();
@@ -100,17 +100,17 @@ public class PatientWindow {
         }
         Wpanel.setLayout(new BoxLayout(Wpanel, BoxLayout.PAGE_AXIS));
         Wpanel.add(runButton);
-        popup.add(Wpanel);
-        popup.pack();
+//        popup.add(Wpanel);
+//        popup.pack();
 
-        JButton launchPopup = new JButton("Add needs");
-        launchPopup.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                popup.setVisible(true);
-            }
-        });
-        addSymptom.add(launchPopup);
+//        JButton launchPopup = new JButton("Add Needs");
+//        launchPopup.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                popup.setVisible(true);
+//            }
+//        });
+        addSymptom.add(Wpanel);
 
 
         framePatient.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
