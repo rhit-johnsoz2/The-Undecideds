@@ -61,12 +61,10 @@ public class PatientWindow {
         viewChronic.setLayout(new GridLayout());
         ResultSet rs = ReadServiceList.CHRONIC_FROM_PATIENT.ExecuteQuery(new Object[]{id});
         viewChronic.add(TableBuilder.buildTable(rs));
-
         return viewChronic;
     }
 
     public JPanel viewMyDoctors(){
-<<<<<<< HEAD
         JPanel viewAvalibleDoctors = new JPanel();
         viewAvalibleDoctors.setLayout(new GridLayout());
         ResultSet rs = ReadServiceList.GET_DOCTORS_UNDER_PATIENTS.ExecuteQuery(new Object[]{id});
@@ -146,13 +144,6 @@ public class PatientWindow {
             }
         });
         return viewHistory;
-=======
-        JPanel viewChronic = new JPanel();
-        viewChronic.setLayout(new GridLayout());
-        /*ResultSet rs = ReadServiceList..ExecuteQuery(new Object[]{id});
-        viewChronic.add(TableBuilder.buildTable(rs));*/
-        return viewChronic;
->>>>>>> 5c6eebffc029f96164ea03f8e039ce4cea45a3ca
     }
 
 
