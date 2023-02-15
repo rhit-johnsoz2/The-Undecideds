@@ -1093,3 +1093,168 @@ BEGIN
 	WHERE Person.ID = @id
 END
 GO
+
+CREATE PROCEDURE GetPatientsUnderDoctor 
+(@doctorID Integer)
+AS
+	IF(@doctorID is null)
+	BEGIN
+		RAISERROR('Doctor ID does not exist.', 14, 1)
+		Return 1
+	END
+	IF(NOT EXISTS(SELECT * FROM DoctorNames WHERE @doctorID = ID))
+	BEGIN
+		RAISERROR('Doctor does not exist.', 14, 1)
+		Return 2
+	END
+	SELECT * FROM DoctorView WHERE DoctorID = @doctorID
+GO
+
+CREATE PROCEDURE GetPatientsNotUnderDoctor
+(@doctorID Integer)
+AS
+	IF(@doctorID is null)
+	BEGIN
+		RAISERROR('Doctor ID does not exist.', 14, 1)
+		Return 1
+	END
+	IF(NOT EXISTS(SELECT * FROM DoctorNames WHERE @doctorID = ID))
+	BEGIN
+		RAISERROR('Doctor does not exist.', 14, 1)
+		Return 2
+	END
+	SELECT * FROM DoctorView WHERE DoctorID != @doctorID
+GO
+
+CREATE PROCEDURE GetPastTreatments
+(@pID Integer)
+AS
+SELECT TreatmentID FROM Needs WHERE PatientID = @pID and EDate < GETDATE()
+GO
+
+CREATE PROCEDURE GetCurrentTreatments
+(@pID Integer)
+AS
+SELECT TreatmentID FROM Needs WHERE PatientID = @pID and EDate >= GETDATE()
+GO
+
+CREATE PROCEDURE GetTreatmentsFromID
+(@tID Integer)
+AS
+SELECT * FROM Treatment WHERE ID = @tID
+GO
+
+CREATE VIEW DoctorsUnderPatientView
+As
+SELECT Patient.ID as PatientID, Doctor.ID, Doctor.fname, Doctor.lname
+FROM Person Patient JOIN DoctorFor DF
+on Patient.ID = DF.patientID
+JOIN Person Doctor on DF.doctorID = Doctor.ID
+WHERE Patient.role = 'PA'
+GO
+
+CREATE PROCEDURE GetDoctorsUnderPatient
+(@patientID Integer)
+AS
+	IF(@patientID is null)
+	BEGIN
+		RAISERROR('Patient ID does not exist.', 14, 1)
+		Return 1
+	END
+	IF(NOT EXISTS(SELECT * FROM PatientNames WHERE @patientID = ID))
+	BEGIN
+		RAISERROR('Patient does not exist.', 14, 1)
+		Return 2
+	END
+	SELECT * FROM DoctorsUnderPatientView WHERE PatientID = @patientID
+	Return 0
+GO
+
+CREATE VIEW SideEffectsOfTreatment
+As
+SELECT T.ID as TreatmentID, S.ID, S.name
+FROM Treatment T JOIN SideEffectOf SE
+on T.ID = SE.treatmentID
+JOIN Symptom S on SE.symptomID = S.ID
+GO
+
+CREATE PROCEDURE GetSideEffectsOfTreatment
+(@treatmentID Integer)
+AS
+	IF(@treatmentID is null)
+	BEGIN
+		RAISERROR('Treatment ID does not exist.', 14, 1)
+		Return 1
+	END
+	IF(NOT EXISTS(SELECT * FROM TreatmentNames WHERE @treatmentID = ID))
+	BEGIN
+		RAISERROR('Treatment does not exist.', 14, 1)
+		Return 2
+	END
+	SELECT * FROM SideEffectsOfTreatment WHERE TreatmentID = @treatmentID
+	Return 0
+GO
+
+CREATE VIEW DoctorsForTreatment
+As
+SELECT T.ID as TreatmentID, D.ID, D.fname as DFirstName, D.lname as DLastName, T.Cost as TreatmentCost
+FROM Treatment T JOIN Performs P
+on T.ID = P.treatmentID
+JOIN Person D on P.doctorID = D.ID
+WHERE D.role = 'DR'
+GO
+
+CREATE VIEW InsuredDoctorsForTreatmentSubtraction
+As
+SELECT T.ID as TreatmentID, D.ID, D.fname as DFirstName, D.lname as DLastName, T.Cost as TreatmentCost
+FROM Treatment T JOIN Insures I
+on T.ID = I.treatmentID
+JOIN Person D on I.personID = D.ID
+JOIN HealthCareProvider HCP on I.HCPID = HCP.ID
+JOIN Person P on HCP.ID = P.hcpID
+WHERE D.role = 'DR' and P.role = 'PA'
+GO
+
+CREATE VIEW InsuredDoctorsForTreatment
+As
+SELECT T.ID as TreatmentID, D.ID, D.fname as DFirstName, D.lname as DLastName, I.HCPID, P.ID as PatientID, I.Coverage as Cost
+FROM Treatment T JOIN Insures I
+on T.ID = I.treatmentID
+JOIN Person D on I.personID = D.ID
+JOIN HealthCareProvider HCP on I.HCPID = HCP.ID
+JOIN Person P on HCP.ID = P.hcpID
+WHERE D.role = 'DR' and P.role = 'PA'
+GO
+
+CREATE PROCEDURE GetDoctorExpensesForTreatment
+(@treatmentID Integer, @patientID Integer)
+AS
+	IF(@treatmentID is null or @patientID is null)
+	BEGIN
+		RAISERROR('Arguments are null.', 14, 1)
+		Return 1
+	END
+	IF(NOT EXISTS(SELECT * FROM TreatmentNames WHERE @treatmentID = ID))
+	BEGIN
+		RAISERROR('Treatment does not exist.', 14, 1)
+		Return 2
+	END
+	IF(NOT EXISTS(SELECT * FROM PatientNames WHERE @patientID = ID))
+	BEGIN
+		RAISERROR('Patient does not exist.', 14, 1)
+		Return 2
+	END
+
+	DECLARE @treatmentCost Integer
+	SET @treatmentCost = (SELECT Cost
+						  FROM Treatment
+						  WHERE Treatment.ID = @treatmentID)
+
+	(SELECT CONCAT(DFirstName, ' ', DLastName) as [Doctor Name], TreatmentCost as Cost FROM DoctorsForTreatment WHERE TreatmentID = @treatmentID
+	EXCEPT
+	SELECT CONCAT(DFirstName, ' ', DLastName) as [Doctor Name], TreatmentCost as Cost FROM InsuredDoctorsForTreatmentSubtraction WHERE TreatmentID = @treatmentID)
+	UNION
+	SELECT CONCAT(DFirstName, ' ', DLastName) as [Doctor Name], @treatmentCost - Cost as Cost FROM InsuredDoctorsForTreatment WHERE TreatmentID = @treatmentID and PatientID = @patientID
+
+	Return 0
+GO
