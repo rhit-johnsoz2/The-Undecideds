@@ -1,26 +1,11 @@
 package com.undecideds.ui;
 
-
-import com.undecideds.services.DeleteServiceList;
-import com.undecideds.services.InsertServiceList;
 import com.undecideds.services.ReadServiceList;
-import com.undecideds.services.UpdateServiceList;
-import com.undecideds.services.generic.CUDService;
-import com.undecideds.services.generic.ReadService;
-import com.undecideds.ui.builders.GenHistogram;
-import com.undecideds.ui.cuduibuilder.InputWidget;
-import com.undecideds.ui.cuduibuilder.ResultListener;
 import com.undecideds.ui.builders.TableBuilder;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
 import java.sql.ResultSet;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 import static com.undecideds.services.ReadServiceList.GET_ACUTE;
 
@@ -37,13 +22,33 @@ public class PatientWindow {
         JPanel home = DoctorViewingPatientWindow.launchHome(false, id, name);
         JPanel viewHistory = DoctorViewingPatientWindow.launchViewHistory(false, id);
         JPanel addSymptom = DoctorViewingPatientWindow.launchaddSymptom(false, id);
+        JPanel viewChronic = viewChronicMethod();
 
         tabbedPane.addTab("Home", null, home, "");
         tabbedPane.addTab("viewHistory", null, viewHistory, "");
         tabbedPane.addTab("addSymptom", null, addSymptom, "");
+        tabbedPane.addTab("View Chronic", null, viewChronic, "");
 
         framePatient.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         framePatient.getContentPane().add(tabbedPane, BorderLayout.CENTER);
         framePatient.setVisible(true);
     }
+
+    public JPanel viewChronicMethod(){
+        JPanel viewChronic = new JPanel();
+        viewChronic.setLayout(new GridLayout());
+        ResultSet rs = ReadServiceList.CHRONIC_FROM_PATIENT.ExecuteQuery(new Object[]{id});
+        viewChronic.add(TableBuilder.buildTable(rs));
+        return viewChronic;
+    }
+
+    public JPanel viewMyDoctors(){
+        JPanel viewChronic = new JPanel();
+        viewChronic.setLayout(new GridLayout());
+        ResultSet rs = ReadServiceList..ExecuteQuery(new Object[]{id});
+        viewChronic.add(TableBuilder.buildTable(rs));
+        return viewChronic;
+    }
+
+
 }

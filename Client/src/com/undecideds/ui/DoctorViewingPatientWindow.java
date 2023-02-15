@@ -39,7 +39,6 @@ public class DoctorViewingPatientWindow {
     public static JPanel launchViewHistory(boolean isDoctor, int patientID) {
         JPanel viewHistory = new JPanel(false);
         viewHistory.setLayout(new GridLayout());
-        JLabel viewHistoryText = new JLabel("View History");
         ResultSet rs = ReadServiceList.ACUTE_FROM_PATIENT.ExecuteQuery(new Object[]{patientID});
         viewHistory.add(TableBuilder.buildTable(rs));
         return viewHistory;
