@@ -1135,17 +1135,17 @@ GO
 CREATE PROCEDURE GetPastTreatments
 (@pID Integer)
 AS
-SELECT NAME FROM TreatmentNames WHERE ID = (SELECT TreatmentID 
-					    FROM Needs 
-					    WHERE PatientID = @pID and EDate < GETDATE())
+SELECT T.name
+FROM Needs JOIN Treatment T on Needs.TreatmentID = T.ID
+WHERE PatientID = @pID and EDate < GETDATE()
 GO
 
 CREATE PROCEDURE GetCurrentTreatments
 (@pID Integer)
 AS
-SELECT NAME FROM TreatmentNames WHERE ID = (SELECT TreatmentID 
-					    FROM Needs 
-				  	    WHERE PatientID = @pID and EDate >= GETDATE())
+SELECT T.name
+FROM Needs JOIN Treatment T on Needs.TreatmentID = T.ID
+WHERE PatientID = @pID and EDate >= GETDATE()
 GO
 
 CREATE PROCEDURE GetTreatmentsFromID
