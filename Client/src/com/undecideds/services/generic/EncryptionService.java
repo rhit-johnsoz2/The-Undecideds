@@ -1,12 +1,18 @@
 package com.undecideds.services.generic;
 
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
+import org.jasypt.salt.FixedSaltGenerator;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
 public class EncryptionService {
     private static String getKey(){
         return "dWUfCDyr6N";
+    }
+
+    private static byte[] getSalt(){
+        return "JORG".getBytes(StandardCharsets.UTF_8);
     }
 
     public static String HiddenPass(String encrypted){

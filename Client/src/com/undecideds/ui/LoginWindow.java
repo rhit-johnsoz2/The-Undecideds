@@ -81,34 +81,31 @@ public class LoginWindow {
             adminWindow.launch();
         }
         String username = username_text.getText();
-        String passwordHash = EncryptionService.Encrypt(password_text.getText());
-        System.out.println(password_text.getText());
-        System.out.println(passwordHash);
-
+        String password = password_text.getText();
 
         Object o = ReadService.getSingleton(ReadServiceList.PASSWORD_FROM_LOGIN.ExecuteQuery(new Object[]{username}));
         if(o == null){
             launchLoginFail();
             return;
         }
-        String correctHash = (String)o;
+        String correct = EncryptionService.Decrypt((String)o);
 
-        if(correctHash.equals(passwordHash)){
+        if(correct.equals(password)){
             o = ReadService.getSingleton(ReadServiceList.ID_FROM_LOGIN.ExecuteQuery(new Object[]{username}));
             if(o == null){
-                launchLoginFail();
+                launchLoginFail("Login successful but failed to fetch ID");
                 return;
             }
             int id = (int)o;
             o = ReadService.getSingleton(ReadServiceList.PERSON_NAME_FROM_ID.ExecuteQuery(new Object[]{id}));
             if(o == null){
-                launchLoginFail();
+                launchLoginFail("Login successful but failed to fetch Name");
                 return;
             }
             String name = (String)o;
             o = ReadService.getSingleton(ReadServiceList.PERSON_ROLE_FROM_ID.ExecuteQuery(new Object[]{id}));
             if(o == null){
-                launchLoginFail();
+                launchLoginFail("Login successful but failed to fetch Role");
                 return;
             }
             String role = (String)o;
@@ -118,19 +115,27 @@ public class LoginWindow {
                 frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
                 DoctorWindow doctorWindow = new DoctorWindow();
                 doctorWindow.launch();
+                return;
             }else if(role.equals("PA")){
                 frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                 frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
                 PatientWindow patientWindow = new PatientWindow();
                 patientWindow.launch();
+                return;
             }
         }
         launchLoginFail();
-        return;
     }
     void launchLoginFail(){
         JFrame frame = new JFrame();
         frame.add(new JLabel("Incorrect username or password"));
+        frame.pack();
+        frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        frame.setVisible(true);
+    }
+    void launchLoginFail(String s){
+        JFrame frame = new JFrame();
+        frame.add(new JLabel(s));
         frame.pack();
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.setVisible(true);
