@@ -6,18 +6,9 @@ import com.undecideds.services.generic.ReadService;
 import com.undecideds.ui.builders.GenHistogram;
 import com.undecideds.ui.cuduibuilder.InputWidget;
 import com.undecideds.ui.cuduibuilder.ResultListener;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
-import org.jfree.data.statistics.HistogramDataset;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
-import java.sql.ResultSet;
-import java.time.LocalDate;
 import java.util.HashMap;
 
 public class DoctorWindow {
@@ -25,13 +16,10 @@ public class DoctorWindow {
     int currentId;
     String currentName;
     public void launch(int id, String name) {
-        currentId = id;
+        currentId = 21;
         currentName = name;
         JFrame frameDoctor = new JFrame();
         frameDoctor.setSize(700, 500);
-
-        GridBagConstraints gbc = new GridBagConstraints();
-        GridBagLayout layout = new GridBagLayout();
 
         JTabbedPane tabbedPane = new JTabbedPane();
         JPanel home = new JPanel(false);
@@ -44,71 +32,23 @@ public class DoctorWindow {
         tabbedPane.addTab("Add Patient", null, addPatient, "");
         tabbedPane.addTab("View Patient", null, viewPatient, "");
 
+        Container hist = new GenHistogram().GenHistogram(26, GenHistogram.GraphType.WEEKLY);
+        Container hist2 = new GenHistogram().GenHistogram(22, GenHistogram.GraphType.WEEKLY);
+        Container hist3 = new GenHistogram().GenHistogram(27, GenHistogram.GraphType.WEEKLY);
+
         JLabel helloDoctor = new JLabel("Hello Dr. Johnson");
         JLabel currentPatients = new JLabel("Current Patient Quick View");
-        JLabel Jorg = new JLabel("Jorg");
 
-        {
+        home.setLayout(new GridLayout(2,3));
+        home.add(helloDoctor);
+        home.add(currentPatients);
+        home.add(new JLabel());
+        home.add(hist);
+        home.add(hist2);
+        home.add(hist3);
 
-            {
-                home.setLayout(layout);
-                gbc.gridx = 0;
-                gbc.gridy = 0;
-                home.add(helloDoctor, gbc);
-                gbc.gridx = 0;
-                gbc.gridy = 1;
-                home.add(currentPatients, gbc);
-                gbc.ipadx = 200;
-                gbc.ipady = 200;
-                gbc.gridx = 0;
-                gbc.gridy = 2;
-                //GenHistogram newHisto = new GenHistogram();
-                //home.add(newHisto.GenHistogram(1, GenHistogram.GraphType.WEEKLY), gbc);
-            }
-        }
 
-//        JLabel selectPatient = new JLabel("Select Patient:");
-//        JLabel treatment = new JLabel("SelectTreatment:");
-//        JButton confirm = new JButton("Confirm");
-//        String[] pat = {"Jorg Henson"};
-//        String[] treatments = {"Badvillll","Eye Drops"};
-//        JComboBox selectPatientDropDown = new JComboBox(pat);
-//        JComboBox selectTreatment = new JComboBox(treatments);
 
-//        confirm.addActionListener(new ActionListener() {
-//            public void actionPerformed(ActionEvent arg0) {
-//                int result = InsertServiceList.INSERT_NEEDS.ExecuteQuery(new Object[]{
-//                        19, 2, java.sql.Date.valueOf(LocalDate.now()), null
-//                });
-//
-//            }
-//        });
-
-        assignTreatment.setLayout(layout);
-//            gbc.ipadx = 100;
-//            gbc.ipady = 40;
-//            gbc.gridx = 0;
-//            gbc.gridy = 0;
-//            assignTreatment.add(selectPatient, gbc);
-//            gbc.ipady = 40;
-//            gbc.gridx = 0;
-//            gbc.gridy = 1;
-//            gbc.ipadx = 100;
-//            assignTreatment.add(selectPatientDropDown, gbc);
-//            gbc.ipadx = 100;
-//            gbc.ipady = 40;
-//            gbc.gridx = 1;
-//            gbc.gridy = 0;
-//            assignTreatment.add(treatment);
-//            gbc.ipadx = 100;
-//            gbc.ipady = 40;
-//            gbc.gridx = 1;
-//            gbc.gridy = 1;
-//            assignTreatment.add(selectTreatment, gbc);
-//            gbc.ipady = 40;
-//            gbc.gridx = 0;
-//            gbc.gridy = 3;
-//            assignTreatment.add(confirm, gbc);
 
             HashMap<String, ReadService> idMatch = new HashMap<>();
             idMatch.put("PATIENT ID", ReadServiceList.GET_PATIENT_NAMES);
@@ -127,14 +67,7 @@ public class DoctorWindow {
             Wpanel.setLayout(new BoxLayout(Wpanel, BoxLayout.PAGE_AXIS));
             assignTreatment.add(Wpanel);
 
-        addPatient.setLayout(layout);
-//        JLabel firstName = new JLabel("Enter Patient First Name:");
-//        JLabel lastName = new JLabel("Enter Patient Last Name:");
-//        JButton confirm2 = new JButton("Confirm");
-//        JTextField firstNameEnter = new JTextField();
-//        JTextField lastNameEnter = new JTextField();
-//        JButton go = new JButton("Go");
-//        JButton go2 = new JButton("Go");
+
 
         HashMap<String, ReadService> idMatch2 = new HashMap<>();
         idMatch2.put("DOCTOR ID", ReadServiceList.GET_DOCTOR_NAMES);
@@ -153,50 +86,18 @@ public class DoctorWindow {
         Wpanel2.setLayout(new BoxLayout(Wpanel2, BoxLayout.PAGE_AXIS));
         addPatient.add(Wpanel2);
 
-//        confirm2.addActionListener(new ActionListener() {
-////            public void actionPerformed(ActionEvent arg0) {
-////                int result = InsertServiceList.INSERT_PERFORMS.ExecuteQuery(new Object[]{
-////                        13, 19
-////                });
-////            }
-////        });
-//        {
-//            gbc.ipady = 40;
-//            gbc.gridx = 0;
-//            gbc.gridy = 0;
-//            addPatient.add(firstName, gbc);
-//            gbc.ipadx = 160;
-//            gbc.ipady = 40;
-//            gbc.gridx = 0;
-//            gbc.gridy = 1;
-//            addPatient.add(firstNameEnter, gbc);
-//            gbc.ipady = 40;
-//            gbc.gridx = 0;
-//            gbc.gridy = 2;
-//            addPatient.add(lastName, gbc);
-//            gbc.ipadx = 160;
-//            gbc.ipady = 40;
-//            gbc.gridx = 0;
-//            gbc.gridy = 3;
-//            addPatient.add(lastNameEnter, gbc);
-//            gbc.ipady = 40;
-//            gbc.gridx = 0;
-//            gbc.gridy = 4;
-//            addPatient.add(confirm2, gbc);
-//        }
+        Container hist4 = new GenHistogram().GenHistogram(26, GenHistogram.GraphType.WEEKLY);
+        Container hist5 = new GenHistogram().GenHistogram(22, GenHistogram.GraphType.WEEKLY);
+        Container hist6 = new GenHistogram().GenHistogram(27, GenHistogram.GraphType.WEEKLY);
 
-        viewPatient.setLayout(layout);
         JLabel myPatients = new JLabel("My Patients:");
-//            gbc.ipady = 40;
-//            gbc.gridx = 0;
-//            gbc.gridy = 0;
-        viewPatient.add(myPatients, gbc);
-//            gbc.ipadx = 200;
-//            gbc.ipady = 200;
-//            gbc.gridx = 0;
-//            gbc.gridy = 2;
-            //GenHistogram newHisto2 = new GenHistogram();
-            //viewPatient.add(newHisto2.GenHistogram(1, GenHistogram.GraphType.WEEKLY),gbc);
+        viewPatient.setLayout(new GridLayout(2,3));
+        viewPatient.add(myPatients);
+        viewPatient.add(new JLabel());
+        viewPatient.add(new JLabel());
+        viewPatient.add(hist4);
+        viewPatient.add(hist5);
+        viewPatient.add(hist6);
 
         frameDoctor.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frameDoctor.getContentPane().add(tabbedPane, BorderLayout.CENTER);
