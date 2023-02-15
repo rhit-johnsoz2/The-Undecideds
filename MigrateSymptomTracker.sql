@@ -252,7 +252,7 @@ GO
 CREATE PROCEDURE [AcuteFromPatient](
 	@PID Integer
 ) AS BEGIN
-	SELECT PatientID, severity, symptomtimestamp, name
+	SELECT PatientID, severity, symptomDate, name
 	FROM PatientAcuteSymptomView
 	WHERE PatientID = @PID
 END
