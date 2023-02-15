@@ -11,10 +11,20 @@ public class ReadServiceList {
             new Argument(Argument.ArgumentType.INT, "PID")
     });
 
+    public static final ReadService GET_SIDEEFFECT_OF_TREATMENT = new ReadService("GetSideEffectsOfTreatment", new Argument[]{
+            new Argument(Argument.ArgumentType.INT, "TreatmentID")
+    });
+
+    public static final ReadService SYMPTOM_GET_ID_FROM_NAME = new ReadService("SymptomGetIDFromName", new Argument[]{
+            new Argument(Argument.ArgumentType.STRING, "name")
+    });
+
     public static final ReadService ACUTE_FROM_PATIENT = new ReadService("AcuteFromPatient", new Argument[]{
             new Argument(Argument.ArgumentType.INT, "PID")
     });
-
+    public static final ReadService GET_TREATMENTS_FROM_DOCTOR = new ReadService("GetTreatmentsFromDoctor", new Argument[]{
+            new Argument(Argument.ArgumentType.INT, "ID")
+    });
     public static final ReadService GET_PAST_TREATMENTS = new ReadService("GetPastTreatments", new Argument[]{
             new Argument(Argument.ArgumentType.INT, "PID")
     });

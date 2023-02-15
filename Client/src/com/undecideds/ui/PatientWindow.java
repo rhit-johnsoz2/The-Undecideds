@@ -1,7 +1,12 @@
 package com.undecideds.ui;
 
+import com.undecideds.services.DeleteServiceList;
+import com.undecideds.services.InsertServiceList;
 import com.undecideds.services.ReadServiceList;
+import com.undecideds.services.generic.ReadService;
 import com.undecideds.ui.builders.TableBuilder;
+import com.undecideds.ui.cuduibuilder.InputWidget;
+import com.undecideds.ui.cuduibuilder.ResultListener;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -10,6 +15,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -26,12 +32,13 @@ public class PatientWindow {
 
         JTabbedPane tabbedPane = new JTabbedPane();
         JPanel home = DoctorViewingPatientWindow.launchHome(false, id, name);
-        JPanel viewHistory = launchViewHistory(false, id);
+        JPanel viewHistory = viewHistory(false, id);
         JPanel addSymptom = DoctorViewingPatientWindow.launchaddSymptom(false, id);
         JPanel viewChronic = viewChronicMethod();
         JPanel viewMyDocs = viewMyDoctors();
         JPanel viewPastTreatments = pastTreatments();
         JPanel viewCurTreatments = curTreatments();
+        JPanel removeMyDocs = removeMyDocs();
         JPanel viewAcute = viewAcute();
 
         tabbedPane.addTab("Home", null, home, "");
@@ -40,6 +47,7 @@ public class PatientWindow {
         tabbedPane.addTab("View Acute", null, viewAcute, "");
         tabbedPane.addTab("View Chronic", null, viewChronic, "");
         tabbedPane.addTab("View Doctors", null, viewMyDocs, "");
+        tabbedPane.addTab("Remove Doctors", null, removeMyDocs, "");
         tabbedPane.addTab("Past Treatments", null, viewPastTreatments, "");
         tabbedPane.addTab("Current Treatments", null, viewCurTreatments, "");
 
@@ -51,7 +59,7 @@ public class PatientWindow {
     public JPanel viewAcute(){
         JPanel viewAcute = new JPanel();
         viewAcute.setLayout(new GridLayout());
-        ResultSet rs = ReadServiceList.GET_PAST_TREATMENTS.ExecuteQuery(new Object[]{id});
+        ResultSet rs = ReadServiceList.ACUTE_FROM_PATIENT.ExecuteQuery(new Object[]{id});
         viewAcute.add(TableBuilder.buildTable(rs));
         return viewAcute;
     }
@@ -72,6 +80,38 @@ public class PatientWindow {
         return viewAvalibleDoctors;
     }
 
+    public JPanel removeMyDocs(){
+        JPanel removeDoc = new JPanel();
+        removeDoc.setLayout(new GridLayout(2,1));
+        HashMap<String, ReadService> idMatch2 = new HashMap<>();
+        idMatch2.put("DOCTOR ID", ReadServiceList.GET_DOCTOR_NAMES);
+        idMatch2.put("PATIENT ID", ReadServiceList.GET_PATIENT_NAMES);
+        HashMap<String, InputWidget> widgets2 = DeleteServiceList.DELETE_DOCTORFOR.buildUIWidgets(idMatch2, true);
+        JPanel Wpanel2 = new JPanel();
+        widgets2.replace("PATIENT ID", new InputWidget("PATIENT ID") {
+            @Override
+            public Container generateWidget() {
+                return new JPanel();
+            }
+
+            @Override
+            public Object getValue() {
+                return id;
+            }
+        });
+        for(String key : widgets2.keySet()){
+            Wpanel2.add(widgets2.get(key).generateWidget());
+        }
+        Container runButton2 = DeleteServiceList.DELETE_DOCTORFOR.buildActivateButton("Remove",widgets2, new ResultListener(){
+            @Override
+            public void onResult(int result) {
+                // DO ON RUN
+            }});
+        removeDoc.add(Wpanel2);
+        removeDoc.add(runButton2);
+        return removeDoc;
+    }
+
     public JPanel pastTreatments(){
         JPanel viewPastTreatments = new JPanel();
         viewPastTreatments.setLayout(new GridLayout());
@@ -88,9 +128,8 @@ public class PatientWindow {
         return viewcurTreatments;
     }
 
-
-    public static JPanel launchViewHistory(boolean isDoctor, int patientID) {
-        JPanel viewHistory = new JPanel(false);
+    public static JPanel viewHistory(boolean isDoctor, int patientID) {
+        JPanel viewHistory = new JPanel();
         viewHistory.setLayout(new BoxLayout(viewHistory, BoxLayout.PAGE_AXIS));
         ResultSet rs = ReadServiceList.ACUTE_FROM_PATIENT.ExecuteQuery(new Object[]{patientID});
         JTable table;
@@ -110,22 +149,22 @@ public class PatientWindow {
         HashMap<String, Object> inputValues = new HashMap<>();
         viewHistory.add(new JScrollPane().add(table));
         JButton selectorButton = new JButton("View Symptom Treatments");
-        viewHistory.add(selectorButton);
+
         selectorButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int selectedSymptomID = 4;//(int)inputValues.get("name");
-                JFrame popUpWindow = new JFrame();
-                popUpWindow.setSize(400,400);
-                ResultSet rs = ReadServiceList.GET_TREATMENTS.ExecuteQuery(new Object[]{selectedSymptomID});
-                HashSet<String> hiddenPT2 = new HashSet<String>();
-                hiddenPT2.add("ID");
-                JComponent potentialTreatments = TableBuilder.buildTableRaw(rs, hiddenPT2);
-                popUpWindow.add(potentialTreatments);
-                popUpWindow.setVisible(true);
-            }
-        });
 
+                    JFrame popUpWindow = new JFrame();
+                    popUpWindow.setSize(400,400);
+                    ResultSet rs1 = ReadServiceList.SYMPTOM_GET_ID_FROM_NAME.ExecuteQuery(new Object[]{inputValues.get("name")});
+//                    ResultSet rs = ReadServiceList.GET_SIDEEFFECT_OF_TREATMENT.ExecuteQuery(new Object[]{ReadService. (rs1)});
+                    HashSet<String> hiddenPT2 = new HashSet<String>();
+                    hiddenPT2.add("ID");
+//                    JComponent potentialTreatments = TableBuilder.buildTableRaw(rs, hiddenPT2);
+//                    popUpWindow.add(potentialTreatments);
+                    popUpWindow.setVisible(true);
+        }});
+        viewHistory.add(selectorButton);
         table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
