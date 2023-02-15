@@ -15,8 +15,16 @@ public class ReadServiceList {
             new Argument(Argument.ArgumentType.INT, "PID")
     });
 
-    public static final ReadService Get_All_Patients_Doctor_Has = new ReadService("GetAllPatientsDoctorHas", new Argument[]{
-            new Argument(Argument.ArgumentType.INT, "doctor ID")
+    public static final ReadService GET_PAST_TREATMENTS = new ReadService("GetPastTreatments", new Argument[]{
+            new Argument(Argument.ArgumentType.INT, "PID")
+    });
+
+    public static final ReadService GET_CURRENT_TREATMENTS = new ReadService("GetCurrentTreatments", new Argument[]{
+            new Argument(Argument.ArgumentType.INT, "PID")
+    });
+
+    public static final ReadService GET_DOCTORS_UNDER_PATIENTS = new ReadService("GetDoctorsUnderPatient", new Argument[]{
+            new Argument(Argument.ArgumentType.INT, "patientID")
     });
 
     public static final ReadService DATE_FROM_SYMPTOM = new ReadService("returnDate", new Argument[]{
