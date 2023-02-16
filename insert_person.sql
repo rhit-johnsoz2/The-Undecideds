@@ -1,6 +1,6 @@
 use [SymptomTracker]
 go
-alter procedure InsertPerson(@FName varchar(30), @LName varchar(30), @Login varchar(30), @Password varchar(30), @Role char(2), @InsuredBy varchar(30))
+alter procedure InsertPerson(@FName varchar(30), @LName varchar(30), @Login varchar(30), @Password varchar(30), @Role char(2), @InsuredBy Integer)
 AS
 Begin
 	if (@FName is null or @LName is null or @Login is null or @Password is null or @Role is null or @InsuredBy is null)

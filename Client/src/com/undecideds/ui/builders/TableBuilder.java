@@ -373,5 +373,13 @@ public class TableBuilder {
         return buildTableWithCUD(readService, name_match, create, update, delete, fixed, canUpdate, canDelete, idMatch);
     }
 
+    public static HashMap<String, String> buildNameMatch(String[] map){
+        HashMap<String, String> nameMatch = new HashMap<>();
+        for(int i = 0; i < map.length; i += 2){
+            nameMatch.put(map[i], map[i+1]);
+        }
+        return nameMatch;
+    }
+
 
 }

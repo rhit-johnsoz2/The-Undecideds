@@ -14,38 +14,43 @@ public class GenHistogram {
 
     public Container GenHistogram(int id , GraphType gt){
         try {
-            ResultSet rs = ReadServiceList.ACUTE_FROM_PATIENT.ExecuteQuery(new Object[]{id});
+            ResultSet rs = ReadServiceList.DATE_FROM_SYMPTOM.ExecuteQuery(new Object[]{id});
             double cutOffDate = System.currentTimeMillis();
             double[] occurences = new double[1];
+            String xAxis = "";
+            String title = "";
             switch (gt) {
                 case WEEKLY -> {
                     cutOffDate -= 7L * 24 * 60 * 60 * 1000;
                     occurences = new double[7];
+                    xAxis = "Days per Week";
+                    title = "Symptom Frequency per Week";
                 }
                 case MONTHLY -> {
                     cutOffDate -= 30L * 24 * 60 * 60 * 1000;
                     occurences = new double[30];
+                    xAxis = "Days per Month";
+                    title = "Symptom Frequency per Month";
                 }
                 case ANNUAL -> {
                     cutOffDate -= 365L * 24 * 60 * 60 * 1000;
                     occurences = new double[365];
+                    xAxis = "Days per Year";
+                    title = "Symptom Frequency per Year";
                 }
             }
-            int i = 0;
-            while (rs.next()) {
-                if(rs.getDate("Symptom Date").getTime() < cutOffDate) {
-                    break;
-                }
-                occurences[i] = rs.getDate("Symptom Date").getTime();
-                i++;
-            }
+
 
             HistogramDataset dataset = new HistogramDataset();
             dataset.addSeries("Frequency of symptom", occurences, occurences.length);
-            JFreeChart histogram = ChartFactory.createHistogram(String.valueOf(rs.getInt("Symptom ID")),
-                    "Severity", "Frequency", dataset);
-            ChartPanel chartPanel = new ChartPanel(histogram);
-            return chartPanel;
+            JFreeChart histogram = ChartFactory.createHistogram(title,
+                    xAxis, "Frequency", dataset);
+            ChartPanel chart = new ChartPanel(histogram);
+            JPanel panel = new JPanel(new GridLayout(1,1));
+            panel.add(chart);
+            panel.setPreferredSize(new Dimension(400,400));
+            return panel;
+
 
         }catch (Exception e){
             e.printStackTrace();

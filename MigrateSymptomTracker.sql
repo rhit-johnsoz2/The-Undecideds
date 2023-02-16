@@ -1,19 +1,18 @@
+:setvar dbName SzmTracker2
+
 USE master
 GO
 
-DECLARE @dbName sysname
-SET @dbName = QUOTENAME('SymptomTracker')
-
-CREATE DATABASE [SymptomTracker] ON (
-    NAME = N'SymptomTracker',
-    FILENAME = 'D:\Database\MSSQL15.MSSQLSERVER\MSSQL\DATA\SymptomTracker',
+CREATE DATABASE $(dbName) ON (
+    NAME = N'$(dbName)',
+    FILENAME = 'D:\Database\MSSQL15.MSSQLSERVER\MSSQL\DATA\$(dbName)',
     SIZE = 6MB,  
     MAXSIZE = 30MB,  
     FILEGROWTH = 12%
 )
 LOG ON (
-    NAME = N'SymptomTracker_log',
-    FILENAME = 'D:\Database\MSSQL15.MSSQLSERVER\MSSQL\DATA\SymptomTracker.ldf',
+    NAME = N'$(dbName)_log',
+    FILENAME = 'D:\Database\MSSQL15.MSSQLSERVER\MSSQL\DATA\$(dbName).ldf',
     SIZE = 3MB,
     MAXSIZE = 30MB,
     FILEGROWTH = 10%
@@ -21,20 +20,28 @@ LOG ON (
 COLLATE SQL_Latin1_General_Cp1_CI_AS
 GO
 
+USE $(dbName)
+GO
+
 CREATE USER [cerasoml] FROM LOGIN [cerasoml]
 EXEC sp_addrolemember 'db_owner', 'cerasoml'
 
-CREATE USER [johnsoz2] FROM LOGIN [johnsoz2]
-EXEC sp_addrolemember 'db_owner', 'johnsoz2'
+CREATE USER [fogartee] FROM LOGIN [fogartee]
+EXEC sp_addrolemember 'db_owner', 'fogartee'
 GO
 
-USE SymptomTracker
+CREATE USER [SymptomTrackerDemoAccount] FROM LOGIN [SymptomTrackerDemoAccount]
+GRANT EXEC TO [SymptomTrackerDemoAccount]
+GO
+
+USE $(dbName)
 GO
 
 CREATE TABLE HealthCareProvider (
 	ID int identity(1,1),
 	name varchar(50),
-	PRIMARY KEY(ID)
+	PRIMARY KEY(ID),
+	unique(name)
 )
 GO
 
@@ -52,7 +59,8 @@ GO
 CREATE TABLE Treatment(
 	ID Integer Identity(1,1) Primary Key,
 	Cost Integer,
-	name varchar(50)
+	name varchar(50),
+	unique(name)
 )
 GO
 
@@ -86,7 +94,8 @@ GO
 --CHECK((SELECT role FROM dbo.Person WHERE ID = doctorID) = 'DR')
 CREATE TABLE DoctorFor(
 	doctorID Integer REFERENCES dbo.Person,
-	patientID Integer REFERENCES dbo.Person
+	patientID Integer REFERENCES dbo.Person,
+	primary key(doctorID, patientID)
 )
 GO
 
@@ -96,7 +105,7 @@ CREATE TABLE Performs (
 	treatmentID integer,
 	primary key(doctorID, treatmentID),
 	foreign key(doctorID) references person(ID),
-	foreign key(treatmentID) references treatment(ID),
+	foreign key(treatmentID) references treatment(ID)
 )
 GO
 
@@ -225,7 +234,7 @@ GO
 
 CREATE VIEW PatientAcuteSymptomView
 AS
-SELECT Patient.ID AS PatientID, Acute.severity, Acute.symptomtimestamp, Symptom.name
+SELECT Patient.ID AS PatientID, Acute.severity, Acute.symptomDate, Symptom.name
 FROM Person Patient JOIN Acute ON Patient.ID = Acute.personID
 JOIN Symptom ON Acute.symptomID = Symptom.ID
 GO
@@ -247,7 +256,7 @@ GO
 CREATE PROCEDURE [AcuteFromPatient](
 	@PID Integer
 ) AS BEGIN
-	SELECT PatientID, severity, symptomtimestamp, name
+	SELECT PatientID, severity, symptomDate, name
 	FROM PatientAcuteSymptomView
 	WHERE PatientID = @PID
 END
@@ -322,7 +331,7 @@ CREATE PROCEDURE [dbo].[InsertHealthCareProviders]
 AS
 BEGIN
 	-- check to see if any of the parameters are null
-	IF(@name is NULL)
+	IF(@name is NULL or @name = '')
 	BEGIN
 		RAISERROR('Input arguments cannot be null', 14, 1)
 		Return 1
@@ -333,10 +342,10 @@ END
 GO
 
 CREATE PROCEDURE InsertPerson(@FName varchar(30), @LName varchar(30), 
-@Login varchar(30), @Password varchar(30), @Role char(2), @InsuredBy varchar(30))
+@Login varchar(30), @Password varchar(30), @Role char(2), @InsuredBy Integer)
 AS
 Begin
-	if (@FName is null or @LName is null or @Login is null or @Password is null or @Role is null or @InsuredBy is null)
+	if (@FName is null or @LName is null or @Login is null or @Password is null or @Role is null or @InsuredBy is null or @FName = '' or @LName = '' or @Login = '' or @Password = '' or @Role = '')
 	Begin
 		raiserror('Input Arguments cannot be null', 14,1)
 		return 1
@@ -351,7 +360,7 @@ GO
 CREATE PROCEDURE InsertSymptom(@Name varchar(50))
 As
 Begin
-	if(@Name is null)
+	if(@Name is null or @Name = '')
 	Begin
 		raiserror('Input Arguments cannot be null', 14,1)
 		return 1
@@ -531,7 +540,7 @@ Return 0
 END
 GO
 
-CREATE PROCEDURE [dbo].[InsertPreforms](@doctorID Integer, @treatmentID Integer)
+CREATE PROCEDURE [dbo].[InsertPerforms](@doctorID Integer, @treatmentID Integer)
 AS
 Begin
 	if(@doctorID is null or @treatmentID is null)
@@ -552,7 +561,7 @@ Begin
 		return 2
 	End
 
-	Insert into dbo.Preforms(doctorID, treatmentID) Values(@doctorID, @treatmentID)
+	Insert into dbo.Performs(doctorID, treatmentID) Values(@doctorID, @treatmentID)
 	return 0
 End
 GO
@@ -584,7 +593,7 @@ CREATE PROCEDURE [dbo].[UpdateHCP](@OldID int, @Name varchar(50))
 As
 Begin
 
-if(@OldID is null or @Name is null)
+if(@OldID is null or @Name is null or @Name = '')
 	Begin
 		RAISERROR('Cannot support null attribute', 14, 1)
 		return 1;
@@ -605,7 +614,8 @@ Begin
 
 	if(@ID is null or @fn is null or @ln is null or
 					@login is null or @password is null or @role is null or
-					@hcpID is null)
+					@hcpID is null or @fn = '' or @ln = '' or
+					@login = '' or @password = '' or @role = '')
 	Begin
 		RAISERROR('Inputs cannot be null',14,1)
 		return 1;
@@ -656,7 +666,7 @@ CREATE PROCEDURE [dbo].[UpdateTreatment](@treatmentID int, @cost int, @name varc
 As
 Begin 
 
-	if(@treatmentID is null or @name is null or @cost is null)
+	if(@treatmentID is null or @name is null or @cost is null or @name = '')
 	Begin
 		RAISERROR('Inputs cannot be null',14,1)
 		return 1;
@@ -697,7 +707,7 @@ if(@date < GETDATE())
 
 Update Acute
 	Set severity = @severity,
-	    date = @date
+	    symptomDate = @date
 	Where personID = @personID and symptomID = @symptomID
 	return 0;
 End
@@ -952,3 +962,463 @@ Begin
 	Where SideEffectOf.symptomID = @symptomID and SideEffectOf.treatmentID = @treatmentID
 End
 GO
+
+CREATE PROCEDURE [dbo].[ImportHealthCareProvider]
+	(@name varchar(50))
+AS
+BEGIN
+	-- check to see if any of the parameters are null
+	IF(@name is NULL or @name = '')
+	BEGIN
+		RAISERROR('Input arguments cannot be null', 14, 1)
+		Return 1
+	END
+INSERT INTO HealthCareProvider Values(@name)
+Select ID From HealthCareProvider Where ID = @@IDENTITY
+END
+GO
+
+CREATE PROCEDURE ImportPerson(@FName varchar(30), @LName varchar(30), @Login varchar(30), @Password varchar(30), @Role char(2), @InsuredBy Integer)
+AS
+Begin
+	if (@FName is null or @LName is null or @Login is null or @Password is null or @Role is null or @InsuredBy is null or
+		@FName = '' or @LName = '' or @Login = '' or @Password = '' or @Role = '')
+	Begin
+		raiserror('Input Arguments cannot be null', 14,1)
+		return 1
+	End
+
+	Insert into dbo.Person(FName, LName, Login, Password, role, hcpID) Values(@FName, @LName, @Login, @Password, @Role, @InsuredBy)
+	Select ID From Person Where ID = @@IDENTITY
+End
+GO
+
+CREATE PROCEDURE ImportSymptom(@Name varchar(50))
+As
+Begin
+	if(@Name is null or @Name = '')
+	Begin
+		raiserror('Input Arguments cannot be null', 14,1)
+		return 1
+	End
+
+	Insert into dbo.Symptom(Name) Values(@Name)
+	Select ID From Symptom Where ID = @@IDENTITY
+End
+GO
+
+CREATE PROCEDURE ImportTreatment(@Cost int, @name varchar(30))
+As
+Begin
+	if(@Cost is null or @name is null or @name = '')
+	Begin
+		raiserror('Input Arguments cannot be null', 14,1)
+		return 1
+	End
+	Insert into dbo.Treatment(Cost, name) Values(@Cost, @name)
+	Select ID From Treatment Where ID = @@IDENTITY
+End
+GO
+
+CREATE PROCEDURE getPasswordByLogin
+(@login varchar(50))
+As
+BEGIN
+	if(@login is null)
+	BEGIN
+		Raiserror('Login can not be null', 14, 1)
+		Return 1
+	END
+	if(NOT EXISTS (SELECT * FROM Person WHERE login = @login))
+	BEGIN
+		Raiserror('Login is not in table', 14, 1)
+		Return 2
+	END
+	SELECT password
+	FROM Person
+	WHERE Person.login = @login
+END
+GO
+
+CREATE PROCEDURE getIDByLogin
+(@login varchar(50))
+As
+BEGIN
+	if(@login is null)
+	BEGIN
+		Raiserror('Login can not be null', 14, 1)
+		Return 1
+	END
+	if(NOT EXISTS (SELECT * FROM Person WHERE login = @login))
+	BEGIN
+		Raiserror('Login is not in table', 14, 1)
+		Return 2
+	END
+	SELECT ID
+	FROM Person
+	WHERE Person.login = @login
+END
+GO
+
+CREATE PROCEDURE personGetNameByID
+(@id Integer)
+As
+BEGIN
+	if(@id is null)
+	BEGIN
+		Raiserror('ID can not be null', 14, 1)
+		Return 1
+	END
+	if(NOT EXISTS (SELECT * FROM Person WHERE ID = @id))
+	BEGIN
+		Raiserror('ID is not in table', 14, 1)
+		Return 2
+	END
+	SELECT CONCAT(FName, ' ', LName) as Name
+	FROM Person
+	WHERE Person.ID = @id
+END
+GO
+
+CREATE PROCEDURE personGetRoleByID
+(@id Integer)
+As
+BEGIN
+	if(@id is null)
+	BEGIN
+		Raiserror('ID can not be null', 14, 1)
+		Return 1
+	END
+	if(NOT EXISTS (SELECT * FROM Person WHERE ID = @id))
+	BEGIN
+		Raiserror('ID is not in table', 14, 1)
+		Return 2
+	END
+	SELECT role as Name
+	FROM Person
+	WHERE Person.ID = @id
+END
+GO
+
+CREATE PROCEDURE GetPatientsUnderDoctor 
+(@doctorID Integer)
+AS
+	IF(@doctorID is null)
+	BEGIN
+		RAISERROR('Doctor ID does not exist.', 14, 1)
+		Return 1
+	END
+	IF(NOT EXISTS(SELECT * FROM DoctorNames WHERE @doctorID = ID))
+	BEGIN
+		RAISERROR('Doctor does not exist.', 14, 1)
+		Return 2
+	END
+	SELECT * FROM DoctorView WHERE DoctorID = @doctorID
+GO
+
+CREATE PROCEDURE GetPatientsNotUnderDoctor
+(@doctorID Integer)
+AS
+	IF(@doctorID is null)
+	BEGIN
+		RAISERROR('Doctor ID does not exist.', 14, 1)
+		Return 1
+	END
+	IF(NOT EXISTS(SELECT * FROM DoctorNames WHERE @doctorID = ID))
+	BEGIN
+		RAISERROR('Doctor does not exist.', 14, 1)
+		Return 2
+	END
+	SELECT * FROM DoctorView WHERE DoctorID != @doctorID
+GO
+
+CREATE PROCEDURE GetPastTreatments
+(@pID Integer)
+AS
+SELECT T.name
+FROM Needs JOIN Treatment T on Needs.TreatmentID = T.ID
+WHERE PatientID = @pID and EDate < GETDATE()
+GO
+
+CREATE PROCEDURE GetCurrentTreatments
+(@pID Integer)
+AS
+SELECT T.name
+FROM Needs JOIN Treatment T on Needs.TreatmentID = T.ID
+WHERE PatientID = @pID and EDate >= GETDATE()
+GO
+
+CREATE PROCEDURE GetTreatmentsFromID
+(@tID Integer)
+AS
+SELECT * FROM Treatment WHERE ID = @tID
+GO
+
+CREATE VIEW DoctorsUnderPatientView
+As
+SELECT Patient.ID as PatientID, Doctor.ID, Doctor.fname, Doctor.lname
+FROM Person Patient JOIN DoctorFor DF
+on Patient.ID = DF.patientID
+JOIN Person Doctor on DF.doctorID = Doctor.ID
+WHERE Patient.role = 'PA'
+GO
+
+CREATE PROCEDURE GetDoctorsUnderPatient
+(@patientID Integer)
+AS
+	IF(@patientID is null)
+	BEGIN
+		RAISERROR('Patient ID does not exist.', 14, 1)
+		Return 1
+	END
+	IF(NOT EXISTS(SELECT * FROM PatientNames WHERE @patientID = ID))
+	BEGIN
+		RAISERROR('Patient does not exist.', 14, 1)
+		Return 2
+	END
+	SELECT * FROM DoctorsUnderPatientView WHERE PatientID = @patientID
+	Return 0
+GO
+
+CREATE VIEW SideEffectsOfTreatment
+As
+SELECT T.ID as TreatmentID, S.ID, S.name
+FROM Treatment T JOIN SideEffectOf SE
+on T.ID = SE.treatmentID
+JOIN Symptom S on SE.symptomID = S.ID
+GO
+
+CREATE PROCEDURE GetSideEffectsOfTreatment
+(@treatmentID Integer)
+AS
+	IF(@treatmentID is null)
+	BEGIN
+		RAISERROR('Treatment ID does not exist.', 14, 1)
+		Return 1
+	END
+	IF(NOT EXISTS(SELECT * FROM TreatmentNames WHERE @treatmentID = ID))
+	BEGIN
+		RAISERROR('Treatment does not exist.', 14, 1)
+		Return 2
+	END
+	SELECT * FROM SideEffectsOfTreatment WHERE TreatmentID = @treatmentID
+	Return 0
+GO
+
+--CREATE VIEW DoctorsForTreatment
+--As
+--SELECT T.ID as TreatmentID, D.ID, D.fname as DFirstName, D.lname as DLastName, T.Cost as TreatmentCost
+--FROM Treatment T JOIN Performs P
+--on T.ID = P.treatmentID
+--JOIN Person D on P.doctorID = D.ID
+--WHERE D.role = 'DR'
+--GO
+
+CREATE VIEW DoctorsForTreatment
+As
+SELECT T.ID as TreatmentID, D.ID as DoctorID, D.fname as DFirstName, D.lname as DLastName, T.Cost as TreatmentCost, T.name as TreatmentName
+FROM Treatment T JOIN Performs P
+on T.ID = P.treatmentID
+JOIN Person D on P.doctorID = D.ID
+WHERE D.role = 'DR'
+GO
+
+CREATE VIEW InsuredDoctorsForTreatmentSubtraction
+As
+SELECT T.ID as TreatmentID, D.ID, D.fname as DFirstName, D.lname as DLastName, T.Cost as TreatmentCost
+FROM Treatment T JOIN Insures I
+on T.ID = I.treatmentID
+JOIN Person D on I.personID = D.ID
+JOIN HealthCareProvider HCP on I.HCPID = HCP.ID
+JOIN Person P on HCP.ID = P.hcpID
+WHERE D.role = 'DR' and P.role = 'PA'
+GO
+
+CREATE VIEW InsuredDoctorsForTreatment
+As
+SELECT T.ID as TreatmentID, D.ID, D.fname as DFirstName, D.lname as DLastName, I.HCPID, P.ID as PatientID, I.Coverage as Cost
+FROM Treatment T JOIN Insures I
+on T.ID = I.treatmentID
+JOIN Person D on I.personID = D.ID
+JOIN HealthCareProvider HCP on I.HCPID = HCP.ID
+JOIN Person P on HCP.ID = P.hcpID
+WHERE D.role = 'DR' and P.role = 'PA'
+GO
+
+CREATE PROCEDURE GetDoctorExpensesForTreatment
+(@treatmentID Integer, @patientID Integer)
+AS
+	IF(@treatmentID is null or @patientID is null)
+	BEGIN
+		RAISERROR('Arguments are null.', 14, 1)
+		Return 1
+	END
+	IF(NOT EXISTS(SELECT * FROM TreatmentNames WHERE @treatmentID = ID))
+	BEGIN
+		RAISERROR('Treatment does not exist.', 14, 1)
+		Return 2
+	END
+	IF(NOT EXISTS(SELECT * FROM PatientNames WHERE @patientID = ID))
+	BEGIN
+		RAISERROR('Patient does not exist.', 14, 1)
+		Return 2
+	END
+
+	DECLARE @treatmentCost Integer
+	SET @treatmentCost = (SELECT Cost
+						  FROM Treatment
+						  WHERE Treatment.ID = @treatmentID)
+
+	(SELECT CONCAT(DFirstName, ' ', DLastName) as [Doctor Name], TreatmentCost as Cost FROM DoctorsForTreatment WHERE TreatmentID = @treatmentID
+	EXCEPT
+	SELECT CONCAT(DFirstName, ' ', DLastName) as [Doctor Name], TreatmentCost as Cost FROM InsuredDoctorsForTreatmentSubtraction WHERE TreatmentID = @treatmentID)
+	UNION
+	SELECT CONCAT(DFirstName, ' ', DLastName) as [Doctor Name], @treatmentCost - Cost as Cost FROM InsuredDoctorsForTreatment WHERE TreatmentID = @treatmentID and PatientID = @patientID
+
+	Return 0
+GO
+
+CREATE PROCEDURE SymptomGetIDFromName
+(@name varchar(50))
+AS
+	IF(@name is null or @name = '')
+	BEGIN
+		RAISERROR('Symptom name is empty.', 14, 1)
+		Return 1
+	END
+	IF(NOT EXISTS(SELECT * FROM SymptomNames WHERE SymptomNames.NAME = @name))
+	BEGIN
+		RAISERROR('Symptom does not exist.', 14, 1)
+		Return 2
+	END
+	SELECT ID FROM SymptomNames WHERE SymptomNames.NAME = @name
+	Return 0
+GO
+
+Create Index IX_PERSONLASTNAME
+on Person(LNAME)
+With FILLFACTOR = 80
+GO
+
+CREATE PROCEDURE GetTreatmentsFromDoctor
+(@doctorID Integer)
+AS
+	IF(@doctorID is null)
+	BEGIN
+		RAISERROR('Arguments are null.', 14, 1)
+		Return 1
+	END
+	IF(NOT EXISTS(SELECT * FROM DoctorNames WHERE @doctorID = ID))
+	BEGIN
+		RAISERROR('Doctor does not exist.', 14, 1)
+		Return 2
+	END
+	SELECT TreatmentName FROM DoctorsForTreatment WHERE DoctorID = @doctorID
+	Return 0
+GO
+
+Create Procedure ShowAllPatients
+As
+BEGIN
+	SELECT *
+	FROM Person
+	WHERE Person.role = 'PA'
+END
+Go
+
+Create Procedure ShowAllDoctors
+As
+BEGIN
+	SELECT *
+	FROM Person
+	WHERE Person.role = 'DR'
+END
+Go
+
+Create Procedure ShowAllPeople
+As
+BEGIN
+	SELECT *
+	FROM Person
+END
+Go
+
+Create Procedure ShowAllHealthCareProviders
+As
+BEGIN
+	SELECT *
+	FROM HealthCareProvider
+END
+Go
+
+Create Procedure ShowAllTreatments
+As
+BEGIN
+	SELECT *
+	FROM Treatment
+END
+Go
+
+Create Procedure ShowAllSymptoms
+As
+BEGIN
+	SELECT *
+	FROM Symptom
+END
+Go
+
+Create Procedure ShowAllAcuteSymptoms
+As
+BEGIN
+	SELECT *
+	FROM Acute
+END
+Go
+
+Create Procedure ShowAllChronicSymptoms
+As
+BEGIN
+	SELECT *
+	FROM Chronic
+END
+Go
+
+Create Procedure ShowAllInsures
+As
+BEGIN
+	SELECT *
+	FROM Insures
+END
+Go
+
+Create Procedure ShowAllPerforms
+As
+BEGIN
+	SELECT *
+	FROM Performs
+END
+Go
+
+Create Procedure ShowAllNeeds
+As
+BEGIN
+	SELECT *
+	FROM Needs
+END
+Go
+
+Create Procedure ShowAllSideEffectOf
+As
+BEGIN
+	SELECT *
+	FROM SideEffectOf
+END
+Go
+
+Create Procedure ShowAllDoctorFor
+As
+BEGIN
+	SELECT *
+	FROM DoctorFor
+END
+Go
