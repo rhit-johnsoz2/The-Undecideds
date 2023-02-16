@@ -1100,7 +1100,7 @@ BEGIN
 END
 GO
 
-CREATE PROCEDURE GetPatientsUnderDoctor 
+CREATE PROCEDURE GetPatientsFromDoctor 
 (@doctorID Integer)
 AS
 	IF(@doctorID is null)
@@ -1116,7 +1116,7 @@ AS
 	SELECT * FROM DoctorView WHERE DoctorID = @doctorID
 GO
 
-CREATE PROCEDURE GetPatientsNotUnderDoctor
+CREATE PROCEDURE GetPatientsNotFromDoctor
 (@doctorID Integer)
 AS
 	IF(@doctorID is null)
@@ -1163,7 +1163,7 @@ JOIN Person Doctor on DF.doctorID = Doctor.ID
 WHERE Patient.role = 'PA'
 GO
 
-CREATE PROCEDURE GetDoctorsUnderPatient
+CREATE PROCEDURE GetDoctorsFromPatient
 (@patientID Integer)
 AS
 	IF(@patientID is null)
@@ -1204,15 +1204,6 @@ AS
 	SELECT * FROM SideEffectsOfTreatment WHERE TreatmentID = @treatmentID
 	Return 0
 GO
-
---CREATE VIEW DoctorsForTreatment
---As
---SELECT T.ID as TreatmentID, D.ID, D.fname as DFirstName, D.lname as DLastName, T.Cost as TreatmentCost
---FROM Treatment T JOIN Performs P
---on T.ID = P.treatmentID
---JOIN Person D on P.doctorID = D.ID
---WHERE D.role = 'DR'
---GO
 
 CREATE VIEW DoctorsForTreatment
 As
@@ -1420,5 +1411,16 @@ As
 BEGIN
 	SELECT *
 	FROM DoctorFor
+END
+Go
+
+CREATE PROCEDURE GetDateFromSymptom
+(@patientID Integer)
+as
+BEGIN
+	SELECT symptomDate
+	FROM dbo.PatientAcuteSymptomView
+	WHERE PatientID = @patientID 
+	ORDER BY symptomDate DESC
 END
 Go
