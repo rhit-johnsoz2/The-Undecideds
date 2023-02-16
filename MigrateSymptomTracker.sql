@@ -1100,7 +1100,7 @@ BEGIN
 END
 GO
 
-CREATE PROCEDURE GetPatientsUnderDoctor 
+CREATE PROCEDURE GetPatientsFromDoctor 
 (@doctorID Integer)
 AS
 	IF(@doctorID is null)
@@ -1116,7 +1116,7 @@ AS
 	SELECT * FROM DoctorView WHERE DoctorID = @doctorID
 GO
 
-CREATE PROCEDURE GetPatientsNotUnderDoctor
+CREATE PROCEDURE GetPatientsNotFromDoctor
 (@doctorID Integer)
 AS
 	IF(@doctorID is null)
