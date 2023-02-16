@@ -540,7 +540,7 @@ Return 0
 END
 GO
 
-CREATE PROCEDURE [dbo].[InsertPreforms](@doctorID Integer, @treatmentID Integer)
+CREATE PROCEDURE [dbo].[InsertPerforms](@doctorID Integer, @treatmentID Integer)
 AS
 Begin
 	if(@doctorID is null or @treatmentID is null)
@@ -561,7 +561,7 @@ Begin
 		return 2
 	End
 
-	Insert into dbo.Preforms(doctorID, treatmentID) Values(@doctorID, @treatmentID)
+	Insert into dbo.Performs(doctorID, treatmentID) Values(@doctorID, @treatmentID)
 	return 0
 End
 GO
