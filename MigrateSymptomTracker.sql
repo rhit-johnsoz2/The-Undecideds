@@ -1422,3 +1422,14 @@ BEGIN
 	FROM DoctorFor
 END
 Go
+
+CREATE PROCEDURE GetDateFromSymptom
+(@patientID Integer)
+as
+BEGIN
+	SELECT symptomDate
+	FROM dbo.PatientAcuteSymptomView
+	WHERE PatientID = @patientID 
+	ORDER BY symptomDate DESC
+END
+Go
