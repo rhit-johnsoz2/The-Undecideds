@@ -1,7 +1,6 @@
 package com.undecideds.ui;
 
 import com.undecideds.services.DeleteServiceList;
-import com.undecideds.services.InsertServiceList;
 import com.undecideds.services.ReadServiceList;
 import com.undecideds.services.generic.ReadService;
 import com.undecideds.ui.builders.TableBuilder;
@@ -15,11 +14,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import static com.undecideds.services.ReadServiceList.GET_ACUTE;
 
 public class PatientWindow {
     int id;
@@ -149,7 +146,6 @@ public class PatientWindow {
         HashMap<String, Object> inputValues = new HashMap<>();
         viewHistory.add(new JScrollPane().add(table));
         JButton selectorButton = new JButton("View Symptom Treatments");
-
         selectorButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -157,11 +153,8 @@ public class PatientWindow {
                     JFrame popUpWindow = new JFrame();
                     popUpWindow.setSize(400,400);
                     ResultSet rs1 = ReadServiceList.SYMPTOM_GET_ID_FROM_NAME.ExecuteQuery(new Object[]{inputValues.get("name")});
-//                    ResultSet rs = ReadServiceList.GET_SIDEEFFECT_OF_TREATMENT.ExecuteQuery(new Object[]{ReadService. (rs1)});
                     HashSet<String> hiddenPT2 = new HashSet<String>();
                     hiddenPT2.add("ID");
-//                    JComponent potentialTreatments = TableBuilder.buildTableRaw(rs, hiddenPT2);
-//                    popUpWindow.add(potentialTreatments);
                     popUpWindow.setVisible(true);
         }});
         viewHistory.add(selectorButton);
