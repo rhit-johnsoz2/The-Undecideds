@@ -138,8 +138,8 @@ public class DoctorWindow {
             Wpanel.add(widgets.get(key).generateWidget());
         }
         HashMap<String, ReadService> idMatch2 = new HashMap<>();
-        idMatch2.put("DOCTOR ID", ReadServiceList.GET_DOCTOR_NAMES);
-        idMatch2.put("PATIENT ID", ReadServiceList.GET_PATIENT_NAMES);
+        idMatch2.put("DOCTOR ID", ReadServiceList.GET_DOCTORFOR);
+        idMatch2.put("PATIENT ID", ReadServiceList.GET_DOCTORFOR);
         HashMap<String, InputWidget> widgets2 = DeleteServiceList.DELETE_DOCTORFOR.buildUIWidgets(idMatch2, true);
         widgets2.replace("DOCTOR ID", new InputWidget("DOCTOR ID") {
             @Override

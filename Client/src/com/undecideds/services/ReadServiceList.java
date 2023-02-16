@@ -118,4 +118,12 @@ public class ReadServiceList {
     public static final ReadService PERSON_ROLE_FROM_ID = new ReadService("personGetRoleByID", new Argument[]{
             new Argument(Argument.ArgumentType.INT, "ID")
     });
+
+    public static final ReadService GET_PATIENTS_FROM_DOCTOR = new ReadService("GetPatientsFromDoctor", new Argument[]{
+            new Argument(Argument.ArgumentType.INT, "ID")
+    });
+
+    public static final ReadService GET_PATIENTS_NOT_FROM_DOCTOR = new ReadService("GetPatientsNotFromDoctor", new Argument[]{
+            new Argument(Argument.ArgumentType.INT, "ID")
+    });
 }
