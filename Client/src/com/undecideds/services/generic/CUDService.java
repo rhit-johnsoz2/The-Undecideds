@@ -39,10 +39,6 @@ public class CUDService {
     }
 
     public int ExecuteQuery(Object[] params) {
-        for(Object o : params){
-            System.out.println("input:" + o);
-        }
-        System.out.println(template.toString());
         try{
             CallableStatement statement = DatabaseConnectionService.getConnection().prepareCall(template.toString());
             statement.registerOutParameter(1, Types.INTEGER);

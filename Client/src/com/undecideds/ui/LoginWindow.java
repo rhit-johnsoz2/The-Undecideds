@@ -79,6 +79,7 @@ public class LoginWindow {
             frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
             AdminWindow adminWindow = new AdminWindow();
             adminWindow.launch();
+            return;
         }
         String username = username_text.getText();
         String password = password_text.getText();

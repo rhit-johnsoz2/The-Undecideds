@@ -27,7 +27,7 @@ public class Main {
             }
         }
         System.out.println("attempting login with credentials:\n\tuser: " + user + "\n\tpass: " + EncryptionService.HiddenPass(encryptedPass));
-        DatabaseConnectionService.InitDatabaseConnectionService("titan.csse.rose-hulman.edu", "SymptomTracker");
+        DatabaseConnectionService.InitDatabaseConnectionService("titan.csse.rose-hulman.edu", "SzmTracker2");
         boolean connected = DatabaseConnectionService.connect(user, EncryptionService.Decrypt(encryptedPass));
         if(!connected){
             System.out.println("Connection failed! Exiting . . .");

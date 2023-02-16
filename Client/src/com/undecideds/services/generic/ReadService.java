@@ -56,6 +56,14 @@ public class ReadService {
         return null;
     }
 
+    public ResultSet executeFromStrings(String[] strings) {
+        Object[] args = new Object[arguments.length];
+        for(int i = 0; i < args.length; i++){
+            args[i] = arguments[i].parseArg(strings[i]);
+        }
+        return ExecuteQuery(args);
+    }
+
     public HashMap<String, InputWidget> buildUIWidgets() {
         HashMap<String, InputWidget> widgets = new HashMap<>();
         for(Argument a : arguments) {

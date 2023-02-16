@@ -55,6 +55,9 @@ public class Commands {
     public static final CommandParser IMPORT_DATABASE = new CommandParser("import") {
         @Override
         public void execute(String[] args) {
+            for(CUDService cud : CUDService.CUD_SERVICES){
+                System.out.println(cud.toString());
+            }
             String path = args[0];
             ArrayList<Table> tables = new ArrayList<>();
             for(int i = 1; i < args.length; i++){
@@ -63,6 +66,7 @@ public class Commands {
                 if(SC == null){
                     System.out.println("Unknown S-Proc: " + subArgs[0]);
                 }
+                System.out.println("Adding table for " + subArgs[1]);
                 tables.add(new Table(tables, path + subArgs[1], SC, subArgs[2]));
             }
         }
