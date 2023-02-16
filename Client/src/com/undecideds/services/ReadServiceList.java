@@ -33,15 +33,15 @@ public class ReadServiceList {
             new Argument(Argument.ArgumentType.INT, "PID")
     });
 
-    public static final ReadService GET_DOCTORS_UNDER_PATIENTS = new ReadService("GetDoctorsUnderPatient", new Argument[]{
+    public static final ReadService DOCTORS_FROM_PATIENT = new ReadService("GetDoctorsFromPatient", new Argument[]{
             new Argument(Argument.ArgumentType.INT, "patientID")
     });
 
-    public static final ReadService GET_ALL_PATIENTS_BY_DOCTOR = new ReadService("GetAllPatientsDoctorHas", new Argument[]{
+    public static final ReadService PATIENTS_FROM_DOCTOR = new ReadService("GetPatientsFromDoctor", new Argument[]{
             new Argument(Argument.ArgumentType.INT, "DoctorID")
     });
 
-    public static final ReadService DATE_FROM_SYMPTOM = new ReadService("returnDate", new Argument[]{
+    public static final ReadService DATE_FROM_SYMPTOM = new ReadService("GetDateFromSymptom", new Argument[]{
             new Argument(Argument.ArgumentType.INT, "patientID")
     });
     public static final ReadService GET_PERSONS = new ReadService("ShowAllPeople", new Argument[]{

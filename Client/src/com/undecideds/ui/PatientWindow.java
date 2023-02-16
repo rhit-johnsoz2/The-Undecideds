@@ -72,7 +72,7 @@ public class PatientWindow {
     public JPanel viewMyDoctors(){
         JPanel viewAvalibleDoctors = new JPanel();
         viewAvalibleDoctors.setLayout(new GridLayout());
-        ResultSet rs = ReadServiceList.GET_DOCTORS_UNDER_PATIENTS.ExecuteQuery(new Object[]{id});
+        ResultSet rs = ReadServiceList.DOCTORS_FROM_PATIENT.ExecuteQuery(new Object[]{id});
         viewAvalibleDoctors.add(TableBuilder.buildTable(rs));
         return viewAvalibleDoctors;
     }

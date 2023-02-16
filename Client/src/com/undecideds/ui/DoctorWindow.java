@@ -54,7 +54,7 @@ public class DoctorWindow {
         //Make table of
         JPanel viewPatient = new JPanel();
         viewPatient.setLayout(new GridLayout(2,1));
-        ResultSet rs = ReadServiceList.GET_ALL_PATIENTS_BY_DOCTOR.ExecuteQuery(new Object[]{currentId});
+        ResultSet rs = ReadServiceList.PATIENTS_FROM_DOCTOR.ExecuteQuery(new Object[]{currentId});
         JTable patients;
         JComponent tableNullable = TableBuilder.buildTableRaw(rs, new HashSet<>());
         if (tableNullable instanceof JTable) {

@@ -114,13 +114,13 @@ public class LoginWindow {
                 frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                 frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
                 DoctorWindow doctorWindow = new DoctorWindow();
-                doctorWindow.launch();
+                doctorWindow.launch(id, name);
                 return;
             }else if(role.equals("PA")){
                 frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                 frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
                 PatientWindow patientWindow = new PatientWindow();
-                patientWindow.launch();
+                patientWindow.launch(id, name);
                 return;
             }
         }
