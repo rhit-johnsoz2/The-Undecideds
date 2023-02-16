@@ -11,8 +11,34 @@ public class ReadServiceList {
             new Argument(Argument.ArgumentType.INT, "PID")
     });
 
+    public static final ReadService GET_SIDEEFFECT_OF_TREATMENT = new ReadService("GetSideEffectsOfTreatment", new Argument[]{
+            new Argument(Argument.ArgumentType.INT, "TreatmentID")
+    });
+
+    public static final ReadService SYMPTOM_GET_ID_FROM_NAME = new ReadService("SymptomGetIDFromName", new Argument[]{
+            new Argument(Argument.ArgumentType.STRING, "name")
+    });
+
     public static final ReadService ACUTE_FROM_PATIENT = new ReadService("AcuteFromPatient", new Argument[]{
             new Argument(Argument.ArgumentType.INT, "PID")
+    });
+    public static final ReadService GET_TREATMENTS_FROM_DOCTOR = new ReadService("GetTreatmentsFromDoctor", new Argument[]{
+            new Argument(Argument.ArgumentType.INT, "ID")
+    });
+    public static final ReadService GET_PAST_TREATMENTS = new ReadService("GetPastTreatments", new Argument[]{
+            new Argument(Argument.ArgumentType.INT, "PID")
+    });
+
+    public static final ReadService GET_CURRENT_TREATMENTS = new ReadService("GetCurrentTreatments", new Argument[]{
+            new Argument(Argument.ArgumentType.INT, "PID")
+    });
+
+    public static final ReadService GET_DOCTORS_UNDER_PATIENTS = new ReadService("GetDoctorsUnderPatient", new Argument[]{
+            new Argument(Argument.ArgumentType.INT, "patientID")
+    });
+
+    public static final ReadService GET_ALL_PATIENTS_BY_DOCTOR = new ReadService("GetAllPatientsDoctorHas", new Argument[]{
+            new Argument(Argument.ArgumentType.INT, "DoctorID")
     });
 
     public static final ReadService DATE_FROM_SYMPTOM = new ReadService("returnDate", new Argument[]{
