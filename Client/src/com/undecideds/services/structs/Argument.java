@@ -253,13 +253,28 @@ public class Argument {
                 case STRING -> {return s;}
                 case INT -> {return Integer.parseInt(s);}
                 case FLOAT -> {return Float.parseFloat(s);}
-                case DATE -> {return s.equalsIgnoreCase("now") ? new Date(System.currentTimeMillis()) : Date.valueOf(s);}
+                case DATE -> {
+                    try{
+                        if (s.equalsIgnoreCase("now")){
+                            return new Date(System.currentTimeMillis());
+                        }
+                        return Date.valueOf(s);
+                    }catch (Exception e){
+                        if(s.matches("^[1]*[0-9][/][1-3]*[0-9][/][12][019][0-9][0-9]$")){
+                            String[] subS = s.split("/");
+                            return new Date(Integer.parseInt(subS[2]) - 1900, Integer.parseInt(subS[0]), Integer.parseInt(subS[1]));
+                        }
+                        break;
+                    }
+                }
                 case TIMESTAMP -> {return s.equalsIgnoreCase("now") ? new Timestamp(System.currentTimeMillis()) : Timestamp.valueOf(s);}
                 default -> {System.out.println("Error parsing argument, no type " + type.name());}
             }
         }catch (Exception e){
             System.out.println("Error parsing argument \"" + s + "\" doesn't match the object type " + type.name());
+            return false;
         }
+        System.out.println("Error parsing argument \"" + s + "\" doesn't match the object type " + type.name());
         return false;
     }
 

@@ -87,4 +87,35 @@ public class ReadServiceList {
     public static final ReadService GET_PATIENT_NAMES = new ReadService("GetPatientNames", new Argument[]{});
     public static final ReadService GET_HCP_NAMES = new ReadService("GetHCPNames", new Argument[]{});
     public static final ReadService GET_TREATMENT_NAMES = new ReadService("GetTreatmentNames", new Argument[]{});
+
+    public static final ReadService IMPORT_SYMPTOM = new ReadService("ImportSymptom", new Argument[]{
+            new Argument(Argument.ArgumentType.STRING, "NAME")
+    });
+    public static final ReadService IMPORT_PERSON = new ReadService("ImportPerson", new Argument[]{
+            new Argument(Argument.ArgumentType.STRING, "FNAME"),
+            new Argument(Argument.ArgumentType.STRING, "LNAME"),
+            new Argument(Argument.ArgumentType.STRING, "LOGIN"),
+            new Argument(Argument.ArgumentType.STRING, "PASSWORD"),
+            new Argument(Argument.ArgumentType.STRING, "ROLE"),
+            new Argument(Argument.ArgumentType.INT, "INSURED BY")
+    });
+    public static final ReadService IMPORT_HCP = new ReadService("ImportHealthCareProvider", new Argument[]{
+            new Argument(Argument.ArgumentType.STRING, "NAME")
+    });
+    public static final ReadService IMPORT_TREATMENT = new ReadService("ImportTreatment", new Argument[]{
+            new Argument(Argument.ArgumentType.INT, "COST"),
+            new Argument(Argument.ArgumentType.STRING, "NAME")
+    });
+    public static final ReadService PASSWORD_FROM_LOGIN = new ReadService("getPasswordByLogin", new Argument[]{
+            new Argument(Argument.ArgumentType.STRING, "LOGIN")
+    });
+    public static final ReadService ID_FROM_LOGIN = new ReadService("getIDByLogin", new Argument[]{
+            new Argument(Argument.ArgumentType.STRING, "LOGIN")
+    });
+    public static final ReadService PERSON_NAME_FROM_ID = new ReadService("personGetNameByID", new Argument[]{
+            new Argument(Argument.ArgumentType.INT, "ID")
+    });
+    public static final ReadService PERSON_ROLE_FROM_ID = new ReadService("personGetRoleByID", new Argument[]{
+            new Argument(Argument.ArgumentType.INT, "ID")
+    });
 }

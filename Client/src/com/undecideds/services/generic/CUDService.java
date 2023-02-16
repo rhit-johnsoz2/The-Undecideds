@@ -39,10 +39,6 @@ public class CUDService {
     }
 
     public int ExecuteQuery(Object[] params) {
-        for(Object o : params){
-            System.out.println("input:" + o);
-        }
-        System.out.println(template.toString());
         try{
             CallableStatement statement = DatabaseConnectionService.getConnection().prepareCall(template.toString());
             statement.registerOutParameter(1, Types.INTEGER);
@@ -135,7 +131,6 @@ public class CUDService {
     }
 
     private InputWidget generateComboWidget(String argId, HashMap<String, ReadService> idMatch, Object inputValue){
-        System.out.println("i " + inputValue);
         return new InputWidget(argId){
             JComboBox comboBox;
             HashMap<String, Integer> map;
@@ -155,9 +150,7 @@ public class CUDService {
                     }
                     comboBox = new JComboBox(map.keySet().toArray());
                     if (inputValue != null){
-                        System.out.println("inp " + inputValue);
                         comboBox.getModel().setSelectedItem(inputName);
-                        System.out.println(comboBox.getModel().getSelectedItem());
                     }
                     JPanel container = new JPanel(new GridLayout(1, 2));
                     container.add(new JLabel(argId));
@@ -187,5 +180,14 @@ public class CUDService {
             return "Failed to parse params, check stacktrace";
         }
         return resultCodes[code];
+    }
+
+    public static CUDService getServiceFromName(String name){
+        for(CUDService service : CUD_SERVICES){
+            if(name.equalsIgnoreCase(service.sprocName)){
+                return service;
+            }
+        }
+        return null;
     }
 }

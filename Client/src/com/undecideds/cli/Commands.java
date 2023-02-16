@@ -1,7 +1,10 @@
 package com.undecideds.cli;
 
+import com.undecideds.cli.migration.Table;
 import com.undecideds.services.generic.CUDService;
+import com.undecideds.services.generic.ReadService;
 import com.undecideds.services.structs.Argument;
+import com.undecideds.services.structs.SprocContainer;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -22,7 +25,7 @@ public class Commands {
             System.out.println("Unknown CUD sproc: " + args[0]);
         }
     };
-    public static final CommandParser IMPORT_CSV = new CommandParser("load") {
+    public static final CommandParser LOAD_CSV = new CommandParser("load") {
         @Override
         public void execute(String[] args) {
             CUDService service = null;
@@ -47,6 +50,36 @@ public class Commands {
             }catch (Exception e){
                 System.out.println("Couldn't open file " + args[1]);
             }
+        }
+    };
+    public static final CommandParser IMPORT_DATABASE = new CommandParser("import") {
+        @Override
+        public void execute(String[] args) {
+            for(CUDService cud : CUDService.CUD_SERVICES){
+                System.out.println(cud.toString());
+            }
+            String path = args[0];
+            ArrayList<Table> tables = new ArrayList<>();
+            for(int i = 1; i < args.length; i++){
+                String[] subArgs = args[i].split("\\|");
+                SprocContainer SC = getSproc(subArgs[0]);
+                if(SC == null){
+                    System.out.println("Unknown S-Proc: " + subArgs[0]);
+                }
+                System.out.println("Adding table for " + subArgs[1]);
+                tables.add(new Table(tables, path + subArgs[1], SC, subArgs[2]));
+            }
+        }
+        private SprocContainer getSproc(String name){
+            ReadService readService = ReadService.getServiceFromName(name);
+            if(readService != null){
+                return new SprocContainer(readService);
+            }
+            CUDService cudService = CUDService.getServiceFromName(name);
+            if(cudService != null){
+                return new SprocContainer(cudService);
+            }
+            return null;
         }
     };
 }

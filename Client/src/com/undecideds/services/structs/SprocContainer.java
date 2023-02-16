@@ -25,6 +25,18 @@ public class SprocContainer {
         this.cuds = cuds;
     }
 
+    public boolean isReadService(){
+        return rs != null;
+    }
+
+    public ReadService getRs(){
+        return rs;
+    }
+
+    public CUDService getCuds(){
+        return cuds;
+    }
+
     public void BuildExecuteWindow(){
         JFrame frame = new JFrame();
         HashMap<String, InputWidget> widgets = new HashMap<>();

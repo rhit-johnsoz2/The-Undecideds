@@ -78,7 +78,7 @@ public class InsertServiceList {
     });
 
 
-    public static final CUDService INSERT_PERFORMS = new CUDService("[InsertPreforms]", new Argument[]{
+    public static final CUDService INSERT_PERFORMS = new CUDService("InsertPerforms", new Argument[]{
             new Argument(Argument.ArgumentType.INT, "DOCTOR ID"),
             new Argument(Argument.ArgumentType.INT, "TREATMENT ID")
     }, new String[]{

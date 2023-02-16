@@ -2,7 +2,9 @@ package com.undecideds.cli;
 
 import com.undecideds.services.DeleteServiceList;
 import com.undecideds.services.InsertServiceList;
+import com.undecideds.services.ReadServiceList;
 import com.undecideds.services.UpdateServiceList;
+import com.undecideds.services.generic.ReadService;
 
 import java.util.Scanner;
 
@@ -14,6 +16,7 @@ public class CLIApplication {
         InsertServiceList.INSERT_PERSON.toString();
         UpdateServiceList.UPDATE_PERSON.toString();
         DeleteServiceList.DELETE_PERSON.toString();
+        ReadServiceList.GET_PATIENT_NAMES.toString();
         while(true){
             parse(QueryUser("$ "));
         }
