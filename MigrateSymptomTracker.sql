@@ -1113,7 +1113,7 @@ AS
 		RAISERROR('Doctor does not exist.', 14, 1)
 		Return 2
 	END
-	SELECT * FROM DoctorView WHERE DoctorID = @doctorID
+	SELECT CONCAT(FName, ' ', LName) as Name, ID FROM DoctorView WHERE DoctorID != @doctorID
 GO
 
 CREATE PROCEDURE GetPatientsNotFromDoctor
@@ -1129,7 +1129,7 @@ AS
 		RAISERROR('Doctor does not exist.', 14, 1)
 		Return 2
 	END
-	SELECT * FROM DoctorView WHERE DoctorID != @doctorID
+	SELECT CONCAT(FName, ' ', LName) as Name, ID FROM DoctorView WHERE DoctorID != @doctorID
 GO
 
 CREATE PROCEDURE GetPastTreatments
