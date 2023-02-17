@@ -44,6 +44,7 @@ public class CUDService {
             statement.registerOutParameter(1, Types.INTEGER);
             int paramNumber = 2;
             for(Argument a : arguments){
+                System.out.println(params[paramNumber - 2]);
                 if(!a.prepare(statement, paramNumber, params[paramNumber - 2])){
                     return -1;
                 }
@@ -52,7 +53,15 @@ public class CUDService {
             statement.execute();
             return statement.getInt(1);
         }catch (Exception e){
-            e.printStackTrace();
+            if(e instanceof SQLException){
+                JFrame err_popup = new JFrame("Error!");
+                err_popup.add(new JLabel(((SQLException)e).getLocalizedMessage()));
+                err_popup.pack();
+                err_popup.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                err_popup.setVisible(true);
+            }else{
+                e.printStackTrace();
+            }
         }
         return -1;
     }

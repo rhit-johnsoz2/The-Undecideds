@@ -15,30 +15,41 @@ public class GenHistogram {
     public Container GenHistogram(int id , GraphType gt){
         try {
             ResultSet rs = ReadServiceList.DATE_FROM_SYMPTOM.ExecuteQuery(new Object[]{id});
-            double cutOffDate = System.currentTimeMillis();
+            long cutOffTime = System.currentTimeMillis();
             double[] occurences = new double[1];
             String xAxis = "";
             String title = "";
             switch (gt) {
                 case WEEKLY -> {
-                    cutOffDate -= 7L * 24 * 60 * 60 * 1000;
+                    cutOffTime -= 7L * 24 * 60 * 60 * 1000;
                     occurences = new double[7];
-                    xAxis = "Days per Week";
-                    title = "Symptom Frequency per Week";
+                    xAxis = "Time";
+                    title = "Symptom Frequency over Week";
                 }
                 case MONTHLY -> {
-                    cutOffDate -= 30L * 24 * 60 * 60 * 1000;
+                    cutOffTime -= 30L * 24 * 60 * 60 * 1000;
                     occurences = new double[30];
-                    xAxis = "Days per Month";
-                    title = "Symptom Frequency per Month";
+                    xAxis = "Time";
+                    title = "Symptom Frequency over Month";
                 }
                 case ANNUAL -> {
-                    cutOffDate -= 365L * 24 * 60 * 60 * 1000;
+                    cutOffTime -= 365L * 24 * 60 * 60 * 1000;
                     occurences = new double[365];
-                    xAxis = "Days per Year";
-                    title = "Symptom Frequency per Year";
+                    xAxis = "Time";
+                    title = "Symptom Frequency over Year";
                 }
             }
+
+            long currentTime = System.currentTimeMillis();
+            long divSize = (currentTime - cutOffTime) / occurences.length;
+            while(rs.next()){
+                long time = rs.getDate("symptomDate").getTime();
+                if(time > cutOffTime && time < currentTime){
+                    long diff = time - cutOffTime;
+                    occurences[(int)(diff / divSize)] ++;
+                }
+            }
+
             HistogramDataset dataset = new HistogramDataset();
             dataset.addSeries("Frequency of symptom", occurences, occurences.length);
             JFreeChart histogram = ChartFactory.createHistogram(title,

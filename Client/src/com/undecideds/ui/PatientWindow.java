@@ -15,6 +15,8 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
 import java.sql.ResultSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -37,6 +39,17 @@ public class PatientWindow {
         refresh();
 
 
+        framePatient.addWindowFocusListener(new WindowFocusListener() {
+            @Override
+            public void windowGainedFocus(WindowEvent e) {
+                refresh();
+            }
+
+            @Override
+            public void windowLostFocus(WindowEvent e) {
+
+            }
+        });
         framePatient.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         framePatient.getContentPane().add(tabbedPane, BorderLayout.CENTER);
         framePatient.setVisible(true);
@@ -104,8 +117,11 @@ public class PatientWindow {
             public void actionPerformed(ActionEvent e) {
                 DeleteServiceList.DELETE_DOCTORFOR.ExecuteQuery(new Object[]{Integer.parseInt(inputValues.get("ID").toString()),id});
                 refresh();
-            }
-        });
+            }});
+        if(patients.getRowCount() == 0){
+            runButton2.getComponent(0).setEnabled(false);
+        }
+        viewAvalibleDoctors.add(runButton2);
 
         patients.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override

@@ -131,7 +131,6 @@ public class ReadService {
                 try {
                     map = new HashMap<>();
                     ResultSet rs = readService.ExecuteQuery(inputValues);
-                    String inputName = "";
                     while (rs.next()) {
                         int id = rs.getInt("ID");
                         String name = rs.getString("NAME");
