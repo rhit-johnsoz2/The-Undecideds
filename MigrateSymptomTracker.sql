@@ -205,6 +205,15 @@ JOIN Person Patient on DF.patientID = Patient.ID
 WHERE Doctor.role = 'DR' AND Patient.role = 'PA'
 GO
 
+CREATE VIEW NotDoctorForView
+AS
+SELECT Doctor.ID AS DoctorID, Patient.fname, Patient.lname, Patient.ID
+FROM Person Doctor JOIN Person Patient On NOT EXISTS (SELECT *
+													  FROM DoctorView
+													  WHERE DoctorID != Doctor.ID and ID != Patient.ID)
+WHERE Doctor.role = 'DR' AND Patient.role = 'PA'
+GO
+
 CREATE VIEW AllDoctorsInHCP
 AS
 SELECT HCP.ID as HCPID, Doctor.fname, Doctor.lname, Doctor.ID
@@ -1129,7 +1138,7 @@ AS
 		RAISERROR('Doctor does not exist.', 14, 1)
 		Return 2
 	END
-	SELECT CONCAT(FName, ' ', LName) as Name, ID FROM DoctorView WHERE DoctorID != @doctorID
+	SELECT CONCAT(FName, ' ', LName) as Name, ID FROM NotDoctorForView WHERE DoctorID = @doctorID
 GO
 
 CREATE PROCEDURE GetPastTreatments
