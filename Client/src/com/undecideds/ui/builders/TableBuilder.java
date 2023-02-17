@@ -293,7 +293,7 @@ public class TableBuilder {
         }
     }
 
-    private static DefaultTableModel getTableModel(ResultSet rs, HashSet<String> hidden){
+    public static DefaultTableModel getTableModel(ResultSet rs, HashSet<String> hidden){
         try{
             ResultSetMetaData rsmd = rs.getMetaData();
 
