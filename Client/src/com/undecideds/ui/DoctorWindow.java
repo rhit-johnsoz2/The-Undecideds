@@ -158,15 +158,11 @@ public class DoctorWindow {
         JPanel myTreatmentsPanel = new JPanel(false);
         myTreatmentsPanel.setLayout(new BoxLayout(myTreatmentsPanel, BoxLayout.PAGE_AXIS));
         ResultSet rs = ReadServiceList.GET_TREATMENTS_FROM_DOCTOR.ExecuteQuery(new Object[]{currentId});
-
         JTable patients = (JTable) TableBuilder.buildTableRaw(rs, new HashSet<>());
+        JPanel Wpanel2 = new JPanel();
+        HashMap<String, InputWidget> widgets = new HashMap<>();
 
-        HashMap<String, ReadService> idMatch = new HashMap<>();
-        idMatch.put("DOCTOR ID", ReadServiceList.GET_DOCTORS);
-        idMatch.put("TREATMENT ID", ReadServiceList.GET_TREATMENTS);
-        HashMap<String, InputWidget> widgets = InsertServiceList.INSERT_PERFORMS.buildUIWidgets(idMatch, true);
-
-        widgets.replace("DOCTOR ID", new InputWidget("DOCTOR ID") {
+        widgets.put("DOCTOR ID", new InputWidget("DOCTOR ID") {
             @Override
             public Container generateWidget() {
                 return new JPanel();
@@ -177,11 +173,12 @@ public class DoctorWindow {
                 return currentId;
             }
         });
-        JPanel Wpanel2 = new JPanel();
+        widgets.put("TreatmentName", ReadService.generateComboWidget("TreatmentName", ReadServiceList.TREATMENTS_NOT_DONE_BY_DOCTOR, new Object[]{currentId}));
+
         for(String key : widgets.keySet()){
             Wpanel2.add(widgets.get(key).generateWidget());
         }
-        Container addTreatment = InsertServiceList.INSERT_PERFORMS.buildActivateButton("Add Treatment ", widgets, new ResultListener() {
+        Container addTreatment = InsertServiceList.INSERT_PERFORMS.buildActivateButton("Add Treatment", widgets, new ResultListener() {
             @Override
             public void onResult(int result) {
                 try {
