@@ -87,7 +87,7 @@ CREATE TABLE Needs(
 	TreatmentID Integer REFERENCES dbo.Treatment(ID),
 	SDate Date,
 	EDate Date,
-	Primary key(PatientID, TreatmentID)
+	Primary key(PatientID, TreatmentID, SDate)
 )
 GO
 
