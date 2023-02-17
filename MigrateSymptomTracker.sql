@@ -1296,7 +1296,7 @@ Begin
 	RAISERROR('Coverage cannot be negative.', 14, 1)
 	ROLLBACK TRANSACTION
 End
-If (SELECT Cost From Treatment Where ID = @tID) > @coverage
+If (SELECT Cost From Treatment Where ID = @tID) < @coverage
 Begin
 	RAISERROR('Coverage cannot be greater than cost.', 14, 1)
 	ROLLBACK TRANSACTION
