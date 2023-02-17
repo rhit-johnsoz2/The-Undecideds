@@ -66,7 +66,7 @@ public class LoginWindow {
             }
         });
         frame.add(panel, "Center");
-        frame.setTitle("Please Login Here !");
+        frame.setTitle("Please Login Here!");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(500, 300);
         frame.setVisible(true);
