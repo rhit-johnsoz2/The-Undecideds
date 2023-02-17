@@ -92,24 +92,6 @@ public class PatientWindow {
         hiddenIDs.add("ID");
         JTable patients = (JTable) TableBuilder.buildTableRaw(rs, hiddenIDs);
         viewAvalibleDoctors.add(new JScrollPane(patients));
-        HashMap<String, InputWidget> widgets = new HashMap<>();
-        JPanel Wpanel = new JPanel();
-
-        widgets.put("PATIENT ID", new InputWidget("PATIENT ID") {
-            @Override
-            public Container generateWidget() {
-                return new JPanel();
-            }
-            @Override
-            public Object getValue() {
-                return id;
-            }
-        });
-//        widgets.put("DOCTOR ID", ReadService.generateComboWidget("DOCTOR ID", ReadServiceList.DOCTORS_FROM_PATIENT, new Object[]{id}));
-        for(String key : widgets.keySet()){
-            Wpanel.add(widgets.get(key).generateWidget());
-        }
-        viewAvalibleDoctors.add(Wpanel);
         JButton runButton = new JButton("Remove Doctor");
         HashMap<String, Object> inputValues = new HashMap<>();
         runButton.addActionListener(new ActionListener() {
@@ -118,10 +100,7 @@ public class PatientWindow {
                 DeleteServiceList.DELETE_DOCTORFOR.ExecuteQuery(new Object[]{Integer.parseInt(inputValues.get("ID").toString()),id});
                 refresh();
             }});
-        if(patients.getRowCount() == 0){
-            runButton.getComponent(0).setEnabled(false);
-        }
-        viewAvalibleDoctors.add(runButton);
+        viewAvalibleDoctors.add(new JPanel().add(runButton));
 
         patients.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
@@ -140,9 +119,7 @@ public class PatientWindow {
                 }
             }
         });
-
-        viewAvalibleDoctors.add(runButton);
-
+        runButton.setEnabled(false);
         return viewAvalibleDoctors;
     }
 
@@ -153,15 +130,13 @@ public class PatientWindow {
         Container hist3 = new GenHistogram().GenHistogram(patientID, GenHistogram.GraphType.ANNUAL);
 
         home.setLayout(new BoxLayout(home, BoxLayout.PAGE_AXIS));
-        JLabel hello = new JLabel("Hello " + patientName + " back to Symptom Tracker!");
-        JLabel curSympts = new JLabel(" Current Symptoms");
+        JLabel hello = new JLabel("Hello " + patientName + " welcome back to Symptom Tracker!");
         String rs = ReadService.getSingleton(ReadServiceList.GET_PATIENT_HCP.ExecuteQuery(new Object[]{id})).toString();
 
         JPanel histoPan = new JPanel();
         histoPan.setLayout(new BoxLayout(histoPan, BoxLayout.X_AXIS));
         JLabel myHealthCare = new JLabel("Current Healthcare Provider: " + rs);
         home.add(hello);
-        home.add(curSympts);
         home.add(myHealthCare);
         home.add(Box.createRigidArea(new Dimension(50,100)));
         histoPan.add(Box.createRigidArea(new Dimension(10,167)));
