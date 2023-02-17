@@ -123,7 +123,7 @@ CREATE TABLE Acute (
 	symptomID integer,
 	severity integer,
 	symptomDate date,
-	primary key(personID, symptomID),
+	primary key(personID, symptomID, symptomDate),
 	foreign key(personID) references person(ID),
 	foreign key(symptomID) references symptom(ID)
 )
@@ -1456,10 +1456,10 @@ GO
 
 CREATE VIEW NotTreatmentForView
 AS
-SELECT Doc.ID AS ID, T.name as Name
+SELECT Doc.ID AS DoctorID, T.ID as ID, T.name as Name
 FROM Person Doc JOIN Treatment T On NOT EXISTS (SELECT *
-						FROM Performs
-						WHERE doctorID = Doc.ID and treatmentID = T.ID)
+												   FROM Performs
+												   WHERE doctorID = Doc.ID and treatmentID = T.ID)
 WHERE Doc.role = 'DR'
 GO
 
@@ -1476,5 +1476,5 @@ AS
 		RAISERROR('Doctor does not exist.', 14, 1)
 		Return 2
 	END
-	SELECT ID, Name FROM NotTreatmentForView WHERE ID = @doctorID
+	SELECT ID, Name FROM NotTreatmentForView WHERE DoctorID = @doctorID
 GO
