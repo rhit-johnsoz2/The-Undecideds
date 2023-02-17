@@ -43,24 +43,6 @@ public class Main {
             System.out.println("Connection failed! Exiting . . .");
             System.exit(401);
         }
-
-        JFrame test = new JFrame();
-
-        ResultSet rs = ReadServiceList.GET_PERSONS.ExecuteQuery(new Object[]{});
-        HashSet<String> hidden = new HashSet<String>();
-        hidden.add("ID");
-        JTable table = (JTable) TableBuilder.buildTableRaw(rs, hidden);
-        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                for (int i = 0; i < table.getColumnCount(); i++) {
-                    System.out.println(table.getColumnName(i) + " : " + table.getValueAt(table.getSelectedRow(), i));
-                }
-            }
-        });
-        test.add(new JScrollPane(table));
-        test.setSize(500, 500);
-        test.setVisible(true);
         
         if(guiEnabled){
             LoginWindow window = new LoginWindow();
