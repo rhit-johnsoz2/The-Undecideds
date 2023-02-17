@@ -160,7 +160,7 @@ public class DoctorWindow {
 
 
                 }catch (Exception e){
-                    System.out.println("fatal error refetching table");
+                    System.out.println("fatal error re-fetching table");
                     e.printStackTrace();
                     System.exit(501);
                 }
