@@ -1135,7 +1135,7 @@ GO
 CREATE PROCEDURE GetPastTreatments
 (@pID Integer)
 AS
-SELECT T.name as Name, T.Cost as Cost, Needs.SDate as [Start Date], Needs.EDate as [End Date]
+SELECT T.name as Name, Needs.SDate as [Start Date], Needs.EDate as [End Date]
 FROM Needs JOIN Treatment T on Needs.TreatmentID = T.ID
 WHERE PatientID = @pID and EDate < GETDATE()
 GO
