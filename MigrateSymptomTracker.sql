@@ -1504,6 +1504,29 @@ AS
 	SELECT ID, Name FROM NotTreatmentForView WHERE DoctorID = @doctorID
 GO
 
+CREATE VIEW NotChronicForView
+AS
+SELECT Pat.ID AS PatientID, Ch.ID as ID, Ch.name as Name
+FROM Person Pat JOIN Symptom Ch On NOT EXISTS (SELECT * FROM Chronic WHERE SymptomID = Ch.ID and PersonID = Pat.ID)
+WHERE Pat.role = 'PA'
+GO
+
+CREATE PROCEDURE GetChronicNotFromPatient
+(@patientID Integer)
+AS
+	IF(@patientID is null)
+	BEGIN
+		RAISERROR('Patient ID does not exist.', 14, 1)
+		Return 1
+	END
+	IF(NOT EXISTS(SELECT * FROM PatientNames WHERE @patientID = ID))
+	BEGIN
+		RAISERROR('Patient does not exist.', 14, 1)
+		Return 2
+	END
+	SELECT ID, Name FROM NotChronicForView WHERE PatientID = @patientID
+GO
+
 CREATE PROCEDURE InsertNeedsNoEnd
 	(@patientID Integer, @treatmentID Integer, @sDate Date)
 AS
