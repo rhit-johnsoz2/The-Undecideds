@@ -34,7 +34,7 @@ public class DoctorWindow {
 
         tabbedPane.addTab("My Treatments", null, myTreatments(), "");
         tabbedPane.addTab("Add Patient", null, addPatient(), "");
-        tabbedPane.addTab("View Patient", null, viewPatient(), "");
+        tabbedPane.addTab("View Patients", null, viewPatient(), "");
 
         frameDoctor.add(tabbedPane);
         frameDoctor.setVisible(true);
@@ -62,10 +62,15 @@ public class DoctorWindow {
         selectorButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+<<<<<<< HEAD
                 JFrame popUpWindow = new JFrame();
                 popUpWindow.setSize(400, 400);
 //                popUpWindow.add(DoctorViewingPatientWindow.launchViewHistory(false, Integer.parseInt(inputValues.get("ID").toString())));
                 popUpWindow.setVisible(true);
+=======
+                DoctorViewingPatientWindow patientView = new DoctorViewingPatientWindow();
+                patientView.launch(currentId, (int)inputValues.get("ID"));
+>>>>>>> 38a596811d1ed64fc329ae998ade14b5163ab929
             }
         });
         JButton selectorButton2 = new JButton("Remove Patient");
@@ -168,6 +173,8 @@ public class DoctorWindow {
         myTreatmentsPanel.add(addTreatment);
         return myTreatmentsPanel;
     }
+
+    JComboBox addPatientComboBox;
     public JPanel addPatient(){
         JPanel addPatient = new JPanel(false);
         addPatient.setLayout(new BoxLayout(addPatient, BoxLayout.PAGE_AXIS));
@@ -192,7 +199,7 @@ public class DoctorWindow {
         Container runButton2 = InsertServiceList.INSERT_DOCTORFOR.buildActivateButton("Add", widgets, new ResultListener(){
             @Override
             public void onResult(int result) {
-                // DO ON RUN
+
             }});
         Wpanel2.add(runButton2);
         Wpanel2.setLayout(new BoxLayout(Wpanel2, BoxLayout.PAGE_AXIS));
