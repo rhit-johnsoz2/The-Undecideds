@@ -1285,7 +1285,7 @@ AS
 GO
 
 Create Trigger NoNegativeCoverage on Insures
-AFTER Insert
+AFTER Insert, Update
 AS
 DECLARE @coverage Integer
 SET @coverage = (Select Coverage from inserted)
