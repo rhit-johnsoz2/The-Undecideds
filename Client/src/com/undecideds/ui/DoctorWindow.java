@@ -1,11 +1,9 @@
 package com.undecideds.ui;
 
-import com.undecideds.cli.migration.Table;
 import com.undecideds.services.DeleteServiceList;
 import com.undecideds.services.InsertServiceList;
 import com.undecideds.services.ReadServiceList;
 import com.undecideds.services.generic.ReadService;
-import com.undecideds.ui.builders.GenHistogram;
 import com.undecideds.ui.builders.TableBuilder;
 import com.undecideds.ui.cuduibuilder.InputWidget;
 import com.undecideds.ui.cuduibuilder.ResultListener;
@@ -13,7 +11,6 @@ import com.undecideds.ui.cuduibuilder.ResultListener;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.xml.transform.Result;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -34,7 +31,6 @@ public class DoctorWindow {
 
         JTabbedPane tabbedPane = new JTabbedPane();
 
-        tabbedPane.addTab("Home", null, home(), "");
         tabbedPane.addTab("My Treatments", null, myTreatments(), "");
         tabbedPane.addTab("Add Patient", null, addPatient(), "");
         tabbedPane.addTab("View Patient", null, viewPatient(), "");
@@ -43,29 +39,17 @@ public class DoctorWindow {
         frameDoctor.setVisible(true);
     }
 
-    public JPanel home(){
-        JPanel homePanel = new JPanel(false);
-        JLabel helloDoctor = new JLabel("Hello Dr. " + currentName);
-        homePanel.setLayout(new BoxLayout(homePanel, BoxLayout.PAGE_AXIS));
-        homePanel.add(helloDoctor);
-        return homePanel;
-    }
-
     public JPanel viewPatient() {
-        //Make table of
         JPanel viewPatient = new JPanel();
         viewPatient.setLayout(new BoxLayout(viewPatient, BoxLayout.PAGE_AXIS));
         ResultSet rs = ReadServiceList.PATIENTS_FROM_DOCTOR.ExecuteQuery(new Object[]{currentId});
-        JTable patients;
-        JComponent tableNullable = TableBuilder.buildTableRaw(rs, new HashSet<>());
-        if (tableNullable instanceof JTable) {
-            patients = (JTable) tableNullable;
-        } else {
-            viewPatient.add(tableNullable);
-            return viewPatient;
-        }
-        viewPatient.add(new JScrollPane(patients));
-        viewPatient.add(patients);
+
+        HashSet<String> hiddenIDs = new HashSet<String>();
+        hiddenIDs.add("ID");
+        hiddenIDs.add("DoctorID");
+        JTable patients = (JTable) TableBuilder.buildTableRaw(rs, hiddenIDs);
+
+
         JButton selectorButton = new JButton("View Symptom Treatments");
         HashMap<String, Object> inputValues = new HashMap<>();
         selectorButton.addActionListener(new ActionListener() {
@@ -78,10 +62,15 @@ public class DoctorWindow {
             }
         });
         JButton selectorButton2 = new JButton("Remove Patient");
-        selectorButton.addActionListener(new ActionListener() {
+        selectorButton2.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 DeleteServiceList.DELETE_DOCTORFOR.ExecuteQuery(new Object[]{currentId,Integer.parseInt(inputValues.get("ID").toString())});
+                ResultSet rs = ReadServiceList.PATIENTS_FROM_DOCTOR.ExecuteQuery(new Object[]{currentId});
+                HashSet<String> hiddenIDs = new HashSet<String>();
+                hiddenIDs.add("ID");
+                hiddenIDs.add("DoctorID");
+                patients.setModel(TableBuilder.getTableModel(rs, hiddenIDs));
             }
         });
         patients.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -119,6 +108,7 @@ public class DoctorWindow {
                 }
             }
         });
+        viewPatient.add(new JScrollPane(patients));
         viewPatient.add(selectorButton2);
         viewPatient.add(selectorButton);
         return viewPatient;
@@ -128,8 +118,9 @@ public class DoctorWindow {
         JPanel myTreatmentsPanel = new JPanel(false);
         myTreatmentsPanel.setLayout(new BoxLayout(myTreatmentsPanel, BoxLayout.PAGE_AXIS));
         ResultSet rs = ReadServiceList.GET_TREATMENTS_FROM_DOCTOR.ExecuteQuery(new Object[]{currentId});
-        Container table = TableBuilder.buildTable(rs);
-        myTreatmentsPanel.add(TableBuilder.buildTable(rs));
+
+        JTable patients = (JTable) TableBuilder.buildTableRaw(rs, new HashSet<>());
+
         HashMap<String, ReadService> idMatch = new HashMap<>();
         idMatch.put("DOCTOR ID", ReadServiceList.GET_DOCTORS);
         idMatch.put("TREATMENT ID", ReadServiceList.GET_TREATMENTS);
@@ -151,13 +142,13 @@ public class DoctorWindow {
         for(String key : widgets2.keySet()){
             Wpanel2.add(widgets2.get(key).generateWidget());
         }
-        myTreatmentsPanel.add(Wpanel2);
         Container addTreatment = InsertServiceList.INSERT_PERFORMS.buildActivateButton("Add Treatmnet ", widgets2, new ResultListener() {
             @Override
             public void onResult(int result) {
                 try {
                     // update TABLE
-
+                    ResultSet rs = ReadServiceList.GET_TREATMENTS_FROM_DOCTOR.ExecuteQuery(new Object[]{currentId});
+                    patients.setModel(TableBuilder.getTableModel(rs, new HashSet<>()));
 
                 }catch (Exception e){
                     System.out.println("fatal error refetching table");
@@ -166,6 +157,8 @@ public class DoctorWindow {
                 }
             }
         });
+        myTreatmentsPanel.add(new JScrollPane(patients));
+        myTreatmentsPanel.add(Wpanel2);
         myTreatmentsPanel.add(addTreatment);
         return myTreatmentsPanel;
     }
