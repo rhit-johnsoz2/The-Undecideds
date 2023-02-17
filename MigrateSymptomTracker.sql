@@ -87,7 +87,7 @@ CREATE TABLE Needs(
 	TreatmentID Integer REFERENCES dbo.Treatment(ID),
 	SDate Date,
 	EDate Date,
-	Primary key(PatientID, TreatmentID, SDate)
+	Primary key(PatientID, TreatmentID, SDate, EDate)
 )
 GO
 
@@ -750,7 +750,7 @@ CREATE PROCEDURE [dbo].[UpdateNeeds](@PersonId int, @Treatment int, @Start date,
 As
 Begin
 
-if(@personID is null or @Treatment is null or @Start is null or @end is null)
+if(@personID is null or @Treatment is null or @Start is null)
 	Begin
 		RAISERROR('Cannot support null attribute', 14, 1)
 		return 1;
