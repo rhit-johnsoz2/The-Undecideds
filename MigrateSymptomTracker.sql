@@ -304,9 +304,16 @@ AFTER Insert
 AS
 DECLARE @doc Integer
 SET @doc = (Select PersonID from inserted)
+DECLARE @treatment Integer
+SET @treatment = (Select TreatmentID from inserted)
 If (NOT EXISTS(SELECT * FROM DoctorNames WHERE ID = @doc))
 Begin
 	RAISERROR('Only doctors can be insured.', 14, 1)
+	ROLLBACK TRANSACTION
+End
+IF (NOT EXISTS(SELECT * FROM Performs WHERE doctorID = @doc and treatmentID = @treatment))
+Begin
+	RAISERROR('Doctor must perform treatment.', 14, 1)
 	ROLLBACK TRANSACTION
 End
 GO
@@ -1152,7 +1159,7 @@ GO
 CREATE PROCEDURE GetCurrentTreatments
 (@pID Integer)
 AS
-SELECT T.ID as ID, T.name as Name, T.Cost as Cost, Needs.SDate as [Start Date]
+SELECT T.ID as ID, T.name as Name, Needs.SDate as [Start Date]
 FROM Needs JOIN Treatment T on Needs.TreatmentID = T.ID
 WHERE PatientID = @pID and EDate >= GETDATE()
 GO
