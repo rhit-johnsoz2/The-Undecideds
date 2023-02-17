@@ -102,6 +102,17 @@ public class InsertServiceList {
             "End Date occurs before Start Date"
     });
 
+    public static final CUDService INSERT_NEEDS_NO_END = new CUDService("InsertNeedsNoEnd", new Argument[]{
+            new Argument(Argument.ArgumentType.INT, "PATIENT ID"),
+            new Argument(Argument.ArgumentType.INT, "TREATMENT ID"),
+            new Argument(Argument.ArgumentType.DATE, "STARTING DATE")
+    }, new String[]{
+            "Successful",
+            "Input Arguments cannot be null",
+            "PatientID does not exist",
+            "TreatmentID does not exist"
+    });
+
 
     public static final CUDService INSERT_SIDEEFFECTOF = new CUDService("InsertSideEffectOf", new Argument[]{
             new Argument(Argument.ArgumentType.INT, "SYMPTOM ID"),

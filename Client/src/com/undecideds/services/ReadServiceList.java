@@ -4,6 +4,7 @@ import com.undecideds.services.generic.CUDService;
 import com.undecideds.services.generic.ReadService;
 import com.undecideds.services.structs.Argument;
 
+import java.sql.ResultSet;
 import java.util.ArrayList;
 
 public class ReadServiceList {
@@ -133,5 +134,14 @@ public class ReadServiceList {
 
     public static final ReadService GET_PATIENTS_NOT_FROM_DOCTOR = new ReadService("GetPatientsNotFromDoctor", new Argument[]{
             new Argument(Argument.ArgumentType.INT, "ID")
+    });
+
+    public static final ReadService GET_DOCTOR_EXPENSES_FOR_TREATMENT = new ReadService("GetDoctorExpensesForTreatment", new Argument[]{
+            new Argument(Argument.ArgumentType.INT, "TREATMENT ID"),
+            new Argument(Argument.ArgumentType.INT, "PATIENT ID")
+    });
+
+    public static final ReadService GET_CHRONIC_NOT_FROM_PATIENT = new ReadService("GetChronicNotFromPatient", new Argument[]{
+            new Argument(Argument.ArgumentType.INT, "PATIENT ID")
     });
 }

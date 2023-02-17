@@ -7,12 +7,12 @@ import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.sql.CallableStatement;
-import java.sql.Date;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.util.Properties;
 
 public class Argument {
@@ -29,7 +29,12 @@ public class Argument {
                 case STRING -> {statement.setString(index, (String) o); return true;}
                 case INT -> {statement.setInt(index, (int) o); return true;}
                 case FLOAT -> {statement.setFloat(index, (float) o); return true;}
-                case DATE -> {statement.setDate(index, (Date) o); return true;}
+                case DATE -> {
+                    if(o == null) {
+                        statement.setNull(index, Types.DATE);
+                    }
+                    statement.setDate(index, (Date) o);
+                    return true;}
                 case TIMESTAMP -> {statement.setTimestamp(index, (Timestamp) o); return true;}
                 default -> {System.out.println("Error parsing argument, no type " + type.name());}
             }
@@ -206,6 +211,7 @@ public class Argument {
             case DATE -> {
                 return new InputWidget(argumentID){
                     JDatePickerImpl datePicker;
+                    boolean isNull = true;
                     @Override
                     public Container generateWidget() {
                         Container con = new Panel(new GridLayout(1, 1));
@@ -219,11 +225,21 @@ public class Argument {
                         JDatePanelImpl datePanel = new JDatePanelImpl(model, p);
                         datePicker = new JDatePickerImpl(datePanel, new DateLabelFormatter());
                         con.add(datePicker);
+                        datePicker.getModel().addChangeListener(new ChangeListener() {
+                            @Override
+                            public void stateChanged(ChangeEvent e) {
+                                isNull = datePicker.getModel().getValue() == null;
+
+                            }
+                        });
                         return con;
                     }
                     @Override
                     public Object getValue() {
-                        Date date = new Date(datePicker.getModel().getYear(), datePicker.getModel().getMonth(), datePicker.getModel().getDay());
+                        if(isNull){
+                            return null;
+                        }
+                        Date date = new Date(datePicker.getModel().getYear() - 1900, datePicker.getModel().getMonth(), datePicker.getModel().getDay());
                         return date;
                     }
                 };

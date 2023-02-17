@@ -4,6 +4,7 @@ import com.undecideds.services.InsertServiceList;
 import com.undecideds.services.ReadServiceList;
 import com.undecideds.services.UpdateServiceList;
 import com.undecideds.services.generic.ReadService;
+import com.undecideds.services.structs.Argument;
 import com.undecideds.ui.builders.TableBuilder;
 import com.undecideds.ui.cuduibuilder.DateLabelFormatter;
 import com.undecideds.ui.cuduibuilder.InputWidget;
@@ -109,13 +110,65 @@ public class DoctorViewingPatientWindow {
 
     public JPanel viewChronic(boolean isDoctor, int id){
         JPanel viewChronic = new JPanel();
-        viewChronic.setLayout(new GridLayout());
+        viewChronic.setLayout(new BoxLayout(viewChronic, BoxLayout.PAGE_AXIS));
         ResultSet rs = ReadServiceList.CHRONIC_FROM_PATIENT.ExecuteQuery(new Object[]{id});
 
         HashSet<String> hiddenIDs = new HashSet<String>();
         hiddenIDs.add("PatientID");
         JTable patients = (JTable) TableBuilder.buildTableRaw(rs, hiddenIDs);
+
         viewChronic.add(new JScrollPane(patients));
+
+        if(isDoctor){
+            JButton addChronic = new JButton("Add Chronic");
+            addChronic.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    JFrame frame = new JFrame("Add Chronic");
+                    JPanel panel = new JPanel();
+                    panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
+
+                    HashMap<String, InputWidget> widgets = new HashMap<>();
+                    widgets.put("PERSON ID", new InputWidget("PERSON ID") {
+                        @Override
+                        public Container generateWidget() {
+                            return new JPanel();
+                        }
+
+                        @Override
+                        public Object getValue() {
+                            return id;
+                        }
+                    });
+                    widgets.put("SYMPTOM ID", ReadService.generateComboWidget("SYMPTOM ID", ReadServiceList.GET_CHRONIC_NOT_FROM_PATIENT, new Object[]{id}));
+                    Container activateButton = InsertServiceList.INSERT_CHRONIC.buildActivateButton("Insert Chronic", widgets, new ResultListener() {
+                        @Override
+                        public void onResult(int result) {
+                            safeRefresh();
+                            frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+                        }
+                    });
+
+                    for(String key : widgets.keySet()){
+                        panel.add(widgets.get(key).generateWidget());
+                    }
+                    panel.add(activateButton);
+                    frame.add(panel);
+                    frame.pack();
+                    frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                    frame.setVisible(true);
+                }
+            });
+
+
+
+
+            viewChronic.add(addChronic);
+        }
+
+
+
+
         return viewChronic;
     }
 
@@ -132,10 +185,10 @@ public class DoctorViewingPatientWindow {
 
     public JPanel currentTreatments(boolean isDoctor, int id){
         JPanel viewcurTreatments = new JPanel();
-        viewcurTreatments.setLayout(new GridLayout());
+        viewcurTreatments.setLayout(new BoxLayout(viewcurTreatments, BoxLayout.PAGE_AXIS));
         ResultSet rs = ReadServiceList.GET_CURRENT_TREATMENTS.ExecuteQuery(new Object[]{id});
         HashSet<String> hidden = new HashSet<>();
-        hidden.add("TREATMENT ID");
+        hidden.add("ID");
         JComponent tableNullable = TableBuilder.buildTableRaw(rs, hidden);
         JTable currentTreatmentTable;
         if(tableNullable instanceof JTable) {
@@ -146,22 +199,104 @@ public class DoctorViewingPatientWindow {
             return panel;
         }
 
-        viewcurTreatments.add(currentTreatmentTable);
+        viewcurTreatments.add(new JScrollPane(currentTreatmentTable));
 
-        JButton addEndDateButton = new JButton("Add End Date");
+        JPanel buttonPanel = new JPanel(new GridLayout(1, isDoctor ? 2 : 1));
+
         HashMap<String, Object> inputValues = new HashMap<>();
-        addEndDateButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                UtilDateModel model = new UtilDateModel();
-                Properties p = new Properties();
-                p.put("text.today", "Today");
-                p.put("text.month", "Month");
-                p.put("text.year", "Year");
-                JDatePanelImpl datePanel = new JDatePanelImpl(model, p);
-                UpdateServiceList.UPDATE_NEEDS.ExecuteQuery(new Object[]{id,inputValues.get("TREATMENT ID"),inputValues.get("STARTING DATE"),new JDatePickerImpl(datePanel, new DateLabelFormatter())});
-            }
-        });
+
+        JButton addEndDateButton = new JButton("Set End Date");
+        JButton addTreatmentButton = new JButton("Schedule Treatment");
+        JButton viewCostButton = new JButton("View Cost Options");
+
+        if(isDoctor) {
+            addEndDateButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                   JFrame datePopup = new JFrame("set end date");
+                   JPanel panel = new JPanel();
+                   panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
+                   InputWidget iw = (new Argument(Argument.ArgumentType.DATE, "END DATE")).buildWidget();
+                   panel.add(iw.generateWidget());
+                   JButton button = new JButton("Set end date");
+                   button.addActionListener(new ActionListener() {
+                       @Override
+                       public void actionPerformed(ActionEvent e) {
+                           UpdateServiceList.UPDATE_NEEDS.ExecuteQuery(new Object[]{id, inputValues.get("ID"), inputValues.get("Start Date"), iw.getValue()});
+                           safeRefresh();
+                           datePopup.dispatchEvent(new WindowEvent(datePopup, WindowEvent.WINDOW_CLOSING));
+                       }
+                   });
+                   panel.add(button);
+                   datePopup.add(panel);
+                   datePopup.pack();
+                   datePopup.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                   datePopup.setVisible(true);
+                }
+            });
+
+            addTreatmentButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    JFrame frame = new JFrame("Add treatment");
+                    JPanel panel = new JPanel();
+                    panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
+                    HashMap<String, ReadService> idMatch = new HashMap<>();
+                    idMatch.put("TREATMENT ID", ReadServiceList.GET_TREATMENT_NAMES);
+                    HashMap<String, InputWidget> widgets = InsertServiceList.INSERT_NEEDS_NO_END.buildUIWidgets(idMatch, true);
+                    widgets.replace("PATIENT ID", new InputWidget("PATIENT ID") {
+                        @Override
+                        public Container generateWidget() {
+                            return new JPanel();
+                        }
+
+                        @Override
+                        public Object getValue() {
+                            return patientId;
+                        }
+                    });
+                    Container activateButton = InsertServiceList.INSERT_NEEDS_NO_END.buildActivateButton("Add treatment", widgets, new ResultListener() {
+                        @Override
+                        public void onResult(int result) {
+                            frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+                            safeRefresh();
+                        }
+                    });
+
+                    for(String key : widgets.keySet()){
+                        panel.add(widgets.get(key).generateWidget());
+                    }
+                    panel.add(activateButton);
+                    frame.add(panel);
+                    frame.pack();
+                    frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                    frame.setVisible(true);
+                }
+            });
+
+            buttonPanel.add(addTreatmentButton);
+            buttonPanel.add(addEndDateButton);
+        }else{
+            viewCostButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    JFrame frame = new JFrame();
+                    JPanel panel = new JPanel();
+
+                    ResultSet rs = ReadServiceList.GET_DOCTOR_EXPENSES_FOR_TREATMENT.ExecuteQuery(new Object[]{inputValues.get("ID"), id});
+                    Container result = TableBuilder.buildTable(rs);
+                    panel.add(result);
+
+                    frame.add(panel);
+                    frame.setSize(500, 500);
+                    frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                    frame.setVisible(true);
+                }
+            });
+            buttonPanel.add(viewCostButton);
+
+
+        }
 
 
         currentTreatmentTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -174,14 +309,28 @@ public class DoctorViewingPatientWindow {
                         System.out.println(currentTreatmentTable.getColumnName(i) + " : " + currentTreatmentTable.getValueAt(currentTreatmentTable.getSelectedRow(), i));
                         inputValues.put(currentTreatmentTable.getColumnName(i), currentTreatmentTable.getValueAt(currentTreatmentTable.getSelectedRow(), i));
                     }
-                    currentTreatmentTable.setEnabled(true);
-
+                    if(isDoctor) {
+                        addEndDateButton.setEnabled(true);
+                    }else {
+                        viewCostButton.setEnabled(true);
+                    }
                 } else {
-                    currentTreatmentTable.setEnabled(false);
+                    if(isDoctor) {
+                        addEndDateButton.setEnabled(false);
+                    }else {
+                        viewCostButton.setEnabled(false);
+                    }
                 }
             }
         });
 
+        if(isDoctor) {
+            addEndDateButton.setEnabled(false);
+        }else {
+            viewCostButton.setEnabled(false);
+        }
+
+        viewcurTreatments.add(buttonPanel);
 
         return viewcurTreatments;
     }
