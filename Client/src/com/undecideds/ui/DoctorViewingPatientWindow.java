@@ -17,48 +17,18 @@ import java.util.HashSet;
 
 public class DoctorViewingPatientWindow {
 
-    public static JPanel launchHome(boolean isDoctor, int patientID, String patientName) {
-        JPanel home = new JPanel(false);
-        Container hist = new GenHistogram().GenHistogram(patientID, GenHistogram.GraphType.WEEKLY);
-        Container hist2 = new GenHistogram().GenHistogram(patientID, GenHistogram.GraphType.MONTHLY);
-        Container hist3 = new GenHistogram().GenHistogram(patientID, GenHistogram.GraphType.ANNUAL);
+    public JPanel viewAcute(int id){
+        JPanel viewAcute = new JPanel();
+        viewAcute.setLayout(new BoxLayout(viewAcute, BoxLayout.Y_AXIS));
+        ResultSet rs = ReadServiceList.ACUTE_FROM_PATIENT.ExecuteQuery(new Object[]{id});
 
-        home.setLayout(new GridLayout(2, 4));
-        if (isDoctor) {
-            JLabel doctorView = new JLabel("You are in doctor view.");
-            home.add(doctorView);
-        }
-        JLabel hello = new JLabel("Hello " + patientName + " back to Symptom Tracker!");
-        JLabel curSympts = new JLabel(" Current Symptoms");
-        home.add(hello);
-        home.add(curSympts);
-        home.add(new JLabel());
-        home.add(hist);
-        home.add(hist2);
-        home.add(hist3);
-        return home;
-    }
+        HashSet<String> hiddenIDs = new HashSet<String>();
+        hiddenIDs.add("PatientID");
 
-    public static JPanel launchViewHistory(boolean isDoctor, int patientID) {
-        JPanel viewHistory = new JPanel(false);
-        viewHistory.setLayout(new GridLayout());
-
-        ResultSet rs = ReadServiceList.ACUTE_FROM_PATIENT.ExecuteQuery(new Object[]{patientID});  if(!isDoctor){
-            HashSet<String> hidden = new HashSet<String>();
-            hidden.add("PatientID");
-            viewHistory.add(TableBuilder.buildTable(rs, hidden));
-        }else {
-            viewHistory.add(TableBuilder.buildTable(rs));
-        }
-        return viewHistory;
-    }
-
-    public static JPanel launchaddSymptom(boolean isDoctor, int patientID) {
-        JPanel addSymptom = new JPanel(false);
         HashMap<String, ReadService> idMatch = new HashMap<>();
         idMatch.put("SYMPTOM ID", ReadServiceList.GET_SYMPTOMS);
-
         HashMap<String, InputWidget> widgets = InsertServiceList.INSERT_ACUTE.buildUIWidgets(idMatch, true);
+        JTable patients = (JTable) TableBuilder.buildTableRaw(rs, hiddenIDs);
         widgets.replace("PERSON ID", new InputWidget("PERSON ID") {
             @Override
             public Container generateWidget() {
@@ -67,23 +37,60 @@ public class DoctorViewingPatientWindow {
 
             @Override
             public Object getValue() {
-                return patientID;
+                return id;
             }
         });
         Container runButton = InsertServiceList.INSERT_ACUTE.buildActivateButton("Add", widgets, new ResultListener() {
             @Override
             public void onResult(int result) {
+                ResultSet rs = ReadServiceList.ACUTE_FROM_PATIENT.ExecuteQuery(new Object[]{id});
+                HashSet<String> hiddenIDs = new HashSet<String>();
+                hiddenIDs.add("PatientID");
+                patients.setModel(TableBuilder.getTableModel(rs,hiddenIDs));
             }
         });
         JPanel Wpanel = new JPanel();
         for (String key : widgets.keySet()) {
             Wpanel.add(widgets.get(key).generateWidget());
         }
-        Wpanel.setLayout(new BoxLayout(Wpanel, BoxLayout.PAGE_AXIS));
-        Wpanel.add(runButton);
-        addSymptom.add(Wpanel);
-        return addSymptom;
+
+        viewAcute.add(new JScrollPane(patients));
+        viewAcute.add(Wpanel);
+        viewAcute.add(runButton);
+        return viewAcute;
     }
+
+    public JPanel viewChronicMethod(int id){
+        JPanel viewChronic = new JPanel();
+        viewChronic.setLayout(new GridLayout());
+        ResultSet rs = ReadServiceList.CHRONIC_FROM_PATIENT.ExecuteQuery(new Object[]{id});
+
+        HashSet<String> hiddenIDs = new HashSet<String>();
+        hiddenIDs.add("PatientID");
+        JTable patients = (JTable) TableBuilder.buildTableRaw(rs, hiddenIDs);
+        viewChronic.add(new JScrollPane(patients));
+        return viewChronic;
+    }
+
+
+    public JPanel pastTreatments(int id){
+        JPanel viewPastTreatments = new JPanel();
+        viewPastTreatments.setLayout(new GridLayout());
+        ResultSet rs = ReadServiceList.GET_PAST_TREATMENTS.ExecuteQuery(new Object[]{id});
+
+        viewPastTreatments.add(TableBuilder.buildTable(rs));
+        return viewPastTreatments;
+    }
+
+
+    public JPanel curTreatments(int id){
+        JPanel viewcurTreatments = new JPanel();
+        viewcurTreatments.setLayout(new GridLayout());
+        ResultSet rs = ReadServiceList.GET_CURRENT_TREATMENTS.ExecuteQuery(new Object[]{id});
+        viewcurTreatments.add(TableBuilder.buildTable(rs));
+        return viewcurTreatments;
+    }
+
 
     public void launch(int doctorID, int patientId) {
         ResultSet rs = ReadServiceList.GET_PATIENT_NAMES.ExecuteQuery(new Object[]{});
