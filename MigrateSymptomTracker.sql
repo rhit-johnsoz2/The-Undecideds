@@ -1456,7 +1456,7 @@ GO
 
 CREATE VIEW NotTreatmentForView
 AS
-SELECT Doc.ID AS DoctorID, T.name as TreatmentName
+SELECT Doc.ID AS ID, T.name as Name
 FROM Person Doc JOIN Treatment T On NOT EXISTS (SELECT *
 						FROM Performs
 						WHERE doctorID = Doc.ID and treatmentID = T.ID)
@@ -1476,5 +1476,5 @@ AS
 		RAISERROR('Doctor does not exist.', 14, 1)
 		Return 2
 	END
-	SELECT TreatmentName FROM NotTreatmentForView WHERE DoctorID = @doctorID
+	SELECT ID, Name FROM NotTreatmentForView WHERE ID = @doctorID
 GO
