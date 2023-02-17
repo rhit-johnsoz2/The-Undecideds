@@ -1231,12 +1231,13 @@ GO
 
 CREATE VIEW InsuredDoctorsForTreatmentSubtraction
 As
-SELECT T.ID as TreatmentID, D.ID, D.fname as DFirstName, D.lname as DLastName, T.Cost as TreatmentCost
+SELECT T.ID as TreatmentID, D.ID as DoctorID, D.fname as DFirstName, D.lname as DLastName, T.Cost as TreatmentCost, P.ID as PatientID
 FROM Treatment T JOIN Insures I
 on T.ID = I.treatmentID
 JOIN Person D on I.personID = D.ID
 JOIN HealthCareProvider HCP on I.HCPID = HCP.ID
-JOIN Person P on HCP.ID = P.hcpID
+JOIN DoctorFor DF on D.ID = DF.doctorID
+JOIN Person P on HCP.ID = P.hcpID and DF.patientID = P.ID
 WHERE D.role = 'DR' and P.role = 'PA'
 GO
 
@@ -1247,8 +1248,9 @@ FROM Treatment T JOIN Insures I
 on T.ID = I.treatmentID
 JOIN Person D on I.personID = D.ID
 JOIN HealthCareProvider HCP on I.HCPID = HCP.ID
-JOIN Person P on HCP.ID = P.hcpID
-WHERE D.role = 'DR' and P.role = 'PA'
+JOIN DoctorFor DF on D.ID = DF.doctorID
+JOIN Person P on HCP.ID = P.hcpID and DF.patientID = P.ID
+WHERE D.role = 'DR' and P.role = 'PA' 
 GO
 
 CREATE PROCEDURE GetDoctorExpensesForTreatment
@@ -1277,7 +1279,7 @@ AS
 
 	(SELECT CONCAT(DFirstName, ' ', DLastName) as [Doctor Name], TreatmentCost as Cost FROM DoctorsForTreatment WHERE TreatmentID = @treatmentID
 	EXCEPT
-	SELECT CONCAT(DFirstName, ' ', DLastName) as [Doctor Name], TreatmentCost as Cost FROM InsuredDoctorsForTreatmentSubtraction WHERE TreatmentID = @treatmentID)
+	SELECT CONCAT(DFirstName, ' ', DLastName) as [Doctor Name], TreatmentCost as Cost FROM InsuredDoctorsForTreatmentSubtraction WHERE TreatmentID = @treatmentID and PatientID = @patientID)
 	UNION
 	SELECT CONCAT(DFirstName, ' ', DLastName) as [Doctor Name], @treatmentCost - Cost as Cost FROM InsuredDoctorsForTreatment WHERE TreatmentID = @treatmentID and PatientID = @patientID
 
