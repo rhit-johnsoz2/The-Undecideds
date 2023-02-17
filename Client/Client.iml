@@ -14,5 +14,6 @@
     <orderEntry type="library" name="jfreechart-1.5.4" level="application" />
     <orderEntry type="library" name="mssql-jdbc-9.4.1.jre8" level="application" />
     <orderEntry type="library" name="jasypt-1.9.0" level="application" />
+    <orderEntry type="library" name="jasypt-1.9.2" level="application" />
   </component>
 </module>
