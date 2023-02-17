@@ -287,7 +287,12 @@ public class TableBuilder {
     public static JComponent buildTableRaw(ResultSet rs, HashSet<String> hidden){
         DefaultTableModel model = getTableModel(rs, hidden);
         if(model != null) {
-            return new JTable(model);
+            JTable table = new JTable(model);
+            for(String s : hidden){
+                table.getColumn(s).setMinWidth(0);
+                table.getColumn(s).setMaxWidth(0);
+            }
+            return table;
         }else{
             return new JLabel("Table has not been fetched. If this is an error, please view the stack trace.");
         }
@@ -304,11 +309,11 @@ public class TableBuilder {
 
             for(int i = 0; i < rsmd.getColumnCount(); i++){
                 String header = rsmd.getColumnName(i + 1);
-                if(!hidden.contains(header)){
-                    headers.add(header);
-                    headerIDs.add(i + 1);
-                    data.put(header, new ArrayList<>());
-                }
+
+                headers.add(header);
+                headerIDs.add(i + 1);
+                data.put(header, new ArrayList<>());
+
             }
 
 
@@ -330,14 +335,15 @@ public class TableBuilder {
                 }
             }
 
-
-
-            return new DefaultTableModel(data_arr, headers_arr){
+            DefaultTableModel model = new DefaultTableModel(data_arr, headers_arr){
                 @Override
                 public boolean isCellEditable(int row, int column) {
                     return false;
-                }
-            };
+                }};
+
+
+
+            return model;
 
         }catch(Exception e){
             e.printStackTrace();

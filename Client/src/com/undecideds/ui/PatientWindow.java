@@ -24,12 +24,11 @@ public class PatientWindow {
     public void launch(int id, String name){
         this.id = id;
         this.name = name;
-        JFrame framePatient = new JFrame();
+        JFrame framePatient = new JFrame(name + "'s information");
         framePatient.setSize(700, 500);
 
         JTabbedPane tabbedPane = new JTabbedPane();
         JPanel home = DoctorViewingPatientWindow.launchHome(false, id, name);
-        JPanel viewHistory = viewHistory(false, id);
         JPanel addSymptom = DoctorViewingPatientWindow.launchaddSymptom(false, id);
         JPanel viewChronic = viewChronicMethod();
         JPanel viewMyDocs = viewMyDoctors();
@@ -39,7 +38,6 @@ public class PatientWindow {
         JPanel viewAcute = viewAcute();
 
         tabbedPane.addTab("Home", null, home, "");
-        tabbedPane.addTab("viewHistory", null, viewHistory, "");
         tabbedPane.addTab("addSymptom", null, addSymptom, "");
         tabbedPane.addTab("View Acute", null, viewAcute, "");
         tabbedPane.addTab("View Chronic", null, viewChronic, "");
@@ -123,59 +121,6 @@ public class PatientWindow {
         ResultSet rs = ReadServiceList.GET_CURRENT_TREATMENTS.ExecuteQuery(new Object[]{id});
         viewcurTreatments.add(TableBuilder.buildTable(rs));
         return viewcurTreatments;
-    }
-
-    public static JPanel viewHistory(boolean isDoctor, int patientID) {
-        JPanel viewHistory = new JPanel();
-        viewHistory.setLayout(new BoxLayout(viewHistory, BoxLayout.PAGE_AXIS));
-        ResultSet rs = ReadServiceList.ACUTE_FROM_PATIENT.ExecuteQuery(new Object[]{patientID});
-        JTable table;
-        JComponent tableNullable;
-        HashSet<String> hidden = new HashSet<String>();
-        if(!isDoctor){
-            hidden.add("PatientID");
-        }
-        tableNullable = TableBuilder.buildTableRaw(rs, hidden);
-        if(tableNullable instanceof JTable){
-            table = (JTable) tableNullable;
-        }else{
-            viewHistory.add(tableNullable);
-            return viewHistory;
-        }
-
-        HashMap<String, Object> inputValues = new HashMap<>();
-        viewHistory.add(new JScrollPane().add(table));
-        JButton selectorButton = new JButton("View Symptom Treatments");
-        selectorButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                    JFrame popUpWindow = new JFrame();
-                    popUpWindow.setSize(400,400);
-                    ResultSet rs1 = ReadServiceList.SYMPTOM_GET_ID_FROM_NAME.ExecuteQuery(new Object[]{inputValues.get("name")});
-                    HashSet<String> hiddenPT2 = new HashSet<String>();
-                    hiddenPT2.add("ID");
-                    popUpWindow.setVisible(true);
-        }});
-        viewHistory.add(selectorButton);
-        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                if(table.getSelectedRow() != -1){
-
-                    inputValues.clear();
-                    for(int i = 0; i < table.getColumnCount(); i++) {
-                        System.out.println(table.getColumnName(i) + " : " + table.getValueAt(table.getSelectedRow(), i));
-                        inputValues.put(table.getColumnName(i), table.getValueAt(table.getSelectedRow(), i));
-                    }
-                    selectorButton.setEnabled(true);
-
-                }else{
-                    selectorButton.setEnabled(false);
-                }
-            }
-        });
-        return viewHistory;
     }
 
 
