@@ -27,6 +27,7 @@ public class DoctorWindow {
         currentId = id;
         currentName = name;
         JFrame frameDoctor = new JFrame();
+        frameDoctor.setTitle("Dashboard for Dr. " + name);
         frameDoctor.setSize(700, 500);
 
         JTabbedPane tabbedPane = new JTabbedPane();
@@ -43,13 +44,19 @@ public class DoctorWindow {
         JPanel viewPatient = new JPanel();
         viewPatient.setLayout(new BoxLayout(viewPatient, BoxLayout.PAGE_AXIS));
         ResultSet rs = ReadServiceList.PATIENTS_FROM_DOCTOR.ExecuteQuery(new Object[]{currentId});
-
-        HashSet<String> hiddenIDs = new HashSet<String>();
-        hiddenIDs.add("ID");
-        hiddenIDs.add("DoctorID");
-        JTable patients = (JTable) TableBuilder.buildTableRaw(rs, hiddenIDs);
-
-
+        HashSet<String> hidden = new HashSet<String>();
+        hidden.add("DoctorID");
+        hidden.add("ID");
+        JTable patients;
+        JComponent tableNullable = TableBuilder.buildTableRaw(rs, hidden);
+        if (tableNullable instanceof JTable) {
+            patients = (JTable) tableNullable;
+        } else {
+            viewPatient.add(tableNullable);
+            return viewPatient;
+        }
+        viewPatient.add(new JScrollPane(patients));
+        viewPatient.add(patients);
         JButton selectorButton = new JButton("View Symptom Treatments");
         HashMap<String, Object> inputValues = new HashMap<>();
         selectorButton.addActionListener(new ActionListener() {
@@ -125,9 +132,8 @@ public class DoctorWindow {
         idMatch.put("DOCTOR ID", ReadServiceList.GET_DOCTORS);
         idMatch.put("TREATMENT ID", ReadServiceList.GET_TREATMENTS);
         HashMap<String, InputWidget> widgets = InsertServiceList.INSERT_PERFORMS.buildUIWidgets(idMatch, true);
-        HashMap<String, InputWidget> widgets2 = InsertServiceList.INSERT_PERFORMS.buildUIWidgets(idMatch, true);
 
-        widgets2.replace("DOCTOR ID", new InputWidget("DOCTOR ID") {
+        widgets.replace("DOCTOR ID", new InputWidget("DOCTOR ID") {
             @Override
             public Container generateWidget() {
                 return new JPanel();
@@ -139,10 +145,10 @@ public class DoctorWindow {
             }
         });
         JPanel Wpanel2 = new JPanel();
-        for(String key : widgets2.keySet()){
-            Wpanel2.add(widgets2.get(key).generateWidget());
+        for(String key : widgets.keySet()){
+            Wpanel2.add(widgets.get(key).generateWidget());
         }
-        Container addTreatment = InsertServiceList.INSERT_PERFORMS.buildActivateButton("Add Treatmnet ", widgets2, new ResultListener() {
+        Container addTreatment = InsertServiceList.INSERT_PERFORMS.buildActivateButton("Add Treatment ", widgets, new ResultListener() {
             @Override
             public void onResult(int result) {
                 try {
@@ -151,7 +157,7 @@ public class DoctorWindow {
                     patients.setModel(TableBuilder.getTableModel(rs, new HashSet<>()));
 
                 }catch (Exception e){
-                    System.out.println("fatal error refetching table");
+                    System.out.println("fatal error re-fetching table");
                     e.printStackTrace();
                     System.exit(501);
                 }
@@ -165,12 +171,9 @@ public class DoctorWindow {
     public JPanel addPatient(){
         JPanel addPatient = new JPanel(false);
         addPatient.setLayout(new BoxLayout(addPatient, BoxLayout.PAGE_AXIS));
-        HashMap<String, ReadService> idMatch2 = new HashMap<>();
-        idMatch2.put("DOCTOR ID", ReadServiceList.GET_DOCTOR_NAMES);
-        idMatch2.put("PATIENT ID", ReadServiceList.GET_PATIENT_NAMES);
-        HashMap<String, InputWidget> widgets2 = InsertServiceList.INSERT_DOCTORFOR.buildUIWidgets(idMatch2, true);
+        HashMap<String, InputWidget> widgets = new HashMap<>();
         JPanel Wpanel2 = new JPanel();
-        widgets2.replace("DOCTOR ID", new InputWidget("DOCTOR ID") {
+        widgets.put("DOCTOR ID", new InputWidget("DOCTOR ID") {
             @Override
             public Container generateWidget() {
                 return new Container();
@@ -181,10 +184,11 @@ public class DoctorWindow {
                 return currentId;
             }
         });
-        for(String key : widgets2.keySet()){
-            Wpanel2.add(widgets2.get(key).generateWidget());
+        widgets.put("PATIENT ID", ReadService.generateComboWidget("PATIENT ID", ReadServiceList.GET_PATIENTS_NOT_FROM_DOCTOR, new Object[]{currentId}));
+        for(String key : widgets.keySet()){
+            Wpanel2.add(widgets.get(key).generateWidget());
         }
-        Container runButton2 = InsertServiceList.INSERT_DOCTORFOR.buildActivateButton("Add", widgets2, new ResultListener(){
+        Container runButton2 = InsertServiceList.INSERT_DOCTORFOR.buildActivateButton("Add", widgets, new ResultListener(){
             @Override
             public void onResult(int result) {
                 // DO ON RUN

@@ -53,7 +53,7 @@ public class GenHistogram {
         }catch (Exception e){
             e.printStackTrace();
             JPanel panel = new JPanel();
-            panel.add(new JLabel("Error Fetching Data, check Stack Trace"));
+            panel.add(new JLabel("Error Fetching Data: " + e.getLocalizedMessage()));
             return panel;
         }
     }

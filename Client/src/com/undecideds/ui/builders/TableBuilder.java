@@ -42,7 +42,7 @@ public class TableBuilder {
                         ResultSet rs = readService.ExecuteQuery(new Object[]{});
                         table.setModel(getTableModel(rs, new HashSet<String>()));
                     }catch (Exception e){
-                        System.out.println("fatal error refetching table");
+                        System.out.println("fatal error re-fetching table");
                         e.printStackTrace();
                         System.exit(501);
                     }
@@ -90,7 +90,7 @@ public class TableBuilder {
                         ResultSet rs = readService.ExecuteQuery(new Object[]{});
                         table.setModel(getTableModel(rs, new HashSet<String>()));
                     }catch (Exception e){
-                        System.out.println("fatal error refetching table");
+                        System.out.println("fatal error re-fetching table");
                         e.printStackTrace();
                         System.exit(501);
                     }
@@ -160,7 +160,7 @@ public class TableBuilder {
                         ResultSet rs = readService.ExecuteQuery(new Object[]{});
                         table.setModel(getTableModel(rs, new HashSet<String>()));
                     }catch (Exception e){
-                        System.out.println("fatal error refetching table");
+                        System.out.println("fatal error re-fetching table");
                         e.printStackTrace();
                         System.exit(501);
                     }
@@ -268,7 +268,7 @@ public class TableBuilder {
             return panel;
         }catch (Exception e){
             Container errContainer = new JPanel(new GridLayout(1, 1));
-            errContainer.add(new JLabel("Table has not been fetched. If this is an error, please view the stack trace."));
+            errContainer.add(new JLabel("Table has not been fetched. If this might be the result of an error, please view the stack trace."));
             e.printStackTrace();
             return errContainer;
         }
@@ -294,7 +294,7 @@ public class TableBuilder {
             }
             return table;
         }else{
-            return new JLabel("Table has not been fetched. If this is an error, please view the stack trace.");
+            return new JLabel("Table has not been fetched. If this might be the result of an error, please view the stack trace.");
         }
     }
 

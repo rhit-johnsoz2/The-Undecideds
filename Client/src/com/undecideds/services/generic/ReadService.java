@@ -122,4 +122,38 @@ public class ReadService {
         }
     }
 
+    public static InputWidget generateComboWidget(String argId, ReadService readService, Object[] inputValues){
+        return new InputWidget(argId){
+            JComboBox comboBox;
+            HashMap<String, Integer> map;
+            @Override
+            public Container generateWidget() {
+                try {
+                    map = new HashMap<>();
+                    ResultSet rs = readService.ExecuteQuery(inputValues);
+                    String inputName = "";
+                    while (rs.next()) {
+                        int id = rs.getInt("ID");
+                        String name = rs.getString("NAME");
+                        map.put(name, id);
+                    }
+                    comboBox = new JComboBox(map.keySet().toArray());
+                    JPanel container = new JPanel(new GridLayout(1, 2));
+                    container.add(new JLabel(argId));
+                    container.add(comboBox);
+                    return container;
+                }catch (Exception e){
+                    JPanel container = new JPanel();
+                    container.add(new JLabel("Issue fetching ID map: " + e));
+                    return container;
+                }
+            }
+
+            @Override
+            public Object getValue() {
+                return map.get(comboBox.getModel().getSelectedItem().toString());
+            }
+        };
+    }
+
 }
