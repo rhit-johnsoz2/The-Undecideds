@@ -1152,7 +1152,7 @@ GO
 CREATE PROCEDURE GetCurrentTreatments
 (@pID Integer)
 AS
-SELECT T.name as Name, T.Cost as Cost, Needs.SDate as [Start Date]
+SELECT T.ID as ID, T.name as Name, T.Cost as Cost, Needs.SDate as [Start Date]
 FROM Needs JOIN Treatment T on Needs.TreatmentID = T.ID
 WHERE PatientID = @pID and EDate >= GETDATE()
 GO
@@ -1458,8 +1458,8 @@ CREATE VIEW NotTreatmentForView
 AS
 SELECT Doc.ID AS DoctorID, T.ID as ID, T.name as Name
 FROM Person Doc JOIN Treatment T On NOT EXISTS (SELECT *
-												   FROM Performs
-												   WHERE doctorID = Doc.ID and treatmentID = T.ID)
+						FROM Performs
+						WHERE doctorID = Doc.ID and treatmentID = T.ID)
 WHERE Doc.role = 'DR'
 GO
 
