@@ -184,6 +184,7 @@ public class DoctorWindow {
                 return currentId;
             }
         });
+        //for remove on doctors
         widgets.put("PATIENT ID", ReadService.generateComboWidget("PATIENT ID", ReadServiceList.GET_PATIENTS_NOT_FROM_DOCTOR, new Object[]{currentId}));
         for(String key : widgets.keySet()){
             Wpanel2.add(widgets.get(key).generateWidget());

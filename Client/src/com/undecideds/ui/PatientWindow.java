@@ -4,6 +4,7 @@ import com.undecideds.services.DeleteServiceList;
 import com.undecideds.services.InsertServiceList;
 import com.undecideds.services.ReadServiceList;
 import com.undecideds.services.generic.ReadService;
+import com.undecideds.ui.builders.GenHistogram;
 import com.undecideds.ui.builders.TableBuilder;
 import com.undecideds.ui.cuduibuilder.InputWidget;
 import com.undecideds.ui.cuduibuilder.ResultListener;
@@ -34,14 +35,12 @@ public class PatientWindow {
         JPanel viewMyDocs = viewMyDoctors();
         JPanel viewPastTreatments = pastTreatments();
         JPanel viewCurTreatments = curTreatments();
-        JPanel removeMyDocs = removeMyDocs();
         JPanel viewAcute = viewAcute();
 
         tabbedPane.addTab("Home", null, home, "");
         tabbedPane.addTab("Acute Symptoms", null, viewAcute, "");
         tabbedPane.addTab("Chronic Symptoms", null, viewChronic, "");
         tabbedPane.addTab("View Doctors", null, viewMyDocs, "");
-        tabbedPane.addTab("Remove Doctors", null, removeMyDocs, "");
         tabbedPane.addTab("Past Treatments", null, viewPastTreatments, "");
         tabbedPane.addTab("Current Treatments", null, viewCurTreatments, "");
 
@@ -50,64 +49,9 @@ public class PatientWindow {
         framePatient.setVisible(true);
     }
 
-    public JPanel viewAcute(){
-        JPanel viewAcute = new JPanel();
-        viewAcute.setLayout(new BoxLayout(viewAcute, BoxLayout.Y_AXIS));
-        ResultSet rs = ReadServiceList.ACUTE_FROM_PATIENT.ExecuteQuery(new Object[]{id});
-
-        HashSet<String> hiddenIDs = new HashSet<String>();
-        hiddenIDs.add("PatientID");
-
-        HashMap<String, ReadService> idMatch = new HashMap<>();
-        idMatch.put("SYMPTOM ID", ReadServiceList.GET_SYMPTOMS);
-        HashMap<String, InputWidget> widgets = InsertServiceList.INSERT_ACUTE.buildUIWidgets(idMatch, true);
-        JTable patients = (JTable) TableBuilder.buildTableRaw(rs, hiddenIDs);
-        widgets.replace("PERSON ID", new InputWidget("PERSON ID") {
-            @Override
-            public Container generateWidget() {
-                return new Container();
-            }
-
-            @Override
-            public Object getValue() {
-                return id;
-            }
-        });
-        Container runButton = InsertServiceList.INSERT_ACUTE.buildActivateButton("Add", widgets, new ResultListener() {
-            @Override
-            public void onResult(int result) {
-                ResultSet rs = ReadServiceList.ACUTE_FROM_PATIENT.ExecuteQuery(new Object[]{id});
-                HashSet<String> hiddenIDs = new HashSet<String>();
-                hiddenIDs.add("PatientID");
-                patients.setModel(TableBuilder.getTableModel(rs,hiddenIDs));
-            }
-        });
-        JPanel Wpanel = new JPanel();
-        for (String key : widgets.keySet()) {
-            Wpanel.add(widgets.get(key).generateWidget());
-        }
-
-        viewAcute.add(new JScrollPane(patients));
-        viewAcute.add(Wpanel);
-        viewAcute.add(runButton);
-        return viewAcute;
-    }
-
-    public JPanel viewChronicMethod(){
-        JPanel viewChronic = new JPanel();
-        viewChronic.setLayout(new GridLayout());
-        ResultSet rs = ReadServiceList.CHRONIC_FROM_PATIENT.ExecuteQuery(new Object[]{id});
-
-        HashSet<String> hiddenIDs = new HashSet<String>();
-        hiddenIDs.add("PatientID");
-        JTable patients = (JTable) TableBuilder.buildTableRaw(rs, hiddenIDs);
-        viewChronic.add(new JScrollPane(patients));
-        return viewChronic;
-    }
-
     public JPanel viewMyDoctors(){
         JPanel viewAvalibleDoctors = new JPanel();
-        viewAvalibleDoctors.setLayout(new GridLayout());
+        viewAvalibleDoctors.setLayout(new BoxLayout(viewAvalibleDoctors, BoxLayout.PAGE_AXIS));
         ResultSet rs = ReadServiceList.DOCTORS_FROM_PATIENT.ExecuteQuery(new Object[]{id});
 
         HashSet<String> hiddenIDs = new HashSet<String>();
@@ -115,57 +59,56 @@ public class PatientWindow {
         JTable patients = (JTable) TableBuilder.buildTableRaw(rs, hiddenIDs);
         viewAvalibleDoctors.add(new JScrollPane(patients));
 
-        return viewAvalibleDoctors;
-    }
-
-    public JPanel removeMyDocs(){
-        JPanel removeDoc = new JPanel();
-        removeDoc.setLayout(new GridLayout(2,1));
         HashMap<String, ReadService> idMatch2 = new HashMap<>();
-        idMatch2.put("DOCTOR ID", ReadServiceList.GET_DOCTOR_NAMES);
         idMatch2.put("PATIENT ID", ReadServiceList.GET_PATIENT_NAMES);
-        HashMap<String, InputWidget> widgets2 = DeleteServiceList.DELETE_DOCTORFOR.buildUIWidgets(idMatch2, true);
-        JPanel Wpanel2 = new JPanel();
-        widgets2.replace("PATIENT ID", new InputWidget("PATIENT ID") {
+        HashMap<String, InputWidget> widgets = DeleteServiceList.DELETE_DOCTORFOR.buildUIWidgets(idMatch2, true);
+        JPanel Wpanel = new JPanel();
+
+        widgets.replace("PATIENT ID", new InputWidget("PATIENT ID") {
             @Override
             public Container generateWidget() {
                 return new JPanel();
             }
-
             @Override
             public Object getValue() {
                 return id;
             }
         });
-        for(String key : widgets2.keySet()){
-            Wpanel2.add(widgets2.get(key).generateWidget());
+        widgets.put("DOCTORS ID", ReadService.generateComboWidget("DOCTORS ID", ReadServiceList.DOCTORS_FROM_PATIENT, new Object[]{id}));
+        for(String key : widgets.keySet()){
+            Wpanel.add(widgets.get(key).generateWidget());
         }
-        Container runButton2 = DeleteServiceList.DELETE_DOCTORFOR.buildActivateButton("Remove",widgets2, new ResultListener(){
+
+        Container runButton2 = DeleteServiceList.DELETE_DOCTORFOR.buildActivateButton("Remove",widgets, new ResultListener(){
             @Override
             public void onResult(int result) {
                 // DO ON RUN
             }});
-        removeDoc.add(Wpanel2);
-        removeDoc.add(runButton2);
-        return removeDoc;
+        viewAvalibleDoctors.add(Wpanel);
+        viewAvalibleDoctors.add(runButton2);
+
+        return viewAvalibleDoctors;
     }
 
-    public JPanel pastTreatments(){
-        JPanel viewPastTreatments = new JPanel();
-        viewPastTreatments.setLayout(new GridLayout());
-        ResultSet rs = ReadServiceList.GET_PAST_TREATMENTS.ExecuteQuery(new Object[]{id});
+    public static JPanel launchHome(boolean isDoctor, int patientID, String patientName) {
+        JPanel home = new JPanel(false);
+        Container hist = new GenHistogram().GenHistogram(patientID, GenHistogram.GraphType.WEEKLY);
+        Container hist2 = new GenHistogram().GenHistogram(patientID, GenHistogram.GraphType.MONTHLY);
+        Container hist3 = new GenHistogram().GenHistogram(patientID, GenHistogram.GraphType.ANNUAL);
 
-        viewPastTreatments.add(TableBuilder.buildTable(rs));
-        return viewPastTreatments;
+        home.setLayout(new GridLayout(2, 4));
+        if (isDoctor) {
+            JLabel doctorView = new JLabel("You are in doctor view.");
+            home.add(doctorView);
+        }
+        JLabel hello = new JLabel("Hello " + patientName + " back to Symptom Tracker!");
+        JLabel curSympts = new JLabel(" Current Symptoms");
+        home.add(hello);
+        home.add(curSympts);
+        home.add(new JLabel());
+        home.add(hist);
+        home.add(hist2);
+        home.add(hist3);
+        return home;
     }
-
-    public JPanel curTreatments(){
-        JPanel viewcurTreatments = new JPanel();
-        viewcurTreatments.setLayout(new GridLayout());
-        ResultSet rs = ReadServiceList.GET_CURRENT_TREATMENTS.ExecuteQuery(new Object[]{id});
-        viewcurTreatments.add(TableBuilder.buildTable(rs));
-        return viewcurTreatments;
-    }
-
-
 }
