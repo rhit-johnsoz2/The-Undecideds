@@ -93,18 +93,40 @@ public class PatientWindow {
                 return id;
             }
         });
-        widgets.put("DOCTOR ID", ReadService.generateComboWidget("DOCTOR ID", ReadServiceList.DOCTORS_FROM_PATIENT, new Object[]{id}));
+//        widgets.put("DOCTOR ID", ReadService.generateComboWidget("DOCTOR ID", ReadServiceList.DOCTORS_FROM_PATIENT, new Object[]{id}));
         for(String key : widgets.keySet()){
             Wpanel.add(widgets.get(key).generateWidget());
         }
         viewAvalibleDoctors.add(Wpanel);
-        Container runButton2 = DeleteServiceList.DELETE_DOCTORFOR.buildActivateButton("Remove",widgets, new ResultListener(){
+        JButton runButton = new JButton("Remove Doctor");
+        HashMap<String, Object> inputValues = new HashMap<>();
+        runButton.addActionListener(new ActionListener() {
             @Override
-            public void onResult(int result) {
-                // DO ON RUN
+            public void actionPerformed(ActionEvent e) {
+                DeleteServiceList.DELETE_DOCTORFOR.ExecuteQuery(new Object[]{Integer.parseInt(inputValues.get("ID").toString()),id});
                 refresh();
-            }});
-        viewAvalibleDoctors.add(runButton2);
+            }
+        });
+
+        patients.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (patients.getSelectedRow() != -1) {
+
+                    inputValues.clear();
+                    for (int i = 0; i < patients.getColumnCount(); i++) {
+                        System.out.println(patients.getColumnName(i) + " : " + patients.getValueAt(patients.getSelectedRow(), i));
+                        inputValues.put(patients.getColumnName(i), patients.getValueAt(patients.getSelectedRow(), i));
+                    }
+                    runButton.setEnabled(true);
+
+                } else {
+                    runButton.setEnabled(false);
+                }
+            }
+        });
+
+        viewAvalibleDoctors.add(runButton);
 
         return viewAvalibleDoctors;
     }
