@@ -1284,6 +1284,25 @@ AS
 	Return 0
 GO
 
+Create Trigger NoNegativeCoverage on Insures
+AFTER Insert
+AS
+DECLARE @coverage Integer
+SET @coverage = (Select Coverage from inserted)
+DECLARE @tID Integer
+SET @tID = (Select TreatmentID from inserted)
+If (@coverage < 0)
+Begin
+	RAISERROR('Coverage cannot be negative.', 14, 1)
+	ROLLBACK TRANSACTION
+End
+If (SELECT Cost From Treatment Where ID = @tID) > @coverage
+Begin
+	RAISERROR('Coverage cannot be greater than cost.', 14, 1)
+	ROLLBACK TRANSACTION
+End
+GO
+
 CREATE PROCEDURE SymptomGetIDFromName
 (@name varchar(50))
 AS
