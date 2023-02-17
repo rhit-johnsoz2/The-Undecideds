@@ -1161,7 +1161,7 @@ CREATE PROCEDURE GetCurrentTreatments
 AS
 SELECT T.ID as ID, T.name as Name, Needs.SDate as [Start Date]
 FROM Needs JOIN Treatment T on Needs.TreatmentID = T.ID
-WHERE PatientID = @pID and (EDate >= GETDATE() or EDate = null)
+WHERE PatientID = @pID and (EDate >= GETDATE() or EDate is null)
 GO
 
 CREATE PROCEDURE GetTreatmentsFromID
