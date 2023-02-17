@@ -2,19 +2,25 @@ package com.undecideds.ui;
 
 import com.undecideds.services.InsertServiceList;
 import com.undecideds.services.ReadServiceList;
+import com.undecideds.services.UpdateServiceList;
 import com.undecideds.services.generic.ReadService;
 import com.undecideds.ui.builders.TableBuilder;
+import com.undecideds.ui.cuduibuilder.DateLabelFormatter;
 import com.undecideds.ui.cuduibuilder.InputWidget;
 import com.undecideds.ui.cuduibuilder.ResultListener;
+import org.jdatepicker.impl.JDatePanelImpl;
+import org.jdatepicker.impl.JDatePickerImpl;
+import org.jdatepicker.impl.UtilDateModel;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
+import java.awt.event.*;
 import java.sql.ResultSet;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Properties;
 
 public class DoctorViewingPatientWindow {
 
@@ -125,7 +131,55 @@ public class DoctorViewingPatientWindow {
         JPanel viewcurTreatments = new JPanel();
         viewcurTreatments.setLayout(new GridLayout());
         ResultSet rs = ReadServiceList.GET_CURRENT_TREATMENTS.ExecuteQuery(new Object[]{id});
-        viewcurTreatments.add(TableBuilder.buildTable(rs));
+        HashSet<String> hidden = new HashSet<>();
+        hidden.add("TREATMENT ID");
+        JComponent tableNullable = TableBuilder.buildTableRaw(rs, hidden);
+        JTable currentTreatmentTable;
+        if(tableNullable instanceof JTable) {
+            currentTreatmentTable = (JTable)tableNullable;
+        }else{
+            JPanel panel = new JPanel();
+            panel.add(tableNullable);
+            return panel;
+        }
+
+        viewcurTreatments.add(currentTreatmentTable);
+
+        JButton addEndDateButton = new JButton("Add End Date");
+        HashMap<String, Object> inputValues = new HashMap<>();
+        addEndDateButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                UtilDateModel model = new UtilDateModel();
+                Properties p = new Properties();
+                p.put("text.today", "Today");
+                p.put("text.month", "Month");
+                p.put("text.year", "Year");
+                JDatePanelImpl datePanel = new JDatePanelImpl(model, p);
+                UpdateServiceList.UPDATE_NEEDS.ExecuteQuery(new Object[]{id,inputValues.get("TREATMENT ID"),inputValues.get("STARTING DATE"),new JDatePickerImpl(datePanel, new DateLabelFormatter())});
+            }
+        });
+
+
+        currentTreatmentTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (currentTreatmentTable.getSelectedRow() != -1) {
+
+                    inputValues.clear();
+                    for (int i = 0; i < currentTreatmentTable.getColumnCount(); i++) {
+                        System.out.println(currentTreatmentTable.getColumnName(i) + " : " + currentTreatmentTable.getValueAt(currentTreatmentTable.getSelectedRow(), i));
+                        inputValues.put(currentTreatmentTable.getColumnName(i), currentTreatmentTable.getValueAt(currentTreatmentTable.getSelectedRow(), i));
+                    }
+                    currentTreatmentTable.setEnabled(true);
+
+                } else {
+                    currentTreatmentTable.setEnabled(false);
+                }
+            }
+        });
+
+
         return viewcurTreatments;
     }
 
