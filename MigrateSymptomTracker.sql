@@ -87,7 +87,7 @@ CREATE TABLE Needs(
 	TreatmentID Integer REFERENCES dbo.Treatment(ID),
 	SDate Date,
 	EDate Date,
-	Primary key(PatientID, TreatmentID)
+	Primary key(PatientID, TreatmentID, SDate)
 )
 GO
 
@@ -304,9 +304,16 @@ AFTER Insert
 AS
 DECLARE @doc Integer
 SET @doc = (Select PersonID from inserted)
+DECLARE @treatment Integer
+SET @treatment = (Select TreatmentID from inserted)
 If (NOT EXISTS(SELECT * FROM DoctorNames WHERE ID = @doc))
 Begin
 	RAISERROR('Only doctors can be insured.', 14, 1)
+	ROLLBACK TRANSACTION
+End
+IF (NOT EXISTS(SELECT * FROM Performs WHERE doctorID = @doc and treatmentID = @treatment))
+Begin
+	RAISERROR('Doctor must perform treatment.', 14, 1)
 	ROLLBACK TRANSACTION
 End
 GO
@@ -743,7 +750,7 @@ CREATE PROCEDURE [dbo].[UpdateNeeds](@PersonId int, @Treatment int, @Start date,
 As
 Begin
 
-if(@personID is null or @Treatment is null or @Start is null or @end is null)
+if(@personID is null or @Treatment is null or @Start is null)
 	Begin
 		RAISERROR('Cannot support null attribute', 14, 1)
 		return 1;
@@ -756,9 +763,8 @@ if(@end < @Start)
 	End
 
 Update Needs
-	Set SDate = @Start,
-		EDate = @end
-	Where PatientID = @PersonId and TreatmentID = @Treatment
+	Set EDate = @end
+	Where PatientID = @PersonId and TreatmentID = @Treatment and SDate = @Start
 	return 0;
 End
 GO
@@ -1152,9 +1158,9 @@ GO
 CREATE PROCEDURE GetCurrentTreatments
 (@pID Integer)
 AS
-SELECT T.name as Name, T.Cost as Cost, Needs.SDate as [Start Date]
+SELECT T.ID as ID, T.name as Name, Needs.SDate as [Start Date]
 FROM Needs JOIN Treatment T on Needs.TreatmentID = T.ID
-WHERE PatientID = @pID and EDate >= GETDATE()
+WHERE PatientID = @pID and (EDate >= GETDATE() or EDate is null)
 GO
 
 CREATE PROCEDURE GetTreatmentsFromID
@@ -1225,12 +1231,13 @@ GO
 
 CREATE VIEW InsuredDoctorsForTreatmentSubtraction
 As
-SELECT T.ID as TreatmentID, D.ID, D.fname as DFirstName, D.lname as DLastName, T.Cost as TreatmentCost
+SELECT T.ID as TreatmentID, D.ID as DoctorID, D.fname as DFirstName, D.lname as DLastName, T.Cost as TreatmentCost, P.ID as PatientID
 FROM Treatment T JOIN Insures I
 on T.ID = I.treatmentID
 JOIN Person D on I.personID = D.ID
 JOIN HealthCareProvider HCP on I.HCPID = HCP.ID
-JOIN Person P on HCP.ID = P.hcpID
+JOIN DoctorFor DF on D.ID = DF.doctorID
+JOIN Person P on HCP.ID = P.hcpID and DF.patientID = P.ID
 WHERE D.role = 'DR' and P.role = 'PA'
 GO
 
@@ -1241,8 +1248,9 @@ FROM Treatment T JOIN Insures I
 on T.ID = I.treatmentID
 JOIN Person D on I.personID = D.ID
 JOIN HealthCareProvider HCP on I.HCPID = HCP.ID
-JOIN Person P on HCP.ID = P.hcpID
-WHERE D.role = 'DR' and P.role = 'PA'
+JOIN DoctorFor DF on D.ID = DF.doctorID
+JOIN Person P on HCP.ID = P.hcpID and DF.patientID = P.ID
+WHERE D.role = 'DR' and P.role = 'PA' 
 GO
 
 CREATE PROCEDURE GetDoctorExpensesForTreatment
@@ -1271,11 +1279,30 @@ AS
 
 	(SELECT CONCAT(DFirstName, ' ', DLastName) as [Doctor Name], TreatmentCost as Cost FROM DoctorsForTreatment WHERE TreatmentID = @treatmentID
 	EXCEPT
-	SELECT CONCAT(DFirstName, ' ', DLastName) as [Doctor Name], TreatmentCost as Cost FROM InsuredDoctorsForTreatmentSubtraction WHERE TreatmentID = @treatmentID)
+	SELECT CONCAT(DFirstName, ' ', DLastName) as [Doctor Name], TreatmentCost as Cost FROM InsuredDoctorsForTreatmentSubtraction WHERE TreatmentID = @treatmentID and PatientID = @patientID)
 	UNION
 	SELECT CONCAT(DFirstName, ' ', DLastName) as [Doctor Name], @treatmentCost - Cost as Cost FROM InsuredDoctorsForTreatment WHERE TreatmentID = @treatmentID and PatientID = @patientID
 
 	Return 0
+GO
+
+Create Trigger NoNegativeCoverage on Insures
+AFTER Insert, Update
+AS
+DECLARE @coverage Integer
+SET @coverage = (Select Coverage from inserted)
+DECLARE @tID Integer
+SET @tID = (Select TreatmentID from inserted)
+If (@coverage < 0)
+Begin
+	RAISERROR('Coverage cannot be negative.', 14, 1)
+	ROLLBACK TRANSACTION
+End
+If (SELECT Cost From Treatment Where ID = @tID) < @coverage
+Begin
+	RAISERROR('Coverage cannot be greater than cost.', 14, 1)
+	ROLLBACK TRANSACTION
+End
 GO
 
 CREATE PROCEDURE SymptomGetIDFromName
@@ -1457,9 +1484,7 @@ GO
 CREATE VIEW NotTreatmentForView
 AS
 SELECT Doc.ID AS DoctorID, T.ID as ID, T.name as Name
-FROM Person Doc JOIN Treatment T On NOT EXISTS (SELECT *
-												   FROM Performs
-												   WHERE doctorID = Doc.ID and treatmentID = T.ID)
+FROM Person Doc JOIN Treatment T On NOT EXISTS (SELECT * FROM Performs WHERE doctorID = Doc.ID and treatmentID = T.ID)
 WHERE Doc.role = 'DR'
 GO
 
@@ -1477,4 +1502,54 @@ AS
 		Return 2
 	END
 	SELECT ID, Name FROM NotTreatmentForView WHERE DoctorID = @doctorID
+GO
+
+CREATE VIEW NotChronicForView
+AS
+SELECT Pat.ID AS PatientID, Ch.ID as ID, Ch.name as Name
+FROM Person Pat JOIN Symptom Ch On NOT EXISTS (SELECT * FROM Chronic WHERE SymptomID = Ch.ID and PersonID = Pat.ID)
+WHERE Pat.role = 'PA'
+GO
+
+CREATE PROCEDURE GetChronicNotFromPatient
+(@patientID Integer)
+AS
+	IF(@patientID is null)
+	BEGIN
+		RAISERROR('Patient ID does not exist.', 14, 1)
+		Return 1
+	END
+	IF(NOT EXISTS(SELECT * FROM PatientNames WHERE @patientID = ID))
+	BEGIN
+		RAISERROR('Patient does not exist.', 14, 1)
+		Return 2
+	END
+	SELECT ID, Name FROM NotChronicForView WHERE PatientID = @patientID
+GO
+
+CREATE PROCEDURE InsertNeedsNoEnd
+	(@patientID Integer, @treatmentID Integer, @sDate Date)
+AS
+BEGIN
+	-- check to see if any of the parameters are null
+	IF(@patientID is NULL or @treatmentID is NULL or @sDate is NULL)
+	BEGIN
+		RAISERROR('Input arguments cannot be null', 14, 1)
+		Return 1
+	END
+	-- check to see if the person exists in the person database
+	IF(NOT EXISTS (SELECT * FROM Person WHERE ID = @patientID))
+	BEGIN
+		RAISERROR('Patient not in the person database', 14, 1)
+		Return 2
+	END
+	-- check to see if the treatment exists in the treatment database
+	IF(NOT EXISTS (SELECT * FROM Treatment WHERE ID = @treatmentID))
+	BEGIN
+		RAISERROR('Treatment not in the treatment database', 14, 1)
+		Return 3
+	END
+INSERT INTO Needs Values(@patientID, @treatmentID, @sDate, null)
+Return 0
+END
 GO
