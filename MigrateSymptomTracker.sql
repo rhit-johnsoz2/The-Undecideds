@@ -210,7 +210,7 @@ AS
 SELECT Doctor.ID AS DoctorID, Patient.fname, Patient.lname, Patient.ID
 FROM Person Doctor JOIN Person Patient On NOT EXISTS (SELECT *
 													  FROM DoctorView
-													  WHERE DoctorID != Doctor.ID and ID != Patient.ID)
+													  WHERE DoctorID = Doctor.ID and ID = Patient.ID)
 WHERE Doctor.role = 'DR' AND Patient.role = 'PA'
 GO
 
