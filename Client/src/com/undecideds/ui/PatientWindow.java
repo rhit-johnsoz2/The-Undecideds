@@ -76,8 +76,7 @@ public class PatientWindow {
         ResultSet rs = ReadServiceList.DOCTORS_FROM_PATIENT.ExecuteQuery(new Object[]{id});
 
         HashSet<String> hiddenIDs = new HashSet<String>();
-//        hiddenIDs.add("PatientID");
-//        hiddenIDs.add("DoctorID");
+        hiddenIDs.add("ID");
         JTable patients = (JTable) TableBuilder.buildTableRaw(rs, hiddenIDs);
         viewAvalibleDoctors.add(new JScrollPane(patients));
         HashMap<String, InputWidget> widgets = new HashMap<>();
