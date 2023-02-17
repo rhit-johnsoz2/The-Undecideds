@@ -119,9 +119,9 @@ public class PatientWindow {
                 refresh();
             }});
         if(patients.getRowCount() == 0){
-            runButton2.getComponent(0).setEnabled(false);
+            runButton.getComponent(0).setEnabled(false);
         }
-        viewAvalibleDoctors.add(runButton2);
+        viewAvalibleDoctors.add(runButton);
 
         patients.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
