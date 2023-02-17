@@ -763,9 +763,8 @@ if(@end < @Start)
 	End
 
 Update Needs
-	Set SDate = @Start,
-		EDate = @end
-	Where PatientID = @PersonId and TreatmentID = @Treatment
+	Set EDate = @end
+	Where PatientID = @PersonId and TreatmentID = @Treatment and SDate = @Start
 	return 0;
 End
 GO
