@@ -39,7 +39,7 @@ public class Main {
         System.out.println("attempting login with credentials:\n\tuser: " + user + "\n\tpass: " + EncryptionService.HiddenPass(encryptedPass));
         DatabaseConnectionService.InitDatabaseConnectionService("titan.csse.rose-hulman.edu", dbName);
         boolean connected = DatabaseConnectionService.connect(user, EncryptionService.Decrypt(encryptedPass));
-        if(!connected){
+        if(!connected) {
             System.out.println("Connection failed! Exiting . . .");
             System.exit(401);
         }

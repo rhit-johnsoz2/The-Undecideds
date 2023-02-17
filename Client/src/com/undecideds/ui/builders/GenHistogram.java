@@ -39,8 +39,6 @@ public class GenHistogram {
                     title = "Symptom Frequency per Year";
                 }
             }
-
-
             HistogramDataset dataset = new HistogramDataset();
             dataset.addSeries("Frequency of symptom", occurences, occurences.length);
             JFreeChart histogram = ChartFactory.createHistogram(title,
@@ -49,9 +47,9 @@ public class GenHistogram {
             JPanel panel = new JPanel(new GridLayout(1,1));
             panel.add(chart);
             panel.setPreferredSize(new Dimension(400,400));
+            chart.setDomainZoomable(false);
+            chart.setRangeZoomable(false);
             return panel;
-
-
         }catch (Exception e){
             e.printStackTrace();
             JPanel panel = new JPanel();

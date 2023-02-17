@@ -21,6 +21,7 @@ public class DoctorViewingPatientWindow {
         Container hist = new GenHistogram().GenHistogram(patientID, GenHistogram.GraphType.WEEKLY);
         Container hist2 = new GenHistogram().GenHistogram(patientID, GenHistogram.GraphType.MONTHLY);
         Container hist3 = new GenHistogram().GenHistogram(patientID, GenHistogram.GraphType.ANNUAL);
+
         home.setLayout(new GridLayout(2, 4));
         if (isDoctor) {
             JLabel doctorView = new JLabel("You are in doctor view.");
@@ -40,8 +41,8 @@ public class DoctorViewingPatientWindow {
     public static JPanel launchViewHistory(boolean isDoctor, int patientID) {
         JPanel viewHistory = new JPanel(false);
         viewHistory.setLayout(new GridLayout());
-        ResultSet rs = ReadServiceList.ACUTE_FROM_PATIENT.ExecuteQuery(new Object[]{patientID});
-        if(!isDoctor){
+
+        ResultSet rs = ReadServiceList.ACUTE_FROM_PATIENT.ExecuteQuery(new Object[]{patientID});  if(!isDoctor){
             HashSet<String> hidden = new HashSet<String>();
             hidden.add("PatientID");
             viewHistory.add(TableBuilder.buildTable(rs, hidden));
