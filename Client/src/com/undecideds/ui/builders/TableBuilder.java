@@ -292,6 +292,7 @@ public class TableBuilder {
                 table.getColumn(s).setMinWidth(0);
                 table.getColumn(s).setMaxWidth(0);
             }
+            table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             return table;
         }else{
             return new JLabel("Table has not been fetched. If this might be the result of an error, please view the stack trace.");

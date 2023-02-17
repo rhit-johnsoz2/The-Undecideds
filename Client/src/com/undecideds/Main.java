@@ -4,13 +4,6 @@ import com.undecideds.cli.CLIApplication;
 import com.undecideds.services.*;
 import com.undecideds.services.generic.EncryptionService;
 import com.undecideds.ui.LoginWindow;
-import com.undecideds.ui.builders.TableBuilder;
-
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.sql.ResultSet;
-import java.util.HashSet;
 
 //Authors: 
 // johnsoz2

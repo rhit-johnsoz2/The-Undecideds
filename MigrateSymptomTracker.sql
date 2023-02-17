@@ -1433,3 +1433,23 @@ BEGIN
 	ORDER BY symptomDate DESC
 END
 Go
+
+CREATE PROCEDURE getHCPFromPatientID
+(@pID varchar(50))
+As
+BEGIN
+	if(@pID is null)
+	BEGIN
+		Raiserror('Patient ID can not be null', 14, 1)
+		Return 1
+	END
+	if(NOT EXISTS (SELECT * FROM Person WHERE ID = @pID and role = 'PA'))
+	BEGIN
+		Raiserror('Patient is not in table', 14, 1)
+		Return 2
+	END
+	SELECT HCP.name
+	FROM Person P Join HealthCareProvider HCP on P.hcpID = HCP.ID
+	WHERE P.ID = @pID and P.role = 'PA'
+END
+GO

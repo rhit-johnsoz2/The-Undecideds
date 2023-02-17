@@ -117,7 +117,7 @@ public class ReadService {
             }
             return null;
         }catch (Exception e){
-            System.out.println(e);
+            e.printStackTrace();
             return null;
         }
     }
@@ -151,7 +151,7 @@ public class ReadService {
 
             @Override
             public Object getValue() {
-                return map.get(comboBox.getModel().getSelectedItem().toString());
+                return comboBox.getSelectedItem() != null ? map.get(comboBox.getModel().getSelectedItem().toString()) : null;
             }
         };
     }

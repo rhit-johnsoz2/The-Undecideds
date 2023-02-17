@@ -119,7 +119,7 @@ public class LoginWindow {
             }else if(role.equals("PA")){
                 frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                 frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
-                PatientWindow patientWindow = new PatientWindow() ;
+                PatientWindow patientWindow = new PatientWindow();
                 patientWindow.launch(id, name);
                 return;
             }
