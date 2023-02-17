@@ -1185,7 +1185,7 @@ AS
 		RAISERROR('Patient does not exist.', 14, 1)
 		Return 2
 	END
-	SELECT * FROM DoctorsUnderPatientView WHERE PatientID = @patientID
+	SELECT CONCAT(FName, ' ', lname) as Name, ID FROM DoctorsUnderPatientView WHERE PatientID = @patientID
 	Return 0
 GO
 
@@ -1452,4 +1452,29 @@ BEGIN
 	FROM Person P Join HealthCareProvider HCP on P.hcpID = HCP.ID
 	WHERE P.ID = @pID and P.role = 'PA'
 END
+GO
+
+CREATE VIEW NotTreatmentForView
+AS
+SELECT Doc.ID AS DoctorID, T.name as TreatmentName
+FROM Person Doc JOIN Treatment T On NOT EXISTS (SELECT *
+						FROM Performs
+						WHERE doctorID = Doc.ID and treatmentID = T.ID)
+WHERE Doc.role = 'DR'
+GO
+
+CREATE PROCEDURE GetTreatmentsNotFromDoctor
+(@doctorID Integer)
+AS
+	IF(@doctorID is null)
+	BEGIN
+		RAISERROR('Doctor ID does not exist.', 14, 1)
+		Return 1
+	END
+	IF(NOT EXISTS(SELECT * FROM DoctorNames WHERE @doctorID = ID))
+	BEGIN
+		RAISERROR('Doctor does not exist.', 14, 1)
+		Return 2
+	END
+	SELECT TreatmentName FROM NotTreatmentForView WHERE DoctorID = @doctorID
 GO
