@@ -54,7 +54,7 @@ public class Table {
                         idTable.put(oldIDVal, (int)ReadService.getSingleton(rs));
                     }
                 }else{
-                    int status = sproc.getCuds().executeFromStrings(args);
+                    int status = sproc.getCuds().executeFromStrings(args, true);
                     if(status != 0){
                         //System.out.println(sproc.getCuds().codeMeaning(status));
                     }

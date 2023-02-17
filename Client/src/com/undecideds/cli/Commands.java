@@ -45,7 +45,7 @@ public class Commands {
                 String line = br.readLine();
                 while((line = br.readLine()) != null){
                     String[] elements = line.split(",");
-                    System.out.println(service.codeMeaning(service.executeFromStrings(elements)));
+                    System.out.println(service.codeMeaning(service.executeFromStrings(elements, true)));
                 }
             }catch (Exception e){
                 System.out.println("Couldn't open file " + args[1]);

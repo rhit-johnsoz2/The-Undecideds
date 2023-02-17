@@ -38,13 +38,12 @@ public class CUDService {
         CUD_SERVICES.add(this);
     }
 
-    public int ExecuteQuery(Object[] params) {
+    public int ExecuteQuery(Object[] params, boolean CLI) {
         try{
             CallableStatement statement = DatabaseConnectionService.getConnection().prepareCall(template.toString());
             statement.registerOutParameter(1, Types.INTEGER);
             int paramNumber = 2;
             for(Argument a : arguments){
-                System.out.println(params[paramNumber - 2]);
                 if(!a.prepare(statement, paramNumber, params[paramNumber - 2])){
                     return -1;
                 }
@@ -53,7 +52,7 @@ public class CUDService {
             statement.execute();
             return statement.getInt(1);
         }catch (Exception e){
-            if(e instanceof SQLException){
+            if(e instanceof SQLException && !CLI){
                 JFrame err_popup = new JFrame("Error!");
                 err_popup.add(new JLabel(((SQLException)e).getLocalizedMessage()));
                 err_popup.pack();
@@ -64,6 +63,9 @@ public class CUDService {
             }
         }
         return -1;
+    }
+    public int ExecuteQuery(Object[] params) {
+        return ExecuteQuery(params, false);
     }
 
     public HashMap<String, InputWidget> buildUIWidgets(HashMap<String, ReadService> idMatch, boolean flag) {
@@ -137,12 +139,16 @@ public class CUDService {
         System.out.println("Return code " + res + ": " + codeMeaning(res));
     }
 
-    public int executeFromStrings(String[] strings) {
+    public int executeFromStrings(String[] strings, boolean CLI) {
         Object[] args = new Object[arguments.length];
         for(int i = 0; i < args.length; i++){
             args[i] = arguments[i].parseArg(strings[i]);
         }
-        return ExecuteQuery(args);
+        return ExecuteQuery(args, CLI);
+    }
+
+    public int executeFromStrings(String[] strings){
+        return executeFromStrings(strings, false);
     }
 
     private InputWidget generateComboWidget(String argId, HashMap<String, ReadService> idMatch, Object inputValue){

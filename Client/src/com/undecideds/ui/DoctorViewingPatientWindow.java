@@ -306,7 +306,6 @@ public class DoctorViewingPatientWindow {
 
                     inputValues.clear();
                     for (int i = 0; i < currentTreatmentTable.getColumnCount(); i++) {
-                        System.out.println(currentTreatmentTable.getColumnName(i) + " : " + currentTreatmentTable.getValueAt(currentTreatmentTable.getSelectedRow(), i));
                         inputValues.put(currentTreatmentTable.getColumnName(i), currentTreatmentTable.getValueAt(currentTreatmentTable.getSelectedRow(), i));
                     }
                     if(isDoctor) {

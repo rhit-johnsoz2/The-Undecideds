@@ -46,7 +46,6 @@ public class ReadService {
             statement.registerOutParameter(1, Types.INTEGER);
             int paramNumber = 2;
             for(Argument a : arguments){
-                System.out.println(a.getArgumentID() + " | " + params[paramNumber - 2]);
                 a.prepare(statement, paramNumber, params[paramNumber - 2]);
                 paramNumber++;
             }
