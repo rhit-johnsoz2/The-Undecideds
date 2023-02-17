@@ -23,15 +23,33 @@ import java.util.HashSet;
 public class PatientWindow {
     int id;
     String name;
+    JTabbedPane tabbedPane;
+
     public void launch(int id, String name){
         this.id = id;
         this.name = name;
         JFrame framePatient = new JFrame(name + "'s information");
         framePatient.setSize(700, 500);
 
-        DoctorViewingPatientWindow shareViewComponents = new DoctorViewingPatientWindow();
 
-        JTabbedPane tabbedPane = new JTabbedPane();
+
+        tabbedPane = new JTabbedPane();
+        refresh();
+
+
+        framePatient.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        framePatient.getContentPane().add(tabbedPane, BorderLayout.CENTER);
+        framePatient.setVisible(true);
+    }
+
+    public void refresh(){
+        int selected = -1;
+        if(tabbedPane.getTabCount() != 0){
+            selected = tabbedPane.getSelectedIndex();
+        }
+        tabbedPane.removeAll();
+
+        DoctorViewingPatientWindow shareViewComponents = new DoctorViewingPatientWindow(this);
         JPanel home = launchHome(id,name);
         JPanel viewChronic = shareViewComponents.viewChronic(false, id);
         JPanel viewMyDocs = viewMyDoctors();
@@ -46,9 +64,10 @@ public class PatientWindow {
         tabbedPane.addTab("Past Treatments", null, viewPastTreatments, "");
         tabbedPane.addTab("Current Treatments", null, viewCurTreatments, "");
 
-        framePatient.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        framePatient.getContentPane().add(tabbedPane, BorderLayout.CENTER);
-        framePatient.setVisible(true);
+        if(selected != -1){
+            tabbedPane.setSelectedIndex(selected);
+        }
+
     }
 
     public JPanel viewMyDoctors(){
@@ -83,6 +102,7 @@ public class PatientWindow {
             @Override
             public void onResult(int result) {
                 // DO ON RUN
+                refresh();
             }});
         viewAvalibleDoctors.add(runButton2);
 

@@ -18,6 +18,23 @@ import java.util.HashSet;
 
 public class DoctorViewingPatientWindow {
 
+    public DoctorViewingPatientWindow(){
+
+    }
+
+    PatientWindow window;
+    public DoctorViewingPatientWindow(PatientWindow patientWindow){
+        this.window = patientWindow;
+    }
+
+    private void safeRefresh(){
+        if(window != null){
+            window.refresh();
+        }else{
+            refresh();
+        }
+    }
+
     public JPanel viewAcute(boolean isDoctor, int id){
         JPanel viewAcute = new JPanel();
         viewAcute.setLayout(new BoxLayout(viewAcute, BoxLayout.Y_AXIS));
@@ -64,6 +81,7 @@ public class DoctorViewingPatientWindow {
                 HashSet<String> hiddenIDs = new HashSet<String>();
                 hiddenIDs.add("PatientID");
                 patients.setModel(TableBuilder.getTableModel(rs,hiddenIDs));
+                safeRefresh();
             }
         });
         JPanel Wpanel = new JPanel();
@@ -111,8 +129,10 @@ public class DoctorViewingPatientWindow {
         return viewcurTreatments;
     }
 
-
+    JTabbedPane tabbedPane;
+    int patientId;
     public void launch(int doctorID, int patientId, DoctorWindow host) {
+        this.patientId = patientId;
         host.hide();
         String patientName = "";
         try {
@@ -128,12 +148,9 @@ public class DoctorViewingPatientWindow {
         JFrame frame = new JFrame("Information on " + patientName);
         frame.setSize(700, 500);
 
-        JTabbedPane tabbedPane = new JTabbedPane();
 
-        tabbedPane.addTab("View Acute", null, viewAcute(true, patientId), "");
-        tabbedPane.addTab("View Chronic", null, viewChronic(true, patientId), "");
-        tabbedPane.addTab("View Current Treatments", null, currentTreatments(true, patientId), "");
-        tabbedPane.addTab("View Treatment History", null, pastTreatments(true, patientId), "");
+        tabbedPane = new JTabbedPane();
+        refresh();
 
         frame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
@@ -144,5 +161,20 @@ public class DoctorViewingPatientWindow {
         frame.add(tabbedPane);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setVisible(true);
+    }
+
+    private void refresh(){
+        int selected = -1;
+        if(tabbedPane.getTabCount() != 0){
+            selected = tabbedPane.getSelectedIndex();
+        }
+        tabbedPane.removeAll();
+        tabbedPane.addTab("View Acute", null, viewAcute(true, patientId), "");
+        tabbedPane.addTab("View Chronic", null, viewChronic(true, patientId), "");
+        tabbedPane.addTab("View Current Treatments", null, currentTreatments(true, patientId), "");
+        tabbedPane.addTab("View Treatment History", null, pastTreatments(true, patientId), "");
+        if(selected != -1){
+            tabbedPane.setSelectedIndex(selected);
+        }
     }
 }
