@@ -29,15 +29,15 @@ public class PatientWindow {
         JFrame framePatient = new JFrame(name + "'s information");
         framePatient.setSize(700, 500);
 
-        DoctorViewingPatientWindow view = new DoctorViewingPatientWindow();
+        DoctorViewingPatientWindow shareViewComponents = new DoctorViewingPatientWindow();
 
         JTabbedPane tabbedPane = new JTabbedPane();
         JPanel home = launchHome(id,name);
-        JPanel viewChronic = view.viewChronicMethod(id);
+        JPanel viewChronic = shareViewComponents.viewChronic(false, id);
         JPanel viewMyDocs = viewMyDoctors();
-        JPanel viewPastTreatments = view.pastTreatments(id);
-        JPanel viewCurTreatments = view.curTreatments(id);
-        JPanel viewAcute = view.viewAcute(id);
+        JPanel viewPastTreatments = shareViewComponents.pastTreatments(false, id);
+        JPanel viewCurTreatments = shareViewComponents.currentTreatments(false, id);
+        JPanel viewAcute = shareViewComponents.viewAcute(false, id);
 
         tabbedPane.addTab("Home", null, home, "");
         tabbedPane.addTab("Acute Symptoms", null, viewAcute, "");
