@@ -11,6 +11,10 @@ public class ReadServiceList {
             new Argument(Argument.ArgumentType.INT, "PID")
     });
 
+    public static final ReadService TREATMENTS_NOT_DONE_BY_DOCTOR = new ReadService("GetTreatmentsNotFromDoctor", new Argument[]{
+            new Argument(Argument.ArgumentType.INT, "DoctorID")
+    });
+
     public static final ReadService GET_PATIENT_HCP = new ReadService("getHCPFromPatientID", new Argument[]{
             new Argument(Argument.ArgumentType.INT, "PID")
     });
