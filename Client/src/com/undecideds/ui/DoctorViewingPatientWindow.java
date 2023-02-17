@@ -9,6 +9,7 @@ import com.undecideds.ui.cuduibuilder.InputWidget;
 import com.undecideds.ui.cuduibuilder.ResultListener;
 
 import javax.swing.*;
+import javax.xml.transform.Result;
 import java.awt.*;
 import java.sql.ResultSet;
 import java.util.HashMap;
@@ -84,4 +85,29 @@ public class DoctorViewingPatientWindow {
         return addSymptom;
     }
 
+    public void launch(int doctorID, int patientId) {
+        ResultSet rs = ReadServiceList.GET_PATIENT_NAMES.ExecuteQuery(new Object[]{});
+        String patientName = "";
+        try {
+            while (rs.next()) {
+                if(rs.getInt("ID") == patientId) {
+                    patientName = rs.getString("fname") + " " + rs.getString("lname");
+                }
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        JFrame frame = new JFrame("Information on " + patientName);
+        frame.setSize(700, 500);
+
+        JTabbedPane tabbedPane = new JTabbedPane();
+
+        tabbedPane.addTab("Home", null, launchHome(true, patientId, patientName), "");
+        tabbedPane.addTab("Add Patient", null, launchViewHistory(true, patientId), "");
+        tabbedPane.addTab("View Patients", null, launchaddSymptom(true, patientId), "");
+        // TODO once Liz is done with Patient
+
+        frame.add(tabbedPane);
+        frame.setVisible(true);
+    }
 }
