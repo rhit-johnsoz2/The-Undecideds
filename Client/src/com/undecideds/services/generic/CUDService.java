@@ -44,7 +44,9 @@ public class CUDService {
             statement.registerOutParameter(1, Types.INTEGER);
             int paramNumber = 2;
             for(Argument a : arguments){
-                a.prepare(statement, paramNumber, params[paramNumber - 2]);
+                if(!a.prepare(statement, paramNumber, params[paramNumber - 2])){
+                    return -1;
+                }
                 paramNumber++;
             }
             statement.execute();
@@ -99,6 +101,10 @@ public class CUDService {
                 Object[] values = new Object[arguments.length];
                 for(int i = 0; i < arguments.length; i++){
                     values[i] = sources.get(arguments[i].getArgumentID()).getValue();
+                    if(values[i] == null){
+                        resultListener.onResult(-1);
+                        return;
+                    }
                 }
                 res = ExecuteQuery(values);
                 resultListener.onResult(res);
@@ -177,7 +183,7 @@ public class CUDService {
 
     public String codeMeaning(int code){
         if(code == -1){
-            return "Failed to parse params, check stacktrace";
+            return "Failed to parse params. Check that your inputs are valid";
         }
         return resultCodes[code];
     }

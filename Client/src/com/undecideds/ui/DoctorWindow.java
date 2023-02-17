@@ -12,8 +12,7 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.sql.ResultSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,25 +21,52 @@ public class DoctorWindow {
 
     int currentId;
     String currentName;
+    JTabbedPane tabbedPane;
+    JFrame frameDoctor;
+    DoctorWindow self;
 
     public void launch(int id, String name){
+        self = this;
         currentId = id;
         currentName = name;
-        JFrame frameDoctor = new JFrame();
+        frameDoctor = new JFrame();
         frameDoctor.setTitle("Dashboard for Dr. " + name);
         frameDoctor.setSize(700, 500);
 
-        JTabbedPane tabbedPane = new JTabbedPane();
+        tabbedPane = new JTabbedPane();
+        refresh();
 
-        tabbedPane.addTab("My Treatments", null, myTreatments(), "");
-        tabbedPane.addTab("Add Patient", null, addPatient(), "");
-        tabbedPane.addTab("View Patients", null, viewPatient(), "");
+        frameDoctor.addWindowFocusListener(new WindowFocusListener() {
+            @Override
+            public void windowGainedFocus(WindowEvent e) {
+                refresh();
+            }
+
+            @Override
+            public void windowLostFocus(WindowEvent e) {
+
+            }
+        });
 
         frameDoctor.add(tabbedPane);
         frameDoctor.setVisible(true);
     }
 
-    public JPanel viewPatient() {
+    void refresh(){
+        int selected = -1;
+        if(tabbedPane.getTabCount() != 0){
+            selected = tabbedPane.getSelectedIndex();
+        }
+        tabbedPane.removeAll();
+        tabbedPane.addTab("My Treatments", null, myTreatments(), "");
+        //tabbedPane.addTab("Add Patient", null, addPatient(), "");
+        tabbedPane.addTab("View Patients", null, viewPatients(), "");
+        if(selected != -1){
+            tabbedPane.setSelectedIndex(selected);
+        }
+    }
+
+    public JPanel viewPatients() {
         JPanel viewPatient = new JPanel();
         viewPatient.setLayout(new BoxLayout(viewPatient, BoxLayout.PAGE_AXIS));
         ResultSet rs = ReadServiceList.PATIENTS_FROM_DOCTOR.ExecuteQuery(new Object[]{currentId});
@@ -56,18 +82,18 @@ public class DoctorWindow {
             return viewPatient;
         }
         viewPatient.add(new JScrollPane(patients));
-        viewPatient.add(patients);
-        JButton selectorButton = new JButton("View Symptom Treatments");
+        JButton doctorViewingPatientButton = new JButton("View Patient Information");
         HashMap<String, Object> inputValues = new HashMap<>();
-        selectorButton.addActionListener(new ActionListener() {
+        doctorViewingPatientButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 DoctorViewingPatientWindow patientView = new DoctorViewingPatientWindow();
-                patientView.launch(currentId, (int)inputValues.get("ID"));
+                patientView.launch(currentId, (int)inputValues.get("ID"), self);
+                refresh();
             }
         });
-        JButton selectorButton2 = new JButton("Remove Patient");
-        selectorButton2.addActionListener(new ActionListener() {
+        JButton removePatientButton = new JButton("Remove Patient");
+        removePatientButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 DeleteServiceList.DELETE_DOCTORFOR.ExecuteQuery(new Object[]{currentId,Integer.parseInt(inputValues.get("ID").toString())});
@@ -76,23 +102,7 @@ public class DoctorWindow {
                 hiddenIDs.add("ID");
                 hiddenIDs.add("DoctorID");
                 patients.setModel(TableBuilder.getTableModel(rs, hiddenIDs));
-            }
-        });
-        patients.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                if (patients.getSelectedRow() != -1) {
-
-                    inputValues.clear();
-                    for (int i = 0; i < patients.getColumnCount(); i++) {
-                        System.out.println(patients.getColumnName(i) + " : " + patients.getValueAt(patients.getSelectedRow(), i));
-                        inputValues.put(patients.getColumnName(i), patients.getValueAt(patients.getSelectedRow(), i));
-                    }
-                    selectorButton.setEnabled(true);
-
-                } else {
-                    selectorButton.setEnabled(false);
-                }
+                refresh();
             }
         });
 
@@ -106,16 +116,39 @@ public class DoctorWindow {
                         System.out.println(patients.getColumnName(i) + " : " + patients.getValueAt(patients.getSelectedRow(), i));
                         inputValues.put(patients.getColumnName(i), patients.getValueAt(patients.getSelectedRow(), i));
                     }
-                    selectorButton.setEnabled(true);
+                    doctorViewingPatientButton.setEnabled(true);
 
                 } else {
-                    selectorButton.setEnabled(false);
+                    doctorViewingPatientButton.setEnabled(false);
                 }
             }
         });
-        viewPatient.add(new JScrollPane(patients));
-        viewPatient.add(selectorButton2);
-        viewPatient.add(selectorButton);
+        JButton addPatientButton = new JButton("Add Patient");
+        addPatientButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFrame popup = new JFrame("add new patient");
+
+                popup.add(addPatient(popup));
+
+                popup.addWindowListener(new WindowAdapter() {
+                    public void windowClosing(WindowEvent e) {
+                        refresh();
+                    }
+                });
+
+                popup.pack();
+                popup.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                popup.setVisible(true);
+
+            }
+        });
+        JPanel buttonPanel = new JPanel(new GridLayout(1, 3));
+        buttonPanel.add(addPatientButton);
+        buttonPanel.add(removePatientButton);
+        buttonPanel.add(doctorViewingPatientButton);
+
+        viewPatient.add(buttonPanel);
         return viewPatient;
     }
 
@@ -153,6 +186,7 @@ public class DoctorWindow {
                     // update TABLE
                     ResultSet rs = ReadServiceList.GET_TREATMENTS_FROM_DOCTOR.ExecuteQuery(new Object[]{currentId});
                     patients.setModel(TableBuilder.getTableModel(rs, new HashSet<>()));
+                    refresh();
 
                 }catch (Exception e){
                     System.out.println("fatal error re-fetching table");
@@ -167,8 +201,7 @@ public class DoctorWindow {
         return myTreatmentsPanel;
     }
 
-    JComboBox addPatientComboBox;
-    public JPanel addPatient(){
+    public JPanel addPatient(JFrame host){
         JPanel addPatient = new JPanel(false);
         addPatient.setLayout(new BoxLayout(addPatient, BoxLayout.PAGE_AXIS));
         HashMap<String, InputWidget> widgets = new HashMap<>();
@@ -192,12 +225,27 @@ public class DoctorWindow {
         Container runButton2 = InsertServiceList.INSERT_DOCTORFOR.buildActivateButton("Add", widgets, new ResultListener(){
             @Override
             public void onResult(int result) {
-
+                if(result == -1){
+                    JFrame err_popup = new JFrame("Error!");
+                    err_popup.add(new JLabel("Check that your inputs are valid"));
+                    err_popup.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                    err_popup.pack();
+                    err_popup.setVisible(true);
+                }
+                host.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                host.dispatchEvent(new WindowEvent(host, WindowEvent.WINDOW_CLOSING));
+                refresh();
             }});
         Wpanel2.add(runButton2);
         Wpanel2.setLayout(new BoxLayout(Wpanel2, BoxLayout.PAGE_AXIS));
         addPatient.add(Wpanel2);
         return addPatient;
+    }
+    public void hide(){
+        frameDoctor.setVisible(false);
+    }
+    public void show(){
+        frameDoctor.setVisible(true);
     }
 }
 

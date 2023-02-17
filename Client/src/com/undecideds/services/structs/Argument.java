@@ -34,6 +34,9 @@ public class Argument {
                 default -> {System.out.println("Error parsing argument, no type " + type.name());}
             }
         }catch (Exception e){
+            if(o == null){
+                return false;
+            }
             System.out.println("Error parsing argument " + o.toString() + " doesn't match the object type " + type.name());
         }
         return false;
@@ -162,7 +165,6 @@ public class Argument {
                 };
             }
             case INT -> {
-                System.out.println(inputValue);
                 return new InputWidget(argumentID){
                     JTextField numbers = new JTextField(((Integer) inputValue).toString());
                     @Override
