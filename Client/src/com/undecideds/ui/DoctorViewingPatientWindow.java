@@ -41,6 +41,22 @@ public class DoctorViewingPatientWindow {
                 return id;
             }
         });
+        widgets.replace("SEVERITY",new InputWidget("SEVERITY"){
+            JComboBox comboBox;
+            @Override
+            public Container generateWidget() {
+                JPanel panel = new JPanel(new GridLayout(1, 2));
+                comboBox = new JComboBox(new Integer[]{1,2,3,4,5,6,7,8,9,10});
+                panel.add(new JLabel("Severity"));
+                panel.add(comboBox);
+                return panel;
+            }
+
+            @Override
+            public Object getValue() {
+                return comboBox.getModel().getSelectedItem();
+            }
+                });
         Container runButton = InsertServiceList.INSERT_ACUTE.buildActivateButton("Add", widgets, new ResultListener() {
             @Override
             public void onResult(int result) {
@@ -51,11 +67,14 @@ public class DoctorViewingPatientWindow {
             }
         });
         JPanel Wpanel = new JPanel();
+        Wpanel.setLayout(new BoxLayout(Wpanel, BoxLayout.X_AXIS));
         for (String key : widgets.keySet()) {
+            Wpanel.add(Box.createRigidArea(new Dimension(15,50)));
             Wpanel.add(widgets.get(key).generateWidget());
         }
 
         viewAcute.add(new JScrollPane(patients));
+        viewAcute.add(Box.createRigidArea(new Dimension(50,100)));
         viewAcute.add(Wpanel);
         viewAcute.add(runButton);
         return viewAcute;

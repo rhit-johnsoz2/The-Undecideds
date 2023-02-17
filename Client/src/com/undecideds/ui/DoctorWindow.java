@@ -87,7 +87,9 @@ public class DoctorWindow {
         doctorViewingPatientButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+
                 DoctorViewingPatientWindow patientView = new DoctorViewingPatientWindow();
+
                 patientView.launch(currentId, (int)inputValues.get("ID"), self);
                 refresh();
             }
