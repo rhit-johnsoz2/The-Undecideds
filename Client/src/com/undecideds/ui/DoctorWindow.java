@@ -49,6 +49,7 @@ public class DoctorWindow {
         });
 
         frameDoctor.add(tabbedPane);
+        frameDoctor.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frameDoctor.setVisible(true);
     }
 
@@ -108,6 +109,7 @@ public class DoctorWindow {
             }
         });
 
+        JButton addPatientButton = new JButton("Add Patient");
         patients.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
@@ -119,13 +121,15 @@ public class DoctorWindow {
                         inputValues.put(patients.getColumnName(i), patients.getValueAt(patients.getSelectedRow(), i));
                     }
                     doctorViewingPatientButton.setEnabled(true);
-
+                    removePatientButton.setEnabled(true);
                 } else {
                     doctorViewingPatientButton.setEnabled(false);
+                    removePatientButton.setEnabled(false);
                 }
             }
         });
-        JButton addPatientButton = new JButton("Add Patient");
+        removePatientButton.setEnabled(false);
+        doctorViewingPatientButton.setEnabled(false);
         addPatientButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -173,18 +177,19 @@ public class DoctorWindow {
                 return currentId;
             }
         });
-        widgets.put("TreatmentName", ReadService.generateComboWidget("TreatmentName", ReadServiceList.TREATMENTS_NOT_DONE_BY_DOCTOR, new Object[]{currentId}));
+
+        widgets.put("TREATMENT ID", ReadService.generateComboWidget("TREATMENT ID", ReadServiceList.TREATMENTS_NOT_DONE_BY_DOCTOR, new Object[]{currentId}));
+
 
         for(String key : widgets.keySet()){
             Wpanel2.add(widgets.get(key).generateWidget());
         }
+
         Container addTreatment = InsertServiceList.INSERT_PERFORMS.buildActivateButton("Add Treatment", widgets, new ResultListener() {
             @Override
             public void onResult(int result) {
                 try {
                     // update TABLE
-                    ResultSet rs = ReadServiceList.GET_TREATMENTS_FROM_DOCTOR.ExecuteQuery(new Object[]{currentId});
-                    patients.setModel(TableBuilder.getTableModel(rs, new HashSet<>()));
                     refresh();
 
                 }catch (Exception e){

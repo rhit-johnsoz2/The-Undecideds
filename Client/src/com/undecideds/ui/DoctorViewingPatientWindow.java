@@ -35,7 +35,7 @@ public class DoctorViewingPatientWindow {
         }
     }
 
-    public JPanel viewAcute(boolean isDoctor, int id){
+    public JPanel viewAcute(boolean isDoctor, int id) {
         JPanel viewAcute = new JPanel();
         viewAcute.setLayout(new BoxLayout(viewAcute, BoxLayout.Y_AXIS));
         ResultSet rs = ReadServiceList.ACUTE_FROM_PATIENT.ExecuteQuery(new Object[]{id});
@@ -58,12 +58,13 @@ public class DoctorViewingPatientWindow {
                 return id;
             }
         });
-        widgets.replace("SEVERITY",new InputWidget("SEVERITY"){
+        widgets.replace("SEVERITY", new InputWidget("SEVERITY") {
             JComboBox comboBox;
+
             @Override
             public Container generateWidget() {
                 JPanel panel = new JPanel(new GridLayout(1, 2));
-                comboBox = new JComboBox(new Integer[]{1,2,3,4,5,6,7,8,9,10});
+                comboBox = new JComboBox(new Integer[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
                 panel.add(new JLabel("Severity"));
                 panel.add(comboBox);
                 return panel;
@@ -73,28 +74,30 @@ public class DoctorViewingPatientWindow {
             public Object getValue() {
                 return comboBox.getModel().getSelectedItem();
             }
-                });
+        });
         Container runButton = InsertServiceList.INSERT_ACUTE.buildActivateButton("Add", widgets, new ResultListener() {
             @Override
             public void onResult(int result) {
                 ResultSet rs = ReadServiceList.ACUTE_FROM_PATIENT.ExecuteQuery(new Object[]{id});
                 HashSet<String> hiddenIDs = new HashSet<String>();
                 hiddenIDs.add("PatientID");
-                patients.setModel(TableBuilder.getTableModel(rs,hiddenIDs));
+                patients.setModel(TableBuilder.getTableModel(rs, hiddenIDs));
                 safeRefresh();
             }
         });
         JPanel Wpanel = new JPanel();
         Wpanel.setLayout(new BoxLayout(Wpanel, BoxLayout.X_AXIS));
         for (String key : widgets.keySet()) {
-            Wpanel.add(Box.createRigidArea(new Dimension(15,50)));
+            Wpanel.add(Box.createRigidArea(new Dimension(15, 50)));
             Wpanel.add(widgets.get(key).generateWidget());
         }
 
         viewAcute.add(new JScrollPane(patients));
-        viewAcute.add(Box.createRigidArea(new Dimension(50,100)));
-        viewAcute.add(Wpanel);
-        viewAcute.add(runButton);
+        if (!isDoctor){
+            viewAcute.add(Box.createRigidArea(new Dimension(50, 100)));
+            viewAcute.add(Wpanel);
+            viewAcute.add(runButton);
+        }
         return viewAcute;
     }
 
