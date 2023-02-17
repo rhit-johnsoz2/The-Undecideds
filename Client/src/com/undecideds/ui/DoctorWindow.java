@@ -64,7 +64,7 @@ public class DoctorWindow {
             public void actionPerformed(ActionEvent e) {
                 JFrame popUpWindow = new JFrame();
                 popUpWindow.setSize(400, 400);
-                popUpWindow.add(DoctorViewingPatientWindow.launchViewHistory(false, Integer.parseInt(inputValues.get("ID").toString())));
+//                popUpWindow.add(DoctorViewingPatientWindow.launchViewHistory(false, Integer.parseInt(inputValues.get("ID").toString())));
                 popUpWindow.setVisible(true);
             }
         });

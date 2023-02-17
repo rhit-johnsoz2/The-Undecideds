@@ -29,13 +29,15 @@ public class PatientWindow {
         JFrame framePatient = new JFrame(name + "'s information");
         framePatient.setSize(700, 500);
 
+        DoctorViewingPatientWindow view = new DoctorViewingPatientWindow();
+
         JTabbedPane tabbedPane = new JTabbedPane();
-        JPanel home = DoctorViewingPatientWindow.launchHome(false, id, name);
-        JPanel viewChronic = viewChronicMethod();
+        JPanel home = launchHome(id,name);
+        JPanel viewChronic = view.viewChronicMethod(id);
         JPanel viewMyDocs = viewMyDoctors();
-        JPanel viewPastTreatments = pastTreatments();
-        JPanel viewCurTreatments = curTreatments();
-        JPanel viewAcute = viewAcute();
+        JPanel viewPastTreatments = view.pastTreatments(id);
+        JPanel viewCurTreatments = view.curTreatments(id);
+        JPanel viewAcute = view.viewAcute(id);
 
         tabbedPane.addTab("Home", null, home, "");
         tabbedPane.addTab("Acute Symptoms", null, viewAcute, "");
@@ -55,16 +57,14 @@ public class PatientWindow {
         ResultSet rs = ReadServiceList.DOCTORS_FROM_PATIENT.ExecuteQuery(new Object[]{id});
 
         HashSet<String> hiddenIDs = new HashSet<String>();
-        hiddenIDs.add("PatientID");
+//        hiddenIDs.add("PatientID");
+//        hiddenIDs.add("DoctorID");
         JTable patients = (JTable) TableBuilder.buildTableRaw(rs, hiddenIDs);
         viewAvalibleDoctors.add(new JScrollPane(patients));
-
-        HashMap<String, ReadService> idMatch2 = new HashMap<>();
-        idMatch2.put("PATIENT ID", ReadServiceList.GET_PATIENT_NAMES);
-        HashMap<String, InputWidget> widgets = DeleteServiceList.DELETE_DOCTORFOR.buildUIWidgets(idMatch2, true);
+        HashMap<String, InputWidget> widgets = new HashMap<>();
         JPanel Wpanel = new JPanel();
 
-        widgets.replace("PATIENT ID", new InputWidget("PATIENT ID") {
+        widgets.put("PATIENT ID", new InputWidget("PATIENT ID") {
             @Override
             public Container generateWidget() {
                 return new JPanel();
@@ -74,41 +74,46 @@ public class PatientWindow {
                 return id;
             }
         });
-        widgets.put("DOCTORS ID", ReadService.generateComboWidget("DOCTORS ID", ReadServiceList.DOCTORS_FROM_PATIENT, new Object[]{id}));
+        widgets.put("DOCTOR ID", ReadService.generateComboWidget("DOCTOR ID", ReadServiceList.DOCTORS_FROM_PATIENT, new Object[]{id}));
         for(String key : widgets.keySet()){
             Wpanel.add(widgets.get(key).generateWidget());
         }
-
+        viewAvalibleDoctors.add(Wpanel);
         Container runButton2 = DeleteServiceList.DELETE_DOCTORFOR.buildActivateButton("Remove",widgets, new ResultListener(){
             @Override
             public void onResult(int result) {
                 // DO ON RUN
             }});
-        viewAvalibleDoctors.add(Wpanel);
         viewAvalibleDoctors.add(runButton2);
 
         return viewAvalibleDoctors;
     }
 
-    public static JPanel launchHome(boolean isDoctor, int patientID, String patientName) {
+    public JPanel launchHome(int patientID, String patientName) {
         JPanel home = new JPanel(false);
         Container hist = new GenHistogram().GenHistogram(patientID, GenHistogram.GraphType.WEEKLY);
         Container hist2 = new GenHistogram().GenHistogram(patientID, GenHistogram.GraphType.MONTHLY);
         Container hist3 = new GenHistogram().GenHistogram(patientID, GenHistogram.GraphType.ANNUAL);
 
-        home.setLayout(new GridLayout(2, 4));
-        if (isDoctor) {
-            JLabel doctorView = new JLabel("You are in doctor view.");
-            home.add(doctorView);
-        }
+        home.setLayout(new BoxLayout(home, BoxLayout.PAGE_AXIS));
         JLabel hello = new JLabel("Hello " + patientName + " back to Symptom Tracker!");
         JLabel curSympts = new JLabel(" Current Symptoms");
+        String rs = ReadService.getSingleton(ReadServiceList.GET_PATIENT_HCP.ExecuteQuery(new Object[]{id})).toString();
+
+        JPanel histoPan = new JPanel();
+        histoPan.setLayout(new BoxLayout(histoPan, BoxLayout.X_AXIS));
+        JLabel myHealthCare = new JLabel("Current Healthcare Provider: " + rs);
         home.add(hello);
         home.add(curSympts);
-        home.add(new JLabel());
-        home.add(hist);
-        home.add(hist2);
-        home.add(hist3);
+        home.add(myHealthCare);
+        home.add(Box.createRigidArea(new Dimension(50,100)));
+        histoPan.add(Box.createRigidArea(new Dimension(10,167)));
+        histoPan.add(hist);
+        histoPan.add(Box.createRigidArea(new Dimension(10,167)));
+        histoPan.add(hist2);
+        histoPan.add(Box.createRigidArea(new Dimension(10,167)));
+        histoPan.add(hist3);
+        home.add(histoPan);
         return home;
     }
 }
